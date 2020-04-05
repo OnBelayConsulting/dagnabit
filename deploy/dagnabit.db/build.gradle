@@ -1,0 +1,138 @@
+apply plugin: 'liquibase'
+apply plugin: 'java'
+
+def UNPACKED_DIR="${buildDir}/unpacked/dist"
+
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		flatDir {
+			name 'localLibsDirectory'
+			dirs 'libs'
+		}
+	}
+
+	dependencies {
+		classpath "org.liquibase:liquibase-gradle-plugin:1.2.4"
+		classpath fileTree(dir: 'libs',include: '*.jar')
+
+	}
+}
+
+task unzip(type: Copy) {
+	def zipFile = file(DIST_DIR + '/' + ZIP_FILE)
+	def outputDir = file(UNPACKED_DIR)
+	from zipTree(zipFile)
+	into outputDir
+}
+
+task deployNew(dependsOn: unzip) {
+	doLast{ liquibase.runList = "applySnapshotActivity, applyChangesActivity" }
+}
+deployNew.finalizedBy update
+
+task deployChanges(dependsOn: unzip) {
+	doLast { liquibase.runList = "applyChangesActivity" }
+}
+deployChanges.finalizedBy update
+
+task deployHistoricalChanges(dependsOn: unzip) {
+	doLast { liquibase.runList = "applyHistoricalChangesActivity" }
+}
+deployHistoricalChanges.finalizedBy update
+
+task compareSchemas() {
+	doLast { liquibase.runList = "diffSchemasActivity" }
+}
+compareSchemas.finalizedBy diff
+
+task generateDifferences() {
+	doLast { liquibase.runList = "genDifferencesActivity" }
+}
+generateDifferences.finalizedBy diffChangeLog
+
+task anonymizeData(dependsOn: unzip) {
+	doLast { liquibase.runList = "anonymizeDataActivity" }
+}
+anonymizeData.finalizedBy update
+
+liquibase {
+
+	Properties jdbcProps = new Properties() 
+	jdbcProps.load(new FileInputStream("${projectDir}/jdbc.properties"))
+
+	// Add the dynamically replaced properties found in the gradle.properties to the system properties.
+	// This makes the properties available to Liquibase at runtime. For example: In the change log
+	// files "${tblspace_data}" would get replaced by the value for tblspace_data found in
+	// gradle.properties (e.g. "RISK_DATA").
+	System.getProperties().put("tblspace_data", tblspace_data)
+	System.getProperties().put("tblspace_data_idx",  tblspace_data_idx)
+	System.getProperties().put("tblspace_work",  tblspace_work)
+	System.getProperties().put("tblspace_work_idx",  tblspace_work_idx)
+
+	activities {
+
+		noChangeLogActivity {
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+		}
+
+		applySnapshotActivity {
+			changeLogFile UNPACKED_DIR + '/Snapshot/SnapshotLog.xml'
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+		}
+
+		applyChangesActivity {
+			changeLogFile UNPACKED_DIR + '/Changes/ChangesLog.xml'
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+		}
+
+		applyHistoricalChangesActivity {
+			changeLogFile UNPACKED_DIR + "/Changes/historical/${historicalVersion}/ChangesLog.xml"
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+		}
+
+		diffSchemasActivity {
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+
+			referenceUrl jdbcProps.get("jdbc.referenceUrl")
+			referenceUsername jdbcProps.get("jdbc.referenceUsername")
+			referencePassword jdbcProps.get("jdbc.referencePassword")
+		}
+
+		genDifferencesActivity {
+			changeLogFile 'differences.xml'
+
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+
+			referenceUrl jdbcProps.get("jdbc.referenceUrl")
+			referenceUsername jdbcProps.get("jdbc.referenceUsername")
+			referencePassword jdbcProps.get("jdbc.referencePassword")
+		}
+
+		anonymizeDataActivity {
+			changeLogFile UNPACKED_DIR + '/DataAnonymization.xml'
+			url jdbcProps.get("jdbc.url")
+			username jdbcProps.get("jdbc.username")
+			password jdbcProps.get("jdbc.password")
+		}
+	}
+
+	try {
+		runList = project.ext.runList
+	} catch (Exception e) {
+		runList = 'noChangeLogActivity'
+	}
+}
