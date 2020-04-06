@@ -1,0 +1,33 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+jar {
+	baseName = 'DAGNabitlib'
+	version = '1.0.0-SNAPSHOT'
+	manifest {
+		attributes("Implementation-Title": "Dagnabitlib", "Implementation-Version": "1.0", "Created-By": "OnBelay Consulting")
+	}
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+    testCompile 'junit:junit:4.11'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.1'
+}
+
+
+

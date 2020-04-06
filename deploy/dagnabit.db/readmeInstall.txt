@@ -1,1 +1,0 @@
-Create a gradle.properties and a jdbc.properties file based on the target database.
