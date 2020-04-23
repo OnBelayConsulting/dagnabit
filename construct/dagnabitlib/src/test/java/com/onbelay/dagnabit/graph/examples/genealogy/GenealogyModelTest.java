@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.  
  */
-package com.onbelay.dagnabit.graph.model;
+package com.onbelay.dagnabit.graph.examples.genealogy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -27,8 +27,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.onbelay.dagnabit.graph.components.DagModelImpl;
+import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagModel;
+import com.onbelay.dagnabit.graph.model.DagNode;
+import com.onbelay.dagnabit.graph.model.DagNodePath;
+import com.onbelay.dagnabit.graph.model.DagNodeVector;
+import com.onbelay.dagnabit.graph.model.DagPathRoutes;
+import com.onbelay.dagnabit.graph.model.LinkAnalysis;
+import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
+import com.onbelay.dagnabit.graph.model.NavigationResult;
+import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 
-public class DagModelTest  {
+public class GenealogyModelTest  {
 	private static Logger logger = LogManager.getLogger();
 
 	private DagModel model;
@@ -40,6 +50,7 @@ public class DagModelTest  {
 		model.addNode("A");
 		
 		model.addNode("B");
+		
 		
 		model.addNode("C");
 		

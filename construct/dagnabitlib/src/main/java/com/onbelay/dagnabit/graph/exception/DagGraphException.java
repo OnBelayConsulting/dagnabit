@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.  
  */
-package com.onbelay.dagnabit.graph.model;
+package com.onbelay.dagnabit.graph.exception;
 
 public class DagGraphException extends RuntimeException {
 

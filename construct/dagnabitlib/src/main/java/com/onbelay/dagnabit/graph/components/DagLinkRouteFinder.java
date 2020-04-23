@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.  
  */
-package com.onbelay.dagnabit.graph.model;
+package com.onbelay.dagnabit.graph.components;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +22,20 @@ import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.onbelay.dagnabit.graph.model.DagLink;
+import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagModel;
+import com.onbelay.dagnabit.graph.model.DagNode;
+import com.onbelay.dagnabit.graph.model.DagNodeConnector;
+import com.onbelay.dagnabit.graph.model.DagNodePath;
+import com.onbelay.dagnabit.graph.model.DagNodeSearchResult;
+import com.onbelay.dagnabit.graph.model.DagNodeType;
+import com.onbelay.dagnabit.graph.model.DagNodeVector;
+import com.onbelay.dagnabit.graph.model.DagPathRoutes;
+import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
+import com.onbelay.dagnabit.graph.model.NavigationResult;
+import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 
 /**
  * The DagLinkRouteFinder finds routes between nodes.

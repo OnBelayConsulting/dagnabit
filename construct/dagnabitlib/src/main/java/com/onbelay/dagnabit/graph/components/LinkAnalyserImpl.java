@@ -13,7 +13,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.  
  */
-package com.onbelay.dagnabit.graph.model;
+package com.onbelay.dagnabit.graph.components;
+
+import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagModel;
+import com.onbelay.dagnabit.graph.model.DagNodeType;
+import com.onbelay.dagnabit.graph.model.LinkAnalyser;
+import com.onbelay.dagnabit.graph.model.LinkAnalysis;
+import com.onbelay.dagnabit.graph.model.NavigationResult;
+import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 
 public class LinkAnalyserImpl implements LinkAnalyser {
 
