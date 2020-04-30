@@ -13,30 +13,34 @@
    See the License for the specific language governing permissions and
    limitations under the License.  
  */
-package com.onbelay.dagnabit.graph.model;
+package com.onbelay.dagnabit.graph.components;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DagNodeSearchResult implements NodeSearchResult{
+import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagNode;
+import com.onbelay.dagnabit.graph.model.DagNodeType;
+
+public class DagNodeSearchState {
     
-    private Map<String, DagNode> visited = new HashMap<String, DagNode>();
+    private Map<String, DagNodeImpl> visited = new HashMap<String, DagNodeImpl>();
     private DagLinkType dagLinkType;
     private DagNodeType dagNodeType;
     private DagNodeVector vector;
     private List<DagNodeVector> vectors = new ArrayList<DagNodeVector>();
-    private List<DagNodeConnector> cycles = new ArrayList<DagNodeConnector>();
+    private List<DagNodeVector> cycles = new ArrayList<DagNodeVector>();
     
-    private NodeSearchResult backChainedNodeSearchResult;
+    private DagNode endingNode;
     
-    private DagNode currentNode;
+    private DagNodeImpl currentNode;
 
-    public DagNodeSearchResult(
+    public DagNodeSearchState(
     		DagNodeType dagNodeType,
     		DagLinkType dagLinkType, 
-    		DagNode currentNode) {
+    		DagNodeImpl currentNode) {
     	
     	this.dagNodeType = dagNodeType;
     	this.dagLinkType = dagLinkType;
@@ -44,11 +48,25 @@ public class DagNodeSearchResult implements NodeSearchResult{
         visited.put(currentNode.getName(), currentNode);
     }
     
-    public DagNodeSearchResult(
-    		DagNodeSearchResult copy, 
-    		DagNode currentNode, 
+    public DagNodeSearchState(
+    		DagNodeType dagNodeType,
+    		DagLinkType dagLinkType, 
+    		DagNodeImpl currentNode,
+    		DagNode endingNode) {
+    	
+    	this.endingNode = endingNode;
+    	this.dagNodeType = dagNodeType;
+    	this.dagLinkType = dagLinkType;
+        this.currentNode = currentNode;
+        visited.put(currentNode.getName(), currentNode);
+    }
+    
+    public DagNodeSearchState(
+    		DagNodeSearchState copy, 
+    		DagNodeImpl currentNode, 
     		DagNodeConnector relationship) {
     	
+    	this.endingNode = copy.endingNode;
     	this.dagNodeType = copy.dagNodeType;
     	this.dagLinkType = copy.dagLinkType;
         this.currentNode = currentNode;
@@ -60,12 +78,11 @@ public class DagNodeSearchResult implements NodeSearchResult{
         this.cycles = copy.cycles;
     }
 
-    @Override
 	public boolean isCyclic() {
     	return cycles.size() > 0;
     }
     
-    public Map<String, DagNode> getVisited() {
+    public Map<String, DagNodeImpl> getVisited() {
         return visited;
     }
 
@@ -79,24 +96,27 @@ public class DagNodeSearchResult implements NodeSearchResult{
         return vector;
     }
 
-    public DagNode getCurrentNode() {
+    public DagNodeImpl getCurrentNode() {
         return currentNode;
     }
     
-    public void setCurrentNode(DagNode node) {
+    public void setCurrentNode(DagNodeImpl node) {
         this.currentNode = node;
     }
 
-    @Override
 	public List<DagNodeVector> getVectors() {
         return vectors;
     }
     
     public void fixCurrentVector(DagNodeConnector connector) {
-        if (vector == null)
-            vector = new DagNodeVector();
-        vector.add(connector);
-        vectors.add(vector);
+    	if (vector != null) {
+    		vector.add(connector);
+    		vectors.add(vector);
+    	} else {
+	    	vector = new DagNodeVector();
+	        vector.add(connector);
+	        vectors.add(vector);
+    	}
     }
 
     public void fixCurrentVector() {
@@ -109,32 +129,25 @@ public class DagNodeSearchResult implements NodeSearchResult{
         return visited.get(code) != null;
     }
     
-    public void addCycle(DagNodeConnector connector, DagLinkType linkType) {
-    	connector.markAsCyclic(linkType);
-        cycles.add(connector);
+    public void addCycle(DagNodeVector currentVector, DagNodeConnector connector, DagLinkType linkType) {
+    	DagNodeVector cyclicVector = new DagNodeVector(currentVector);
+    	cyclicVector.add(connector);
+        cycles.add(cyclicVector);
     }
     
-    public void addCycle(DagNodeConnector connector) {
-    	connector.markAsCyclic();
-        cycles.add(connector);
+    public void addCycle(DagNodeVector currentVector, DagNodeConnector connector) {
+    	DagNodeVector cyclicVector = new DagNodeVector(currentVector);
+    	cyclicVector.add(connector);
+        cycles.add(cyclicVector);
     }
 
-    @Override
-	public List<DagNodeConnector> getCycles() {
+	public List<DagNodeVector> getCycles() {
         return cycles;
     }
 
-    public void setCycles(ArrayList<DagNodeConnector> cycles) {
+    public void setCycles(ArrayList<DagNodeVector> cycles) {
         this.cycles = cycles;
     }
-
-	public NodeSearchResult getBackChainedNodeSearchResult() {
-		return backChainedNodeSearchResult;
-	}
-
-	public void setBackChainedNodeSearchResult(NodeSearchResult backChainedNodeSearchResult) {
-		this.backChainedNodeSearchResult = backChainedNodeSearchResult;
-	}
 
 	public DagLinkType getDagLinkType() {
 		return dagLinkType;
@@ -142,6 +155,10 @@ public class DagNodeSearchResult implements NodeSearchResult{
 
 	public DagNodeType getDagNodeType() {
 		return dagNodeType;
+	}
+
+	public DagNode getEndingNode() {
+		return endingNode;
 	}
 
 }

@@ -20,14 +20,12 @@ import java.util.Map;
 
 public interface LinkAnalysis {
 
-	public boolean hasCycles();
-	
 	public boolean isCyclic();
 	
 	public boolean isCyclic(DagLinkType linkType);
 	
-	public Map<DagLinkType, List<DagNodeConnector>> getCyclesByLinkType();
+	public Map<DagLinkType, List<DagNodePath>> getCyclesByLinkType();
 	
-	public List<DagNodeConnector> getCycles();
+	public List<DagNodePath> getCycles();
 	
 }

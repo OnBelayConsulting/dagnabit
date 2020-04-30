@@ -16,7 +16,6 @@
 package com.onbelay.dagnabit.graph.components;
 
 import com.onbelay.dagnabit.graph.model.DagLinkType;
-import com.onbelay.dagnabit.graph.model.DagModel;
 import com.onbelay.dagnabit.graph.model.DagNodeType;
 import com.onbelay.dagnabit.graph.model.LinkAnalyser;
 import com.onbelay.dagnabit.graph.model.LinkAnalysis;
@@ -28,11 +27,11 @@ public class LinkAnalyserImpl implements LinkAnalyser {
 	private DagLinkType linkType;
 	private DagNodeType nodeType;
 	
-	private DagModel model;
+	private DagModelImpl model;
 	
 	
 	
-	public LinkAnalyserImpl(DagModel model) {
+	public LinkAnalyserImpl(DagModelImpl model) {
 		super();
 		this.model = model;
 	}
@@ -59,7 +58,7 @@ public class LinkAnalyserImpl implements LinkAnalyser {
 	        			model,
 	        			nodeType,
 	        			linkType);
-	        	NavigationResult result = finder.discoverToRelationships();
+	        	NavigationResult result = traverseFromRoot(finder);
 	        	
 	        	for (NodeSearchResult nodeSearchResult : result.getNodeSearchResults().values()) {
 	        		analysisResult.addCycleByLinkType(
@@ -73,7 +72,7 @@ public class LinkAnalyserImpl implements LinkAnalyser {
         			model,
         			nodeType,
         			linkType);
-        	NavigationResult result = finder.discoverToRelationships();
+        	NavigationResult result = traverseFromRoot(finder);
         	
         	for (NodeSearchResult nodeSearchResult : result.getNodeSearchResults().values()) {
         		analysisResult.addCycleByLinkType(
@@ -83,6 +82,18 @@ public class LinkAnalyserImpl implements LinkAnalyser {
     	}
     	return analysisResult;
     	
+	}
+	
+	private NavigationResult traverseFromRoot(DagLinkRouteFinder finder) {
+		
+		NavigationResult navigationResult = new NavigationResult();
+		
+		for (DagNodeImpl node : model.getNodeMap().values()) {
+			navigationResult.add(
+					node, 
+					finder.discoverFromRelationships(node));
+		}
+		return navigationResult;
 	}
 
 }

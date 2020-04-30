@@ -35,7 +35,7 @@ import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
  */
 public class DagModelImpl implements DagModel {
     
-    private HashMap<String, DagNode> nodeMap = new HashMap<String, DagNode>();
+    private HashMap<String, DagNodeImpl> nodeMap = new HashMap<String, DagNodeImpl>();
     
     private Map<String, DagNodeType> nodeTypeMap = new HashMap<String, DagNodeType>();
     
@@ -43,7 +43,7 @@ public class DagModelImpl implements DagModel {
     
     
     public DagModelImpl() {
-    	nodeMap = new HashMap<String, DagNode>();
+    	nodeMap = new HashMap<String, DagNodeImpl>();
     	nodeTypeMap = new HashMap<String, DagNodeType>();
     	
     	DagNodeType defaultNodeType = new DagNodeType(DagNodeType.DEFAULT_TYPE);
@@ -124,7 +124,7 @@ public class DagModelImpl implements DagModel {
     }
     
     public void addNode(String nodeName) {
-    	DagNode node = new DagNode(
+    	DagNodeImpl node = new DagNodeImpl(
     			nodeName, 
     			nodeTypeMap.get(DagNodeType.DEFAULT_TYPE));
     	
@@ -141,7 +141,7 @@ public class DagModelImpl implements DagModel {
     		nodeTypeMap.put(nodeTypeName, nodeType);
     	}
     	
-    	DagNode node = new DagNode(
+    	DagNodeImpl node = new DagNodeImpl(
     			nodeName, 
     			nodeType);
     	
@@ -150,7 +150,7 @@ public class DagModelImpl implements DagModel {
         addNodeToNodeTypeMap(node, DagNodeType.DEFAULT_TYPE);
     }
     
-    private void addNodeToNodeTypeMap(DagNode node, String typeName) {
+    private void addNodeToNodeTypeMap(DagNodeImpl node, String typeName) {
     	DagNodeType nodeType;
     	if (nodeTypeMap.containsKey(typeName)) {
     		nodeType= nodeTypeMap.get(typeName);
@@ -164,10 +164,14 @@ public class DagModelImpl implements DagModel {
         return nodeMap.get(code);
     }
     
+    protected DagNodeImpl getNodeImplementation(String code) {
+    	return nodeMap.get(code);
+    }
+    
     public void addRelationship(
-    		DagNode fromNode, 
+    		DagNode fromNodeIn, 
     		String relationshipName, 
-    		DagNode toNode) {
+    		DagNode toNodeIn) {
 
     	
     	 DagLinkType dagLinkType = linkTypeMap.get(relationshipName);
@@ -175,6 +179,9 @@ public class DagModelImpl implements DagModel {
     		 dagLinkType = new DagLinkType(relationshipName);
     		 linkTypeMap.put(relationshipName, dagLinkType);
     	 }
+    	 
+    	 DagNodeImpl fromNode = nodeMap.get(fromNodeIn.getName());
+    	 DagNodeImpl toNode = nodeMap.get(toNodeIn.getName());
     	
          fromNode.addFromThisNodeRelationshipToNode(
         		 dagLinkType, 
@@ -185,17 +192,11 @@ public class DagModelImpl implements DagModel {
     	return linkTypeMap.get(name);
     }
 
-    public Map<String, DagNodeType> getNodeTypeMap() {
-		return nodeTypeMap;
-	}
-
-	public Map<String, DagNode> getNodeMap() {
-        return nodeMap;
+    protected Map<String, DagNodeImpl> getNodeMap() {
+    	return nodeMap;
     }
-
-	public Map<String, DagLinkType> getLinkTypeMap() {
-		return linkTypeMap;
-	}
-
     
+    protected Map<String, DagLinkType> getLinkTypeMap() {
+    	return linkTypeMap; 
+    }
 }

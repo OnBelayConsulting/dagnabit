@@ -13,13 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.  
  */
-package com.onbelay.dagnabit.graph.model;
+package com.onbelay.dagnabit.graph.components;
 
-public abstract class DagItem {
+public abstract class DagItemImpl {
 	
     protected String name;
     
-	protected DagItem(String name) {
+	protected DagItemImpl(String name) {
 		super();
 		this.name = name;
 	}
@@ -52,7 +52,7 @@ public abstract class DagItem {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        DagNode other = (DagNode) obj;
+        DagNodeImpl other = (DagNodeImpl) obj;
         if (name == null) {
             if (other.name != null)
                 return false;

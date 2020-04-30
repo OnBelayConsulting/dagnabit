@@ -22,33 +22,37 @@ import java.util.stream.Collectors;
 
 import com.onbelay.dagnabit.graph.exception.DagGraphException;
 import com.onbelay.dagnabit.graph.model.DagLinkType;
-import com.onbelay.dagnabit.graph.model.DagModel;
 import com.onbelay.dagnabit.graph.model.DagNode;
-import com.onbelay.dagnabit.graph.model.DagNodeConnector;
 import com.onbelay.dagnabit.graph.model.DagNodeNavigator;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.DagNodeType;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
+import com.onbelay.dagnabit.graph.model.TraversalDirectionType;
 
 public class DagNodeNavigatorImpl implements DagNodeNavigator {
 
-	private DagNode fromNode;
+	private DagNodeImpl startNode;
 	private DagLinkType linkType;
 	private DagNodeType nodeType;
-	private DagNode toNode;
+	private DagNodeImpl endingNode;
 	
-	private DagModel model;
+	private DagModelImpl model;
 	
+	private TraversalDirectionType traversalDirectionType;
 	
-	
-	public DagNodeNavigatorImpl(DagModel model) {
+	public DagNodeNavigatorImpl(DagModelImpl model) {
 		super();
 		this.model = model;
 	}
 
 	@Override
-	public DagNodeNavigator from(DagNode fromNode) {
-		this.fromNode = fromNode;
+	public DagNodeNavigator from(DagNode fromNodeIn) {
+		
+		if (traversalDirectionType == null)
+			traversalDirectionType = TraversalDirectionType.TRAVERSE_STARTING_FROM_ENDING_TO;
+		
+		this.startNode = model.getNodeImplementation(fromNodeIn.getName());
+		
 		return this;
 	}
 
@@ -65,18 +69,23 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 	}
 
 	@Override
-	public DagNodeNavigator to(DagNode toNode) {
-		this.toNode = toNode;
+	public DagNodeNavigator to(DagNode toNodeIn) {
+		
+		if (traversalDirectionType == null) 
+			traversalDirectionType = TraversalDirectionType.TRAVERSE_STARTING_TO_ENDING_FROM;
+		
+		this.endingNode = model.getNodeImplementation(toNodeIn.getName());
+		
 		return this;
 	}
 
 	@Override
 	public List<DagNode> adjacent() {
 		
-		if (fromNode == null)
+		if (startNode == null)
 			return new ArrayList<DagNode>();
 		
-		return fromNode
+		return startNode
 				.getFromThisNodeConnectors()
 				.stream()
 				.filter(createPredicate())
@@ -104,17 +113,27 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 	@Override
 	public List<DagNodePath> paths() {
 		
-		if (fromNode == null)
-			throw new DagGraphException("fromNode is required");
+		if (startNode == null && endingNode == null)
+			throw new DagGraphException("Either a from() or a to() is required");
 		
 		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
 				nodeType,
 				linkType);
 		
-		if (toNode != null)
-			return routeFinder.findPaths(fromNode, toNode);
-		else
-			return routeFinder.findAllPaths(fromNode);
+		if (traversalDirectionType == TraversalDirectionType.TRAVERSE_STARTING_FROM_ENDING_TO) {
+			if (startNode == null)
+				throw new DagGraphException("fromNode is missing in a traverse from");
+			
+			if (endingNode != null)
+				return routeFinder.findPathsStartingFromEndingAt(startNode, endingNode);
+			else
+				return routeFinder.findAllPathsFrom(startNode);
+		} else {
+			if (startNode != null)
+				return routeFinder.findPathsEndingAtStartingFrom(endingNode, startNode);
+			else
+				return routeFinder.findAllPathsTo(endingNode);
+		}
 	}
 
 }

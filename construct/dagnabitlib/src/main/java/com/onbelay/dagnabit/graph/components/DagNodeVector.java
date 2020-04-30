@@ -13,10 +13,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.  
  */
-package com.onbelay.dagnabit.graph.model;
+package com.onbelay.dagnabit.graph.components;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.onbelay.dagnabit.graph.model.DagNodePath;
+import com.onbelay.dagnabit.graph.model.NodePathLink;
 
 /**
  * Contains a list of DagNodeConnectors representing a vector from a from to a to node.
@@ -30,27 +34,89 @@ public class DagNodeVector {
         
     }
     
-    public List<DagNodePath> createPaths() {
+    public DagNodePath createPath() {
     	
-    	DagNode startNode = getFromNode();
+    	List<NodePathLink> links = connectors
+    			.stream()
+    				.map( c -> new NodePathLink(
+    						c.getFromNode(), 
+    						c.getRelationships().keySet(), 
+    						c.getToNode()))
+    				.collect(Collectors.toList());
+    	
+    	return new DagNodePath(
+    			getFromNode(), 
+    			links,
+    			getToNode());
+    }
+    
+    public List<DagNodePath> createFromPaths() {
+    	
+    	DagNodeImpl startNode = getFromNode();
     	
     	ArrayList<DagNodePath> paths = new ArrayList<>();
     	
     	DagNodePath last = null;
     	
     	DagNodeConnector firstConnector = connectors.get(0);
-    	last = new DagNodePath(startNode, firstConnector);
+    	
+    	last = new DagNodePath(
+    			startNode, 
+    			new NodePathLink(
+    					firstConnector.getFromNode(), 
+    					firstConnector.getRelationships().keySet(), 
+    					firstConnector.getToNode()));
+    			
 		paths.add(last);
     	
     	for (int i=1; i <connectors.size(); i++) {
         	DagNodeConnector nextConnector = connectors.get(i);
-        	DagNodePath next = new DagNodePath(startNode, last, nextConnector);
-    		paths.add(next);
+        	
+        	DagNodePath next = new DagNodePath(
+        			startNode, 
+        			last, 
+        			new NodePathLink(
+        					nextConnector.getFromNode(), 
+        					nextConnector.getRelationships().keySet(), 
+        					nextConnector.getToNode()));
+        	
+        	paths.add(next);
     		last = next;
     	}
     	
     	return paths;
     }
+    
+    public List<DagNodePath> createToPaths() {
+    	
+    	ArrayList<DagNodePath> paths = new ArrayList<>();
+    	
+    	
+    	DagNodeConnector firstConnector = connectors.get(0);
+    	
+    	DagNodePath path = new DagNodePath(
+    			firstConnector.getToNode(), 
+    			new NodePathLink(
+    					firstConnector.getToNode(), 
+    					firstConnector.getRelationships().keySet(), 
+    					firstConnector.getFromNode()));
+    			
+    	
+    	for (int i=1; i <connectors.size(); i++) {
+        	DagNodeConnector nextConnector = connectors.get(i);
+        	
+        	path.addToPathLink(
+        			new NodePathLink(
+        					nextConnector.getToNode(), 
+        					nextConnector.getRelationships().keySet(), 
+        					nextConnector.getFromNode()));
+        	
+    	}
+    	paths.add(path);
+    	return paths;
+    }
+    
+
     
     public DagNodeVector(DagNodeVector copy) {
         if (copy != null)
@@ -61,7 +127,7 @@ public class DagNodeVector {
     	connectors.add(connector);
     }
     
-    public DagNode getFromNode() {
+    public DagNodeImpl getFromNode() {
         if (connectors.size() > 0) {
             return connectors.get(0).getFromNode();
         } else {
@@ -70,7 +136,7 @@ public class DagNodeVector {
             
     }
 
-    public DagNode getToNode() {
+    public DagNodeImpl getToNode() {
         if (connectors.size() > 0) {
         	int end = connectors.size() - 1;
             return connectors.get(end).getToNode();

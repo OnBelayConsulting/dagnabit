@@ -16,6 +16,7 @@
 package com.onbelay.dagnabit.graph.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -26,16 +27,17 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.onbelay.dagnabit.graph.components.DagModelImpl;
+import com.onbelay.dagnabit.graph.factories.DagModelFactory;
 
 public class DagModelTest  {
 	private static Logger logger = LogManager.getLogger();
 
+	private DagModelFactory factory = new DagModelFactory();
 	private DagModel model;
 	
 	@Before
 	public void beforeRun() throws Throwable {
-		model = new DagModelImpl();
+		model = factory.newModel();
 		
 		model.addNode("A");
 		
@@ -79,19 +81,22 @@ public class DagModelTest  {
 	public void testNoCycles() {
 
 		for (DagNode node : model.findRootNodes()) {
-			for (DagLinkType linkType : model.getLinkTypeMap().values()) {
+			for (DagLinkType linkType : model.getLinkTypes()) {
 				
 				LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
 						null,
 						linkType);
 				NodeSearchResult nodeSearchResult = routeFinder.discoverFromRelationships(node);
-				assertEquals(0, nodeSearchResult.getCycles());
+				assertFalse(nodeSearchResult.isCyclic());
 			}
 		}
 
 	}
 	
 	@Test
+	/*
+	 * Should find A -> B directly A -> C via B and A -> D directly
+	 */
 	public void testNavigateFromRoot() {
 		
 		List<DagNodePath> paths = model
@@ -99,9 +104,81 @@ public class DagModelTest  {
 									.from(model.getNode("A"))
 									.by(model.getLinkType("benchesTo"))
 									.paths();
+		
+		
+		DagNodePath pathAToB = null;
+		DagNodePath pathAToC = null;
+		DagNodePath pathAToD = null;
+		
+		for (DagNodePath p : paths) {
+			logger.error(p.getRouteId());
+			
+			if (p.getRouteId().equals("A:B"))
+				pathAToB = p;
+			
+			if (p.getRouteId().equals("A:C"))
+				pathAToC = p;
+			
+			if (p.getRouteId().equals("A:D"))
+				pathAToD = p;
+		}
+		
+		assertNotNull(pathAToB);
+		assertNotNull(pathAToC);
+		assertNotNull(pathAToD);
+		
+		assertEquals(2, pathAToC.getLinks().size());
+	}
+	
+	@Test
+	/*
+	 * Should find A -> B 
+	 */
+	public void testNavigateFromRootToLeaf() {
+		
+		List<DagNodePath> paths = model
+									.navigate()
+									.from(model.getNode("A"))
+									.to(model.getNode("B"))
+									.by(model.getLinkType("benchesTo"))
+									.paths();
+		
+
+		assertEquals(1, paths.size());
+		DagNodePath pathAToB = paths.get(0);
+		assertEquals("A", pathAToB.getFromNode().getName());
+		assertEquals("B", pathAToB.getToNode().getName());
+	}
+	
+	@Test
+	public void testNavigateToRoot() {
+		
+		List<DagNodePath> paths = model
+				.navigate()
+				.to(model.getNode("A"))
+				.by(model.getLinkType("benchesTo"))
+				.paths();
+	
+		assertEquals(3, paths.size());
 		for (DagNodePath p : paths) {
 			logger.error(p.getRouteId());
 		}
+	}
+	
+	@Test
+	public void testNavigateToRootFromLeaf() {
+		
+		List<DagNodePath> paths = model
+				.navigate()
+				.to(model.getNode("A"))
+				.from(model.getNode("C"))
+				.by(model.getLinkType("benchesTo"))
+				.paths();
+	
+		assertEquals(1, paths.size());
+		DagNodePath path  = paths.get(0);
+		assertEquals("A", path.getToNode().getName());
+		assertEquals("C", path.getFromNode().getName());
 	}
 	
 	
@@ -111,7 +188,7 @@ public class DagModelTest  {
 								.analyse()
 								.result();
 		
-		assertEquals(false, analysis.hasCycles());	
+		assertEquals(false, analysis.isCyclic());	
 	}
 	
 
@@ -125,23 +202,39 @@ public class DagModelTest  {
 
 		
 		DagNode rootNode = model.getNode("A");
+		
 		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
 				null,
 				model.getLinkType("benchesTo"));
-		NodeSearchResult result = routeFinder.discoverFromRelationships(rootNode);
-		NodeSearchResult backChained = result.getBackChainedNodeSearchResult();
-		assertTrue(result.isCyclic());
-		assertEquals(1, result.getVectors().size());
-		// find the A -> D
-		DagNodeVector vector = result.getVectors().get(0);
-		assertEquals("A -> D", vector.getId());
 		
-		DagNode toNode = result.getCycles().get(0).getToNode();
-		for (DagNodeVector v : backChained.getVectors()) {
-			for (DagNodePath p : v.createPaths()) {
-				logger.error("Backchaining " + " " + p.getId());
-			}
+		NodeSearchResult result = routeFinder.discoverFromRelationships(rootNode);
+		assertTrue(result.isCyclic());
+		
+		assertEquals(3, result.getPaths().size());
+		DagNodePath pathAToB = null;
+		DagNodePath pathAToC = null;
+		DagNodePath pathAToD = null;
+		
+		for (DagNodePath p : result.getPaths()) {
+			logger.error(p.getRouteId());
+			
+			if (p.getRouteId().equals("A:B"))
+				pathAToB = p;
+			
+			if (p.getRouteId().equals("A:C"))
+				pathAToC = p;
+			
+			if (p.getRouteId().equals("A:D"))
+				pathAToD = p;
 		}
+		
+		assertNotNull(pathAToB);
+		assertNotNull(pathAToC);
+		assertNotNull(pathAToD);
+		
+		assertEquals(1, result.getCycles().size());
+		DagNodePath cycle = result.getCycles().get(0);
+		assertEquals("A", cycle.getToNode().getName());
 	}
 
 
@@ -154,31 +247,60 @@ public class DagModelTest  {
 				model.getNode("A"));
 
 		
-		DagNode rootNode = model.getNode("A");
 		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
 				null,
 				model.getLinkType("benchesTo"));
-		NavigationResult result = routeFinder.discoverToRelationships();
+		NavigationResult result = routeFinder.discoverToRelationships(model.getNode("A"));
 		
-		NodeSearchResult cyclicResult = null;
+		DagNodePath pathBtoA = null;
+		DagNodePath pathCToA = null;
+		DagNodePath pathDToA = null;
+		
 		for (NodeSearchResult nodeSearchResult : result.getNodeSearchResults().values()) {
-			if (nodeSearchResult.isCyclic()) {
-				cyclicResult = nodeSearchResult;
-				break;
+			for (DagNodePath path : nodeSearchResult.getPaths()) {
+				if (path.getFromNode().getName().equals("B"))
+					pathBtoA = path;
+				if (path.getFromNode().getName().equals("C"))
+					pathCToA = path;
+				if (path.getFromNode().getName().equals("D"))
+					pathDToA = path;
 			}
-				
 		}
-		assertNotNull(cyclicResult);
-		assertEquals(1, cyclicResult.getVectors().size());
-		// find the A -> D
-		DagNodeVector vector = cyclicResult.getVectors().get(0);
-		assertEquals("A -> D", vector.getId());
 		
-		DagNode toNode = cyclicResult.getCycles().get(0).getToNode();
-		for (DagNodeVector v : cyclicResult.getBackChainedNodeSearchResult().getVectors()) {
-			for (DagNodePath p : v.createPaths()) {
-				logger.error("Backchaining " + " " + p.getId());
-			}
+		
+		assertNotNull(pathBtoA);
+		assertNotNull(pathCToA);
+		assertNotNull(pathDToA);
+	}
+
+	@Test
+	public void testToLinks() {
+		
+		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
+				null,
+				model.getLinkType("benchesTo"));
+		NavigationResult result = routeFinder.discoverToRelationships(model.getNode("A"));
+		
+		NodeSearchResult nodeSearchResultCtoA =  result.getNodeSearchResult(model.getNode("C"));
+		NodeSearchResult nodeSearchResultBtoA =  result.getNodeSearchResult(model.getNode("B"));
+		NodeSearchResult nodeSearchResultDtoA =  result.getNodeSearchResult(model.getNode("D"));
+		
+		
+		assertNotNull(nodeSearchResultCtoA);
+		assertNotNull(nodeSearchResultBtoA);
+		assertNotNull(nodeSearchResultDtoA);
+
+		
+		for (DagNodePath p : nodeSearchResultCtoA.getPaths()) {
+			logger.error("C to A " + " " + p.getRouteId());
+		}
+		
+		for (DagNodePath p : nodeSearchResultBtoA.getPaths()) {
+			logger.error("B to A " + " " + p.getRouteId());
+		}
+		
+		for (DagNodePath p : nodeSearchResultDtoA.getPaths()) {
+			logger.error("D to A " + " " + p.getRouteId());
 		}
 	}
 
@@ -256,8 +378,8 @@ public class DagModelTest  {
 				model.getLinkType("benchesTo"));
 		
 		NodeSearchResult result = routeFinder.discoverFromRelationships(rootNode);
-		for (DagNodeVector v : result.getVectors()) {
-			logger.error(v.toString());
+		for (DagNodePath p : result.getPaths()) {
+			logger.error("path " + " " + p.getId());
 		}
 		
 	}

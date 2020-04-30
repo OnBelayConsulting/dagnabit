@@ -16,7 +16,7 @@
 package com.onbelay.dagnabit.graph.model;
 
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * Defines a common interface for a DagModel.
@@ -59,12 +59,6 @@ public interface DagModel {
     		DagNode toNode);
     
     public DagLinkType getLinkType(String name);
-
-    public Map<String, DagNodeType> getNodeTypeMap();
-
-	public Map<String, DagNode> getNodeMap();
-
-	public Map<String, DagLinkType> getLinkTypeMap();
 
     
 }

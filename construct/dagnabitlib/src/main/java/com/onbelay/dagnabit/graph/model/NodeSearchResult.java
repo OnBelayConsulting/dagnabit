@@ -19,16 +19,14 @@ import java.util.List;
 
 public interface NodeSearchResult {
 
-    public DagNode getCurrentNode();
+    public DagNode getRootNode();
     
 	public DagLinkType getDagLinkType();
 
-	public List<DagNodeConnector> getCycles();
+	public List<DagNodePath> getCycles();
 
-	public List<DagNodeVector> getVectors();
+	public List<DagNodePath> getPaths();
 
 	public boolean isCyclic();
-
-	public NodeSearchResult getBackChainedNodeSearchResult();
 
 }

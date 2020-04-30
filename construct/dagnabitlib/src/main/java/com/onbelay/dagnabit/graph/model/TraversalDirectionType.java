@@ -24,31 +24,31 @@ import java.util.Map;
  * Defines Report direction for reports
  *
  */
-public enum ReportDirectionType {
-	TO_RELATIONSHIP ("TO", "To Relationships"),
-	FROM_RELATIONSHIP ("FROM", "From Relationships");
+public enum TraversalDirectionType {
+	TRAVERSE_STARTING_TO_ENDING_FROM ("TO", " TO to FROM"),
+	TRAVERSE_STARTING_FROM_ENDING_TO ("FROM", "FROM to TO");
 
 	private final String code;
     private final String name;
 
     
-    private static final Map<String,ReportDirectionType> lookup 
-    = new HashMap<String,ReportDirectionType>();
+    private static final Map<String,TraversalDirectionType> lookup 
+    = new HashMap<String,TraversalDirectionType>();
 
-    private static final Map<String,ReportDirectionType> lookupByName 
-    = new HashMap<String,ReportDirectionType>();
+    private static final Map<String,TraversalDirectionType> lookupByName 
+    = new HashMap<String,TraversalDirectionType>();
 
 static {
-    for(ReportDirectionType c : EnumSet.allOf(ReportDirectionType.class))
+    for(TraversalDirectionType c : EnumSet.allOf(TraversalDirectionType.class))
      lookup.put(c.code, c);
-    for(ReportDirectionType c : EnumSet.allOf(ReportDirectionType.class))
+    for(TraversalDirectionType c : EnumSet.allOf(TraversalDirectionType.class))
         lookupByName.put(c.name, c);
 }
 
 
     
     
-	private ReportDirectionType(String code, String name) {
+	private TraversalDirectionType(String code, String name) {
 		this.code = code;
 		this.name = name;
 	}
@@ -61,19 +61,19 @@ static {
 	    return name;
 	}
 	
-    public static ReportDirectionType lookUp(String code) {
+    public static TraversalDirectionType lookUp(String code) {
         return lookup.get(code);
     }
 
-    public static ReportDirectionType lookUpByCodeOrName(String code) {
-        ReportDirectionType fnd = lookUp(code);
+    public static TraversalDirectionType lookUpByCodeOrName(String code) {
+        TraversalDirectionType fnd = lookUp(code);
         if (fnd != null)
             return fnd;
                     
         return lookupByName.get(code);
     }
 
-    public static ReportDirectionType lookUpByName(String name) {
+    public static TraversalDirectionType lookUpByName(String name) {
         return lookupByName.get(name);
     }
 

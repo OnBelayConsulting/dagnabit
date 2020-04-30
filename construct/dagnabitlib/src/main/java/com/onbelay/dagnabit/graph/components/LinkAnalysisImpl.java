@@ -21,23 +21,18 @@ import java.util.List;
 import java.util.Map;
 
 import com.onbelay.dagnabit.graph.model.DagLinkType;
-import com.onbelay.dagnabit.graph.model.DagNodeConnector;
+import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.LinkAnalysis;
 
 public class LinkAnalysisImpl  implements LinkAnalysis {
 	
-	private Map<DagLinkType, List<DagNodeConnector>> cyclesByLinkType = new HashMap<DagLinkType, List<DagNodeConnector>>();
-	private List<DagNodeConnector> connectorCycles = new ArrayList<DagNodeConnector>();
-	
-	public void addCycle(List<DagNodeConnector> cycles) {
-		connectorCycles.addAll(cycles);
-	}
+	private Map<DagLinkType, List<DagNodePath>> cyclesByLinkType = new HashMap<DagLinkType, List<DagNodePath>>();
 
 	public void addCycleByLinkType(
 			DagLinkType linkType, 
-			List<DagNodeConnector> cycles) {
+			List<DagNodePath> cycles) {
 		
-		List<DagNodeConnector> existingCycles = cyclesByLinkType.get(linkType);
+		List<DagNodePath> existingCycles = cyclesByLinkType.get(linkType);
 		if (existingCycles != null) {
 			existingCycles.addAll(cycles);
 		} else {
@@ -45,51 +40,36 @@ public class LinkAnalysisImpl  implements LinkAnalysis {
 		}
 	}
 	
-	public List<DagNodeConnector> getCycles() {
-		List<DagNodeConnector> cycles = new ArrayList<DagNodeConnector>();
+	@Override
+	public List<DagNodePath> getCycles() {
+		List<DagNodePath> cycles = new ArrayList<DagNodePath>();
 		
-		if (connectorCycles.isEmpty() == false) {
-			cycles.addAll(connectorCycles);
-		} else {
-			for (List<DagNodeConnector> connectors : cyclesByLinkType.values()) {
-				cycles.addAll(connectors);
-			}
+		for (List<DagNodePath> connectors : cyclesByLinkType.values()) {
+			cycles.addAll(connectors);
 		}
+		
 		return cycles;
 	}
 	
-	public Map<DagLinkType, List<DagNodeConnector>> getCyclesByLinkType() {
+	@Override
+	public Map<DagLinkType, List<DagNodePath>> getCyclesByLinkType() {
 		return cyclesByLinkType;
 	}
 
-	public void setCyclesByLinkType(Map<DagLinkType, List<DagNodeConnector>> cyclesByLinkType) {
+	public void setCyclesByLinkType(Map<DagLinkType, List<DagNodePath>> cyclesByLinkType) {
 		this.cyclesByLinkType = cyclesByLinkType;
 	}
 	
+	@Override
 	public boolean isCyclic() {
-		return (connectorCycles.isEmpty() == false);
+		return (getCycles().isEmpty() == false);
 	}
 	
+	@Override
 	public boolean isCyclic(DagLinkType linkType) {
-		boolean hasCycles = false;
-		for (DagNodeConnector c : cyclesByLinkType.get(linkType))
-			if (c.hasCycles())
-				hasCycles = true;
-	
-		return hasCycles;
+		return (cyclesByLinkType.containsKey(linkType));
 		
 	}
-	
-	public boolean hasCycles() {
-		boolean hasCycles = false;
-		for (List<DagNodeConnector> cycles : cyclesByLinkType.values()) {
-			for (DagNodeConnector c : cycles)
-				if (c.hasCycles())
-					hasCycles = true;
-		}
-		return hasCycles;
-	}
-	
 	
 	
 }

@@ -23,15 +23,10 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.onbelay.dagnabit.graph.model.DagLink;
 import com.onbelay.dagnabit.graph.model.DagLinkType;
-import com.onbelay.dagnabit.graph.model.DagModel;
 import com.onbelay.dagnabit.graph.model.DagNode;
-import com.onbelay.dagnabit.graph.model.DagNodeConnector;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
-import com.onbelay.dagnabit.graph.model.DagNodeSearchResult;
 import com.onbelay.dagnabit.graph.model.DagNodeType;
-import com.onbelay.dagnabit.graph.model.DagNodeVector;
 import com.onbelay.dagnabit.graph.model.DagPathRoutes;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
 import com.onbelay.dagnabit.graph.model.NavigationResult;
@@ -52,13 +47,11 @@ import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 public class DagLinkRouteFinder implements LinkRouteFinder {
 	private static final Logger logger = LogManager.getLogger(DagLinkRouteFinder.class);
 
-	private DagModel model;
+	private DagModelImpl model;
 
 	private DagLinkType linkType;
 	
 	private DagNodeType nodeType;
-	
-	private NavigationResult navigationResult;
 	
 
 	/**
@@ -67,8 +60,8 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 	 * @param dagNodeType - optional. restricts the toNode to navigate to.
 	 * @param dagLinkType - optional. restricts the link to navigate to.
 	 */
-	public DagLinkRouteFinder(
-			DagModel model,
+	protected DagLinkRouteFinder(
+			DagModelImpl model,
 			DagNodeType dagNodeType,
 			DagLinkType dagLinkTypeIn) {
 		
@@ -80,62 +73,66 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 	}
 
 	protected void initialize() {
-		navigationResult = discoverToRelationships();
 	}
 
+	@Override
 	public Map<DagNode, DagPathRoutes> findAllRoutesFrom(DagNode fromNode) {
 		Map<DagNode, DagPathRoutes> routeMap = new HashMap<>();
 		
 		NodeSearchResult result = discoverFromRelationships(fromNode);
 		
-		if (result.getVectors().size() > 0) {
-			for (DagNodeVector vector : result.getVectors()) {
-				for (DagNodePath path : vector.createPaths()) {
-					DagPathRoutes pathRoutes = routeMap.get(path.getToNode());
+		for (DagNodePath path : result.getPaths()) {
+			DagPathRoutes pathRoutes = routeMap.get(path.getToNode());
 					
-					if (pathRoutes == null) {
-						pathRoutes = new DagPathRoutes(fromNode, path.getToNode());
-						routeMap.put(path.getToNode(), pathRoutes);
-					}
-					
-					pathRoutes.addPath(path);
-				}
+			if (pathRoutes == null) {
+				pathRoutes = new DagPathRoutes(fromNode, path.getToNode());
+				routeMap.put(path.getToNode(), pathRoutes);
 			}
+					
+			pathRoutes.addPath(path);
 		}
+		
 		return routeMap;
 	}
 	
-	public List<DagNodePath> findAllPaths(DagNode fromNode) {
-		List<DagNodePath> paths = new ArrayList<>();
+	@Override
+	public List<DagNodePath> findAllPathsFrom(DagNode startNode) {
 		
-		NodeSearchResult result = discoverFromRelationships(fromNode);
+		NodeSearchResult result = discoverFromRelationships(startNode);
 		
-		if (result.getVectors().size() > 0) {
-			for (DagNodeVector vector : result.getVectors()) {
-				for (DagNodePath path : vector.createPaths()) {
-					
-					paths.add(path);
-				}
-			}
+		return result.getPaths();
+	}
+	
+	@Override
+	public List<DagNodePath> findAllPathsTo(DagNode endingNode) {
+		ArrayList<DagNodePath> paths = new ArrayList<DagNodePath>();
+		NavigationResult navResult = discoverToRelationships(endingNode);
+		for (NodeSearchResult s : navResult.getNodeSearchResults().values()) {
+			paths.addAll(s.getPaths());
 		}
 		return paths;
 	}
 	
-	public List<DagNodePath> findPaths(DagNode fromNode, DagNode toNode) {
-		List<DagNodePath> paths = new ArrayList<>();
+	@Override
+	public List<DagNodePath> findPathsStartingFromEndingAt(DagNode startNode, DagNode endNode) {
 		
-		NodeSearchResult result = discoverFromRelationships(fromNode);
+		NodeSearchResult result = discoverFromRelationships(startNode);
+		ArrayList<DagNodePath> paths = new ArrayList<DagNodePath>();
 		
-		if (result.getVectors().size() > 0) {
-			for (DagNodeVector vector : result.getVectors()) {
-				for (DagNodePath path : vector.createPaths()) {
-					
-					if (path.getToNode().equals(toNode))
-						paths.add(path);
-				}
-			}
+		for (DagNodePath path : result.getPaths()) {
+			
+			if (path.getToNode().equals(endNode))
+				paths.add(path);
 		}
+		
 		return paths;
+	}
+
+	@Override
+	public List<DagNodePath> findPathsEndingAtStartingFrom(DagNode endingNode, DagNode startingNode) {
+		
+		DagNodeSearchResult result = discoverToRelationships(startingNode, endingNode);
+		return result.getPaths();
 	}
 
 
@@ -144,59 +141,119 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		NodeSearchResult result = discoverFromRelationships(fromNode);
 		DagPathRoutes pathRoutes = new DagPathRoutes(fromNode, toNode);
 		
-		if (result.getVectors().size() > 0) {
-			for (DagNodeVector vector : result.getVectors()) {
-				for (DagNodePath path : vector.createPaths()) {
-					
-					if (path.getToNode().equals(toNode))
-						pathRoutes.addPath(path);
-				}
-			}
+		for (DagNodePath path : result.getPaths()) {
+				
+			if (path.getToNode().equals(toNode))
+				pathRoutes.addPath(path);
 		}
+		
 		return pathRoutes;
 	}
 
-	public NodeSearchResult discoverFromRelationships(DagNode rootNode) {
+	public NodeSearchResult discoverFromRelationships(DagNode rootNodeIn) {
 
-		DagNodeSearchResult searchResult = new DagNodeSearchResult(
+		DagNodeImpl rootNode = model.getNodeImplementation(rootNodeIn.getName());
+		
+		DagNodeSearchState searchState = new DagNodeSearchState(
 				nodeType,
 				linkType, 
 				rootNode);
 
-		followFromRelationship(searchResult);
+		followFromRelationship(searchState);
+		
+		DagNodeSearchResult searchResult = new DagNodeSearchResult(linkType, rootNode);
 
-		if (searchResult.isCyclic()) {
-			searchResult.setBackChainedNodeSearchResult(navigationResult.getNodeSearchResult(rootNode));
+		for (DagNodeVector v : searchState.getVectors()) {
+			searchResult.addPaths(v.createFromPaths());
+		}
+
+		
+		if (searchState.isCyclic()) {
+			
+			for (DagNodeVector c : searchState.getCycles()) {
+				searchResult.addCycle(c.createPath());
+			}
 		}
 		
 		return searchResult;
 	}
 
-	public NavigationResult discoverToRelationships() {
+	public NavigationResult discoverToRelationships(DagNode endingNode) {
 
 		NavigationResult navigationResult = new NavigationResult();
 
-		for (DagNode node : model.getNodeMap().values()) {
+		for (DagNodeImpl node : model.getNodeMap().values()) {
 
+			if (endingNode.getName().equals(node.getName()))
+				continue;
+			
 			if (nodeType != null) {
 				if (nodeType.equals(node.getNodeType()) == false)
 					continue;
 			}
 			
-			DagNodeSearchResult searchResult = new DagNodeSearchResult(
+			DagNodeSearchState searchState = new DagNodeSearchState(
 					null,
 					linkType, 
-					node);
+					node,
+					endingNode);
 
-			followToRelationship(searchResult);
+			followToRelationship(searchState);
+
+			DagNodeSearchResult searchResult = new DagNodeSearchResult(linkType, node);
+			
+			for (DagNodeVector c : searchState.getCycles()) {
+				searchResult.addCycle(c.createPath());
+			}
+			
+			for (DagNodeVector v : searchState.getVectors()) {
+				searchResult.addPaths(v.createToPaths());
+			}
+			
+			
 			navigationResult.add(node, searchResult);
 		}
 
 		return navigationResult;
 	}
+	
+	@Override
+	public DagNodeSearchResult discoverToRelationships(DagNode startingNode, DagNode endingNode) {
 
-	private void followFromRelationship(DagNodeSearchResult searchResult) {
-		DagNode currentNode = searchResult.getCurrentNode();
+
+		DagNodeSearchResult searchResult = new DagNodeSearchResult(linkType, startingNode);
+
+
+		if (endingNode.getName().equals(startingNode.getName()))
+			return searchResult;
+		
+		if (nodeType != null) {
+			if (nodeType.equals(startingNode.getNodeType()) == false)
+				return searchResult;
+		}
+		
+		DagNodeSearchState searchState = new DagNodeSearchState(
+				null,
+				linkType, 
+				model.getNodeImplementation(startingNode.getName()),
+				endingNode);
+
+		followToRelationship(searchState);
+		
+		for (DagNodeVector c : searchState.getCycles()) {
+			searchResult.addCycle(c.createPath());
+		}
+		
+		for (DagNodeVector v : searchState.getVectors()) {
+			searchResult.addPaths(v.createToPaths());
+		}
+			
+
+		return searchResult;
+	}
+
+	private void followFromRelationship(DagNodeSearchState searchState) {
+		DagNodeImpl currentNode = searchState.getCurrentNode();
 		boolean foundNextLink = false;
 		
 		if (currentNode.hasFromThisNodeConnectors()) {
@@ -216,33 +273,25 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 
 				
 				foundNextLink = true;
-				boolean isCyclic = false;
-				if (linkType != null) {
-					DagLink dagLink = connector.getRelationship(linkType);
-					isCyclic = dagLink.isCyclic();
-				} else {
-					isCyclic = connector.isConnectorIsCyclic();
-				}
 				
-				if (isCyclic) {
-					searchResult.addCycle(connector, linkType);
+				if (searchState.hasVisited(connector.getToNode().getName())) {
+					searchState.addCycle(searchState.getVector(), connector, linkType);
 					foundNextLink = false;
-					logger.debug("Ignoring cyclic relationship: " + connector.toString());
 				} else {
-					followFromRelationship(new DagNodeSearchResult(searchResult, connector.getToNode(), connector));
+					followFromRelationship(new DagNodeSearchState(searchState, connector.getToNode(), connector));
 				}
 			}
 		}
 		
 		if (foundNextLink == false)
-			searchResult.fixCurrentVector();
+			searchState.fixCurrentVector();
 		
 
 	}
 
 
-	private void followToRelationship(DagNodeSearchResult searchResult) {
-		DagNode currentNode = searchResult.getCurrentNode();
+	private void followToRelationship(DagNodeSearchState searchState) {
+		DagNodeImpl currentNode = searchState.getCurrentNode();
 		
 		boolean foundNextLink = false;
 		
@@ -261,19 +310,24 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 						continue;
 				}
 				
+				if (connector.getFromNode().getName().equals(searchState.getEndingNode().getName())) {
+					searchState.fixCurrentVector(connector);
+					return;
+				}
+				
 				foundNextLink = true;
 				
-				if (searchResult.hasVisited(connector.getFromNode().getName())) {
-					searchResult.addCycle(connector, linkType);
+				if (searchState.hasVisited(connector.getFromNode().getName())) {
+					searchState.addCycle(searchState.getVector(), connector, linkType);
 					foundNextLink = false;
 				} else {
-					followToRelationship(new DagNodeSearchResult(searchResult, connector.getFromNode(), connector));
+					followToRelationship(new DagNodeSearchState(searchState, connector.getFromNode(), connector));
 				}
 			}
 		}
 		
 		if (foundNextLink == false)
-			searchResult.fixCurrentVector();
+			searchState.fixCurrentVector();
 		
 
 	}

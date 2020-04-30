@@ -13,29 +13,30 @@
    See the License for the specific language governing permissions and
    limitations under the License.  
  */
-package com.onbelay.dagnabit.graph.model;
+package com.onbelay.dagnabit.graph.components;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import com.onbelay.dagnabit.graph.model.DagLinkType;
+
 public class DagNodeConnector {
     
-    private DagNode fromNode;
-    private DagNode toNode;
-    private boolean connectorIsCyclic = false;
-    private Map<DagLinkType, DagLink> relationshipMap = new HashMap<>();
+    private DagNodeImpl fromNode;
+    private DagNodeImpl toNode;
+    private Map<DagLinkType, DagLinkImpl> relationshipMap = new HashMap<>();
     
     
     public DagNodeConnector(
-    		DagNode fromNode, 
+    		DagNodeImpl fromNode, 
     		DagLinkType dagLinkType, 
-    		DagNode toNode) {
+    		DagNodeImpl toNode) {
         
         relationshipMap.put(
         		dagLinkType,
-        		new DagLink(
+        		new DagLinkImpl(
         				fromNode,
         				dagLinkType,
         				toNode));
@@ -44,21 +45,21 @@ public class DagNodeConnector {
         this.toNode = toNode;
     }
     
-    public DagNode getFromNode() {
+    public DagNodeImpl getFromNode() {
         return fromNode;
     }
-    public void setFromNode(DagNode startNode) {
+    public void setFromNode(DagNodeImpl startNode) {
         this.fromNode = startNode;
     }
     
-    public DagNode getToNode() {
+    public DagNodeImpl getToNode() {
         return toNode;
     }
-    public void setToNode(DagNode endNode) {
+    public void setToNode(DagNodeImpl endNode) {
         this.toNode = endNode;
     }
     
-    public Map<DagLinkType, DagLink> getRelationships() {
+    public Map<DagLinkType, DagLinkImpl> getRelationships() {
     	return relationshipMap;
     }
     
@@ -69,7 +70,7 @@ public class DagNodeConnector {
     public void addRelationshipName(DagLinkType dagLinkType) {
     	
     	if (relationshipMap.containsKey(dagLinkType) == false) {
-    		DagLink node = 	new DagLink(
+    		DagLinkImpl node = 	new DagLinkImpl(
     				fromNode,
     				dagLinkType,
     				toNode);
@@ -79,7 +80,7 @@ public class DagNodeConnector {
     	}
     }
     
-    public DagLink getRelationship(DagLinkType linkType) {
+    public DagLinkImpl getRelationship(DagLinkType linkType) {
     	return relationshipMap.get(linkType);
     }
     
@@ -103,51 +104,10 @@ public class DagNodeConnector {
 		return buffer.toString();
     }
     
-    public void markAsCyclic() {
-    	connectorIsCyclic = true;
-    }
-    
-    public void markAsCyclic(DagLinkType linkType) {
- 		
-    	if (linkType != null) {
-	    	
-	    	if (relationshipMap.containsKey(linkType)) {
-	    		DagLink relationship = relationshipMap.get(linkType);
-	    		relationship.makeCyclic();
-	    	}
-    	} else {
-    		connectorIsCyclic = true;
-    	}
- 				
- 	
-     }
-    
-	public boolean isConnectorIsCyclic() {
-		return connectorIsCyclic;
-	}
-
-	public void setConnectorIsCyclic(boolean connectorIsCyclic) {
-		this.connectorIsCyclic = connectorIsCyclic;
-	}
 
 	public boolean hasRelationship(DagLinkType traversalRelationship) {
 
 		return relationshipMap.containsKey(traversalRelationship);
-	}
-	
-	public boolean isCyclic(DagLinkType linkType) {
-		if (hasRelationship(linkType))
-			return relationshipMap.get(linkType).isCyclic();
-		else
-			return false;
-	}
-
-	public boolean hasCycles() {
-		for (DagLink link : relationshipMap.values()) {
-			if (link.isCyclic())
-				return true;
-		}
-		return false;
 	}
 
 }

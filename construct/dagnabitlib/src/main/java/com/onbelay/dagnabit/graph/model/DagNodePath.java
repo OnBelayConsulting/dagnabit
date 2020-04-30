@@ -23,28 +23,45 @@ public class DagNodePath {
     private DagNode fromNode;
     private DagNode toNode;
     
-    private List<DagNodeConnector> connectors = new ArrayList<>();
+    private List<NodePathLink> links = new ArrayList<>();
+    
+    public DagNodePath(
+    		DagNode fromNode, 
+    		List<NodePathLink> links, 
+    		DagNode toNode) {
+    	
+    	this.fromNode = fromNode;
+    	this.links = links;
+    	this.toNode = toNode;
+    	
+    }
 
-    public DagNodePath(DagNode startNode, DagNodeConnector connector) {
+    public DagNodePath(DagNode startNode, NodePathLink link) {
         super();
         this.fromNode = startNode;
-        this.toNode = connector.getToNode();
-        connectors.add(connector);
+        this.toNode = link.getToNode();
+        links.add(link);
     }
     
-    public DagNodePath(DagNode startNode, DagNodePath lastPath, DagNodeConnector connector) {
-    	connectors.addAll(lastPath.getConnectors());
+    public DagNodePath(DagNode startNode, DagNodePath lastPath, NodePathLink link) {
+    	links.addAll(lastPath.getLinks());
         this.fromNode = startNode;
-        this.toNode = connector.getToNode();
-        connectors.add(connector);
+        this.toNode = link.getToNode();
+        links.add(link);
     }
 
-    public void addConnector(DagNodeConnector v) {
-    	connectors.add(v);
+    public void addPathLink(NodePathLink v) {
+    	links.add(v);
     }
     
-    public List<DagNodeConnector> getConnectors() {
-        return connectors;
+    public void addToPathLink(NodePathLink v) {
+    	this.toNode = v.getToNode();
+    	links.add(v);
+    }
+    
+    
+    public List<NodePathLink> getLinks() {
+        return links;
     }
 
     public DagNode getFromNode() {
@@ -54,7 +71,7 @@ public class DagNodePath {
     public DagNode getToNode() {
         return toNode;
     }
-
+    
 
     public String getRouteId() {
     	return getFromNode() + ":" + getToNode();
@@ -62,7 +79,7 @@ public class DagNodePath {
     
     public String getId() {
     	StringBuffer buffer = new StringBuffer(getFromNode().getName());
-    	for (DagNodeConnector c : connectors) {
+    	for (NodePathLink c : links) {
     		buffer.append(" -> ");
     		buffer.append(c.getToNode().getName());
     	}
