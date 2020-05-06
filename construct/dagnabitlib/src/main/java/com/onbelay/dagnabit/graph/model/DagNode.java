@@ -11,6 +11,8 @@ public interface DagNode {
 	
 	public boolean isRoot();
 	
+	public void setData(DagData data);
 	
+	public DagData getData();
 	
 }

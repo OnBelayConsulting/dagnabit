@@ -99,8 +99,8 @@ public class DagNodeImpl extends DagItemImpl implements DagNode {
 	public boolean hasNoConnectors() {
     	return !(hasFromThisNodeConnectors() || hasToThisNodeConnectors());
     }
-    
-    public boolean hasFromThisNodeConnectors() {
+
+	public boolean hasFromThisNodeConnectors() {
         return fromThisConnectorToNodes.size() > 0;
     }
     

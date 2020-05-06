@@ -56,8 +56,8 @@ public class LinkAnalyserImpl implements LinkAnalyser {
 	    	for (DagLinkType linkType : model.getLinkTypeMap().values()) {
 	        	DagLinkRouteFinder finder = new DagLinkRouteFinder(
 	        			model,
-	        			nodeType,
-	        			linkType);
+	        			linkType,
+	        			nodeType);
 	        	NavigationResult result = traverseFromRoot(finder);
 	        	
 	        	for (NodeSearchResult nodeSearchResult : result.getNodeSearchResults().values()) {
@@ -70,8 +70,8 @@ public class LinkAnalyserImpl implements LinkAnalyser {
     	} else {
         	DagLinkRouteFinder finder = new DagLinkRouteFinder(
         			model,
-        			nodeType,
-        			linkType);
+        			linkType,
+        			nodeType);
         	NavigationResult result = traverseFromRoot(finder);
         	
         	for (NodeSearchResult nodeSearchResult : result.getNodeSearchResults().values()) {

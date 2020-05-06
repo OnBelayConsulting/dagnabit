@@ -16,6 +16,9 @@
 package com.onbelay.dagnabit.graph.model;
 
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+
 
 
 /**
@@ -31,8 +34,30 @@ public interface DagModel {
     public LinkAnalyser analyse();
     
     public LinkRouteFinder createDagLinkRouteFinder(
-    		DagNodeType dagNodeType,
     		DagLinkType dagLinkType);
+
+    public LinkRouteFinder createDagLinkRouteFinder(
+    		DagLinkType dagLinkType,
+    		DagContext context,
+    		BiConsumer<DagContext, DagNode> nodeVisitor,
+    		Predicate<DagLink> filterLinkPredicate,
+    		Predicate<DagNode> filterNodePredicate);
+
+    
+    public LinkRouteFinder createDagLinkRouteFinder(
+    		DagLinkType dagLinkType,
+    		DagNodeType nodeType);
+
+    public LinkRouteFinder createDagLinkRouteFinder(
+    		DagLinkType dagLinkType,
+    		Predicate<DagNode> filterNodePredicate);
+
+    
+    public LinkRouteFinder createDagLinkRouteFinder(
+    		DagLinkType dagLinkType,
+    		DagContext context,
+    		BiConsumer<DagContext, DagNode> nodeVisitor);
+
     
     public List<DagNode> findRootNodes();
     
@@ -46,9 +71,9 @@ public interface DagModel {
     
     public List<DagNodeType> getNodeTypes();
     
-    public void addNode(String nodeName);
+    public DagNode addNode(String nodeName);
     
-    public void addNode(String nodeName, String nodeTypeName);
+    public DagNode addNode(String nodeName, String nodeTypeName);
     
 
     public DagNode getNode(String code);

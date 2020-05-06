@@ -53,5 +53,4 @@ public interface LinkRouteFinder {
 	
 	public List<DagNodePath> findPathsEndingAtStartingFrom(DagNode endNode, DagNode startNode);
 
-
 }

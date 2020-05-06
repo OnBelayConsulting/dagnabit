@@ -8,10 +8,11 @@ public interface DagLink {
 	
 	public DagNode getFromNode();
 
-
 	public DagNode getToNode();
 
 
+	public void setData(DagData data);
 	
+	public DagData getData();
 	
 }

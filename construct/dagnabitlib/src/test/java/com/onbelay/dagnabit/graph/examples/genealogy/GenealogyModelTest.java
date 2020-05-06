@@ -17,6 +17,7 @@ package com.onbelay.dagnabit.graph.examples.genealogy;
 
 import static org.junit.Assert.assertEquals;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.onbelay.dagnabit.graph.components.DagModelImpl;
+import com.onbelay.dagnabit.graph.factories.DagModelFactory;
 import com.onbelay.dagnabit.graph.model.DagLinkType;
 import com.onbelay.dagnabit.graph.model.DagModel;
 import com.onbelay.dagnabit.graph.model.DagNode;
@@ -39,44 +40,22 @@ public class GenealogyModelTest  {
 	
 	@Before
 	public void beforeRun() throws Throwable {
-		model = new DagModelImpl();
+		DagModelFactory factory = new DagModelFactory();
+		model = factory.newModel();
 		
-		model.addNode("A");
+		GenealogyFixture fixture = new GenealogyFixture(model);
 		
-		model.addNode("B");
+		fixture.addPerson("Fred Jones", LocalDate.of(1961, 3, 15));
+		fixture.addPerson("Sally Jones", LocalDate.of(1961, 7, 11));
+		fixture.addIsSpouseOf("Fred Jones", "Sally Jones");
+
+		fixture.addPerson("John Jones", LocalDate.of(1991, 4, 14));
+		fixture.addPerson("Jill Jones", LocalDate.of(19931, 3, 10));
 		
+
+		fixture.addPerson("Mary Gifford-Jones", LocalDate.of(1970, 1, 17));
+
 		
-		model.addNode("C");
-		
-		model.addNode("D");
-		
-		model.addRelationship(
-				model.getNode("A"), 
-				"benchesTo", 
-				model.getNode("B"));
-		
-		model.addRelationship(
-				model.getNode("A"), 
-				"benchesTo", 
-				model.getNode("D"));
-		
-		
-		model.addRelationship(
-				model.getNode("B"), 
-				"benchesTo", 
-				model.getNode("C"));
-		
-		
-		model.addRelationship(
-				model.getNode("A"), 
-				"basisTo", 
-				model.getNode("C"));
-		
-		
-		model.addRelationship(
-				model.getNode("C"), 
-				"basisTo", 
-				model.getNode("D"));
 	}
 
 
@@ -87,7 +66,6 @@ public class GenealogyModelTest  {
 			for (DagLinkType linkType : model.getLinkTypes()) {
 				
 				LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-						null,
 						linkType);
 				NodeSearchResult nodeSearchResult = routeFinder.discoverFromRelationships(node);
 				assertEquals(0, nodeSearchResult.getCycles());

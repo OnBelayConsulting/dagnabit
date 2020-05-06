@@ -15,10 +15,11 @@
  */
 package com.onbelay.dagnabit.graph.components;
 
+import com.onbelay.dagnabit.graph.model.DagLink;
 import com.onbelay.dagnabit.graph.model.DagLinkType;
 import com.onbelay.dagnabit.graph.model.DagNode;
 
-public class DagLinkImpl extends DagItemImpl {
+public class DagLinkImpl extends DagItemImpl implements DagLink {
 	public static final String DEFAULT_TYPE = "link";
 
 	private DagLinkType type;
@@ -39,7 +40,7 @@ public class DagLinkImpl extends DagItemImpl {
 		this.type = type;
 	}
 
-	public DagLinkType getType() {
+	public DagLinkType getDagLinkType() {
 		return type;
 	}
 

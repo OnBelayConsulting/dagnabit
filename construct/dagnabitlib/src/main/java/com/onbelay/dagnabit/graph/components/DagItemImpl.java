@@ -15,10 +15,14 @@
  */
 package com.onbelay.dagnabit.graph.components;
 
+import com.onbelay.dagnabit.graph.model.DagData;
+
 public abstract class DagItemImpl {
 	
     protected String name;
+    private DagData data;
     
+
 	protected DagItemImpl(String name) {
 		super();
 		this.name = name;
@@ -32,7 +36,15 @@ public abstract class DagItemImpl {
 		this.name = code;
 	}
 	
-	
+    
+    public DagData getData() {
+		return data;
+	}
+
+	public void setData(DagData data) {
+		this.data = data;
+	}
+
 
 
     @Override

@@ -16,12 +16,20 @@
 package com.onbelay.dagnabit.graph.model;
 
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 /**
  * Responsible for navigating the Directed Acyclic Graph (DAG) as defined in a DagModel.
  * Navigator is configure and initiate in a similar manner to streams.
  * 
- * The methods are called to configure return a DagNodeNavigator. The paths command will initiate the search.
+ * The methods are called to configure return a DagNodeNavigator. 
+ * 
+ * The following commands will resolve the search to zero or more nodes:
+ * nodes
+ * paths 
+ * 
+ * get - will cause the navigator to fire and will result the results.
  *  
  * 
  */
@@ -42,6 +50,23 @@ public interface DagNodeNavigator {
 	 */
 	public DagNodeNavigator by (DagLinkType linkType);
 	
+	
+	/**
+	 * Filter the paths by a predicate based on the link
+	 * @param filterLinkpredicate
+	 * @return
+	 */
+	public DagNodeNavigator by (Predicate<DagLink> filterLinkpredicate);
+	
+	
+	
+	/**
+	 * provide a function that will be called as it visits each link
+	 * @param vistor
+	 * @return
+	 */
+	public DagNodeNavigator visitLinkWith (BiConsumer<DagContext, DagLink>  vistor);
+	
 	/**
 	 * Optionally set the nodeType for the "To" node. If the "To" node nodeType is not equal to the specified nodeType then the navigation terminates at the previous node.
 	 * @param nodeType
@@ -51,11 +76,54 @@ public interface DagNodeNavigator {
 	
 	
 	/**
-	 * Returns a list of adjacent nodes that satisfies the previous criteria
+	 * Filter the paths by a predicate based on the DagNode
+	 * @param filterNodepredicate
 	 * @return
 	 */
-	public List<DagNode> adjacent();
+	public DagNodeNavigator forOnly (Predicate<DagNode> filterNodepredicate);
 	
+	
+	/**
+	 * Provide a function that is called when the navigator passes through a node.
+	 * @param vistor
+	 * @return
+	 */
+	public DagNodeNavigator visitNodeWith (BiConsumer<DagContext, DagNode>  vistor);
+
+	
+	/**
+	 * Specify a class that implements a DagContext that will be provided to each visitor
+	 * @param context
+	 * @return
+	 */
+	public DagNodeNavigator using(DagContext context);
+
+	
+	/**
+	 * Retrieve the current context
+	 * @return
+	 */
+	public DagContext getContext();
+	
+	/**
+	 * End result
+	 * Generates a list of immediate child nodes that satisfies the previous criteria
+	 * @return
+	 */
+	public List<DagNode> children();
+	
+	
+	/**
+	 * Traverse the graph to immediate children and reset the startingNodes.
+	 * @return
+	 */
+	public DagNodeNavigator findChildren();
+	
+	/**
+	 * Traverse the graph from starting nodes to descendants according to earlier instructions and reset the startingNodes.
+	 * @return
+	 */
+	public DagNodeNavigator findDescendants();
 	
 	/**
 	 * Optionally set the "To" node. All other paths are ignored.
@@ -65,9 +133,17 @@ public interface DagNodeNavigator {
 	public DagNodeNavigator to (DagNode toNode);
 	
 	/**
+	 * End result
 	 * return 0 or many DagNodePaths representing the paths from the specified node.
 	 * @return
 	 */
 	public List<DagNodePath> paths();
+	
+	
+	/**
+	 * retrieve the current starting nodes
+	 * @return a list of zero or more nodes
+	 */
+	public List<DagNode> nodes();
     
 }

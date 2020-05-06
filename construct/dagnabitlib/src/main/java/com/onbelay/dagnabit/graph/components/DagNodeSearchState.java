@@ -22,13 +22,11 @@ import java.util.Map;
 
 import com.onbelay.dagnabit.graph.model.DagLinkType;
 import com.onbelay.dagnabit.graph.model.DagNode;
-import com.onbelay.dagnabit.graph.model.DagNodeType;
 
 public class DagNodeSearchState {
     
     private Map<String, DagNodeImpl> visited = new HashMap<String, DagNodeImpl>();
     private DagLinkType dagLinkType;
-    private DagNodeType dagNodeType;
     private DagNodeVector vector;
     private List<DagNodeVector> vectors = new ArrayList<DagNodeVector>();
     private List<DagNodeVector> cycles = new ArrayList<DagNodeVector>();
@@ -38,24 +36,20 @@ public class DagNodeSearchState {
     private DagNodeImpl currentNode;
 
     public DagNodeSearchState(
-    		DagNodeType dagNodeType,
     		DagLinkType dagLinkType, 
     		DagNodeImpl currentNode) {
     	
-    	this.dagNodeType = dagNodeType;
     	this.dagLinkType = dagLinkType;
         this.currentNode = currentNode;
         visited.put(currentNode.getName(), currentNode);
     }
     
     public DagNodeSearchState(
-    		DagNodeType dagNodeType,
     		DagLinkType dagLinkType, 
     		DagNodeImpl currentNode,
     		DagNode endingNode) {
     	
     	this.endingNode = endingNode;
-    	this.dagNodeType = dagNodeType;
     	this.dagLinkType = dagLinkType;
         this.currentNode = currentNode;
         visited.put(currentNode.getName(), currentNode);
@@ -67,7 +61,6 @@ public class DagNodeSearchState {
     		DagNodeConnector relationship) {
     	
     	this.endingNode = copy.endingNode;
-    	this.dagNodeType = copy.dagNodeType;
     	this.dagLinkType = copy.dagLinkType;
         this.currentNode = currentNode;
         this.visited.putAll(copy.visited);
@@ -151,10 +144,6 @@ public class DagNodeSearchState {
 
 	public DagLinkType getDagLinkType() {
 		return dagLinkType;
-	}
-
-	public DagNodeType getDagNodeType() {
-		return dagNodeType;
 	}
 
 	public DagNode getEndingNode() {

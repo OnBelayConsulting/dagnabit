@@ -19,8 +19,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.onbelay.dagnabit.graph.model.DagContext;
+import com.onbelay.dagnabit.graph.model.DagLink;
 import com.onbelay.dagnabit.graph.model.DagLinkType;
 import com.onbelay.dagnabit.graph.model.DagModel;
 import com.onbelay.dagnabit.graph.model.DagNode;
@@ -54,22 +58,86 @@ public class DagModelImpl implements DagModel {
     	linkTypeMap.put(DagLinkType.DEFAULT_TYPE, defaultLinkType);
     }
     
+    @Override
     public DagNodeNavigator navigate() {
     	return new DagNodeNavigatorImpl(this);
     }
     
+    @Override
     public LinkAnalyser analyse() {
     	return new LinkAnalyserImpl(this);
     }
-    
+
+    @Override
     public LinkRouteFinder createDagLinkRouteFinder(
-    		DagNodeType dagNodeType,
     		DagLinkType dagLinkType) {
     	
     	DagLinkRouteFinder navigator = new DagLinkRouteFinder(
     			this,
-    			dagNodeType,
     			dagLinkType);
+    	
+    	
+    	return navigator;
+    }
+
+    @Override
+    public LinkRouteFinder createDagLinkRouteFinder(
+    		DagLinkType dagLinkType,
+    		DagContext context,
+    		BiConsumer<DagContext, DagNode> nodeVisitor) {
+    	
+    	DagLinkRouteFinder navigator = new DagLinkRouteFinder(
+    			this,
+    			dagLinkType,
+    			context,
+    			nodeVisitor);
+    	
+    	
+    	return navigator;
+    }
+
+    @Override
+    public LinkRouteFinder createDagLinkRouteFinder(
+    		DagLinkType dagLinkType,
+    		DagContext context,
+    		BiConsumer<DagContext, DagNode> nodeVisitor,
+    		Predicate<DagLink> filterLinkPredicate,
+    		Predicate<DagNode> filterNodePredicate) {
+    	
+    	DagLinkRouteFinder navigator = new DagLinkRouteFinder(
+    			this,
+    			dagLinkType,
+    			context,
+    			nodeVisitor);
+    	
+    	
+    	return navigator;
+    }
+
+    
+    @Override
+    public LinkRouteFinder createDagLinkRouteFinder(
+    		DagLinkType dagLinkType,
+    		DagNodeType dagNodeType) {
+    	
+    	DagLinkRouteFinder navigator = new DagLinkRouteFinder(
+    			this,
+    			dagLinkType,
+    			dagNodeType);
+    	
+    	
+    	return navigator;
+    }
+    
+    @Override
+    public LinkRouteFinder createDagLinkRouteFinder(
+    		DagLinkType dagLinkType,
+    		Predicate<DagNode> filterNodePredicate) {
+    	
+    	DagLinkRouteFinder navigator = new DagLinkRouteFinder(
+    			this,
+    			dagLinkType,
+    			filterNodePredicate);
     	
     	
     	return navigator;
@@ -123,7 +191,7 @@ public class DagModelImpl implements DagModel {
     	return types;
     }
     
-    public void addNode(String nodeName) {
+    public DagNode addNode(String nodeName) {
     	DagNodeImpl node = new DagNodeImpl(
     			nodeName, 
     			nodeTypeMap.get(DagNodeType.DEFAULT_TYPE));
@@ -131,9 +199,10 @@ public class DagModelImpl implements DagModel {
         nodeMap.put(node.getName(),node);
         
         addNodeToNodeTypeMap(node, DagNodeType.DEFAULT_TYPE);
+        return node;
     }
     
-    public void addNode(String nodeName, String nodeTypeName) {
+    public DagNode addNode(String nodeName, String nodeTypeName) {
     	
     	DagNodeType nodeType = nodeTypeMap.get(nodeTypeName);
     	if (nodeType == null) {
@@ -148,6 +217,7 @@ public class DagModelImpl implements DagModel {
         nodeMap.put(node.getName(),node);
         
         addNodeToNodeTypeMap(node, DagNodeType.DEFAULT_TYPE);
+        return node;
     }
     
     private void addNodeToNodeTypeMap(DagNodeImpl node, String typeName) {

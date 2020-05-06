@@ -19,11 +19,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.onbelay.dagnabit.graph.exception.DagGraphException;
+import com.onbelay.dagnabit.graph.model.DagContext;
+import com.onbelay.dagnabit.graph.model.DagLink;
 import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagMapContext;
 import com.onbelay.dagnabit.graph.model.DagNode;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.DagNodeType;
@@ -51,24 +57,132 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 
 	private DagLinkType linkType;
 	
-	private DagNodeType nodeType;
+	private Predicate<DagLink> filterLinkPredicate = c -> true;
+	
+	private Predicate<DagNode> filterNodePredicate = c -> true;
+	
+	private BiConsumer<DagContext, DagNode> nodeVisitor = (c, v) -> { ; };
+	
+	private DagContext context = new DagMapContext();
+	
+	protected DagLinkRouteFinder(
+			DagModelImpl model,
+			DagLinkType dagLinkTypeIn) {
+		
+		this.model = model;
+		if (dagLinkTypeIn == null) 
+			throw new DagGraphException("Link is required");
+
+		this.linkType = dagLinkTypeIn;
+	}
+	
+	
+	protected DagLinkRouteFinder(
+			DagModelImpl model,
+			DagLinkType dagLinkTypeIn,
+			DagContext context,
+			BiConsumer<DagContext, DagNode> nodeVisitor) {
+		
+		this.model = model;
+		if (dagLinkTypeIn == null) 
+			throw new DagGraphException("Link is required");
+
+		this.linkType = dagLinkTypeIn;
+		if (context != null)
+			this.context = context;
+		
+		this.nodeVisitor = nodeVisitor;
+	}
+
+	protected DagLinkRouteFinder(
+			DagModelImpl model,
+			DagLinkType dagLinkTypeIn,
+			Predicate<DagNode> filterNodePredicate) {
+		super();
+		this.model = model;
+
+		if (dagLinkTypeIn == null) 
+			throw new DagGraphException("Link is required");
+
+		this.linkType = dagLinkTypeIn;
+		this.filterNodePredicate = filterNodePredicate;
+	}
+
+
+	protected DagLinkRouteFinder(
+			DagModelImpl model,
+			DagLinkType dagLinkTypeIn,
+			DagContext context,
+			BiConsumer<DagContext, DagNode> nodeVisitor,
+			Predicate<DagLink> filterLinkPredicate,
+			Predicate<DagNode> filterNodePredicate) {
+		super();
+		this.model = model;
+
+		if (dagLinkTypeIn == null) 
+			throw new DagGraphException("Link is required");
+
+		this.linkType = dagLinkTypeIn;
+		this.filterLinkPredicate = filterLinkPredicate;
+		this.filterNodePredicate = filterNodePredicate;
+		if (context != null)
+			this.context = context;
+		
+		this.nodeVisitor = nodeVisitor;
+	}
+
+
 	
 
 	/**
-	 * Create a DagLinkRouteFinder for a given model with optional nodeType and linkType
-	 * @param model - required. DagModel to navigate
-	 * @param dagNodeType - optional. restricts the toNode to navigate to.
-	 * @param dagLinkType - optional. restricts the link to navigate to.
+	 * Create a RouteFinder with two predicates
+	 * @param model - required
+	 * @param linkType
+	 * @param filterLinkPredicate - required. return true to navigate as default
+	 * @param filterNodePredicate - required, return true to navigate as default
 	 */
 	protected DagLinkRouteFinder(
 			DagModelImpl model,
-			DagNodeType dagNodeType,
-			DagLinkType dagLinkTypeIn) {
+			DagLinkType dagLinkTypeIn,
+			Predicate<DagLink> filterLinkPredicate,
+			Predicate<DagNode> filterNodePredicate) {
+		super();
+		this.model = model;
+
+		if (dagLinkTypeIn == null) 
+			throw new DagGraphException("Link is required");
+
+		this.linkType = dagLinkTypeIn;
+		this.filterLinkPredicate = filterLinkPredicate;
+		this.filterNodePredicate = filterNodePredicate;
+	}
+
+
+
+	/**
+	 * Create a DagLinkRouteFinder for a given model
+	 * Create predicates for filtering based on the optional nodeType and linkType
+	 * @param model - required. DagModel to navigate
+	 * @param dagLinkType - required. restricts the link to navigate to.
+	 * @param dagNodeType - required. restricts the toNode to navigate to.
+	 */
+	protected DagLinkRouteFinder(
+			DagModelImpl model,
+			DagLinkType dagLinkTypeIn,
+			DagNodeType dagNodeType) {
 		
 		super();
 		this.model = model;
-		this.nodeType = dagNodeType;
+		
+		if (dagNodeType != null) {
+			this.filterNodePredicate = c ->  c.getNodeType().equals(dagNodeType); 
+		}
+		
+		if (dagLinkTypeIn == null) 
+			throw new DagGraphException("Link is required");
+		
 		this.linkType = dagLinkTypeIn;
+		
 		initialize();
 	}
 
@@ -155,7 +269,6 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		DagNodeImpl rootNode = model.getNodeImplementation(rootNodeIn.getName());
 		
 		DagNodeSearchState searchState = new DagNodeSearchState(
-				nodeType,
 				linkType, 
 				rootNode);
 
@@ -187,13 +300,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 			if (endingNode.getName().equals(node.getName()))
 				continue;
 			
-			if (nodeType != null) {
-				if (nodeType.equals(node.getNodeType()) == false)
-					continue;
-			}
-			
 			DagNodeSearchState searchState = new DagNodeSearchState(
-					null,
 					linkType, 
 					node,
 					endingNode);
@@ -227,13 +334,11 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		if (endingNode.getName().equals(startingNode.getName()))
 			return searchResult;
 		
-		if (nodeType != null) {
-			if (nodeType.equals(startingNode.getNodeType()) == false)
-				return searchResult;
+		if (filterNodePredicate.test(startingNode) == false) {
+			return searchResult;
 		}
 		
 		DagNodeSearchState searchState = new DagNodeSearchState(
-				null,
 				linkType, 
 				model.getNodeImplementation(startingNode.getName()),
 				endingNode);
@@ -260,17 +365,17 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 
 			for (DagNodeConnector connector : currentNode.getFromThisNodeConnectors()) {
 				
-				if (linkType != null) {
-					if (connector.hasRelationship(linkType) == false)
-						continue;
+				if (connector.hasRelationship(linkType) == false)
+					continue;
+				
+				if (filterLinkPredicate.test(connector.getRelationship(linkType)) == false)
+					continue;
+				
+				if (filterNodePredicate.test(connector.getToNode()) == false) {
+					continue;
 				}
 				
-				// if nodeType is set then don't navigate unless it is equal to.
-				if (nodeType != null) {
-					if (connector.getToNode().getNodeType().equals(nodeType) == false)
-						continue;
-				}
-
+				nodeVisitor.accept(context, connector.getToNode());
 				
 				foundNextLink = true;
 				
@@ -298,17 +403,20 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		if (currentNode.hasToThisNodeConnectors()) {
 
 			for (DagNodeConnector connector : currentNode.getToThisNodeConnectors()) {
-
-				if (linkType != null) {
-					if (connector.hasRelationship(linkType) == false)
+				
+				if (connector.hasRelationship(linkType) == false)
+					continue;
+				
+				if (filterLinkPredicate.test(connector.getRelationship(linkType)) == false)
+					continue;
+				
+				
+				if (filterNodePredicate.test(connector.getFromNode()) == false) {
 					continue;
 				}
 				
-				// if nodeType is set then don't navigate unless it is equal to.
-				if (nodeType != null) {
-					if (connector.getToNode().getNodeType().equals(nodeType) == false)
-						continue;
-				}
+				nodeVisitor.accept(context, connector.getFromNode());
+				
 				
 				if (connector.getFromNode().getName().equals(searchState.getEndingNode().getName())) {
 					searchState.fixCurrentVector(connector);
