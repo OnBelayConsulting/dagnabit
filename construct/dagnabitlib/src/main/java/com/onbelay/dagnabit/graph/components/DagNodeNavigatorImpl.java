@@ -16,6 +16,7 @@
 package com.onbelay.dagnabit.graph.components;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -31,8 +32,16 @@ import com.onbelay.dagnabit.graph.model.DagNodeNavigator;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.DagNodeType;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
+import com.onbelay.dagnabit.graph.model.NodeSearchResult;
+import com.onbelay.dagnabit.graph.model.NodeVisitor;
 import com.onbelay.dagnabit.graph.model.TraversalDirectionType;
 
+/**
+ * Concrete implementation of the DagNodeNavigator interface.
+ * 
+ * @author lefeu
+ *
+ */
 public class DagNodeNavigatorImpl implements DagNodeNavigator {
 
 	private List<DagNodeImpl> startingNodes = new ArrayList<DagNodeImpl>();
@@ -45,9 +54,8 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 
 	private Predicate<DagLink> filterLinkPredicate = c -> true;
 
-	private BiConsumer<DagContext, DagNode> nodeVisitor = (c, n) -> { ; } ;
+	private NodeVisitor nodeVisitor = (c, n, l, e) -> { ; } ;
 
-	private BiConsumer<DagContext, DagLink> linkVisitor = (c, n) -> { ; } ;
 	
 	private DagModelImpl model;
 	
@@ -70,25 +78,33 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 	}
 
 	@Override
+	public DagNodeNavigator fromBreadthFirst(DagNode fromNodeIn) {
+		
+		if (traversalDirectionType != null)
+			throw new DagGraphException("fromBreadthFirst excludes using To as start");
+		
+		traversalDirectionType = TraversalDirectionType.TRAVERSE_STARTING_FROM_BREADTH_FIRST;
+		
+		startingNodes.add(model.getNodeImplementation(fromNodeIn.getName()));
+		
+		return this;
+	}
+
+
+	@Override
 	public DagNodeNavigator by(DagLinkType linkType) {
 		this.linkType = linkType;
 		return this;
 	}
 
 	@Override
-	public DagNodeNavigator by(Predicate<DagLink> fn) {
+	public DagNodeNavigator filterBy(Predicate<DagLink> fn) {
 		this.filterLinkPredicate = fn;
 		return this;
 	}
 
 	@Override
-	public DagNodeNavigator visitLinkWith(BiConsumer<DagContext, DagLink> linkVisitor) {
-		this.linkVisitor = linkVisitor;
-		return this;
-	}
-
-	@Override
-	public DagNodeNavigator visitNodeWith(BiConsumer<DagContext, DagNode> nodeVisitor) {
+	public DagNodeNavigator visitWith(NodeVisitor nodeVisitor) {
 		this.nodeVisitor = nodeVisitor;
 		return this;
 	}
@@ -135,14 +151,34 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		 	endingNodes.addAll(startNode
 				.getFromThisNodeConnectors()
 				.stream()
-				.filter(c -> filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
+				.filter(c -> c.hasRelationship(linkType) && filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
 				.map(d -> d.getToNode())
 				.collect(Collectors.toList()));
 		 });
 		return endingNodes;
 	}
+
+	@Override
+	public List<DagNode> parents() {
+		
+		if (startingNodes.isEmpty())
+			return new ArrayList<DagNode>();
+		
+		ArrayList<DagNode> endingNodes = new ArrayList<>();
+		
+		 startingNodes.forEach( startNode -> {
+			 
+		 	endingNodes.addAll(startNode
+				.getToThisNodeConnectors()
+				.stream()
+				.filter(c -> c.hasRelationship(linkType) && filterNodePredicate.test(c.getFromNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
+				.map(d -> d.getFromNode())
+				.collect(Collectors.toList()));
+		 });
+		return endingNodes;
+	}
 	
-	
+	@Override
 	public DagNodeNavigator findChildren() {
 		if (startingNodes.isEmpty())
 			return this;
@@ -154,8 +190,29 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		 	endingNodes.addAll(startNode
 				.getFromThisNodeConnectors()
 				.stream()
-				.filter(c -> filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
+				.filter(c -> c.hasRelationship(linkType) && filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
 				.map(d -> d.getToNode())
+				.collect(Collectors.toList()));
+		 });
+		startingNodes = endingNodes; 
+		return this;
+
+	}
+	
+	@Override
+	public DagNodeNavigator findParents() {
+		if (startingNodes.isEmpty())
+			return this;
+		
+		ArrayList<DagNodeImpl> endingNodes = new ArrayList<>();
+		
+		 startingNodes.forEach( startNode -> {
+			 
+		 	endingNodes.addAll(startNode
+				.getToThisNodeConnectors()
+				.stream()
+				.filter(c -> filterNodePredicate.test(c.getFromNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
+				.map(d -> d.getFromNode())
 				.collect(Collectors.toList()));
 		 });
 		startingNodes = endingNodes; 
@@ -165,13 +222,37 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 	
 
 	@Override
-	public DagNodeNavigator findDescendants() {
-		List<DagNodePath> paths = paths();
+	public DagNodeNavigator visitBy(DagLinkType linkType, NodeVisitor visitor) {
 		
-		startingNodes = paths
-						.stream()
-						.map(p -> (DagNodeImpl)p.getToNode())
-						.collect(Collectors.toList());
+		startingNodes.forEach( startNode -> {
+			 
+			for (DagNodeConnector c : startNode.getFromThisNodeConnectors()) { 
+				
+				if (c.hasRelationship(linkType) == false)
+					continue;
+				
+				if (filterNodePredicate.test(c.getFromNode()) == false)
+					continue;
+
+				if (filterLinkPredicate.test(c.getRelationship(linkType)) == false)
+					continue;
+				
+				visitor.accept(context, startNode, c.getRelationship(linkType), c.getToNode());
+			}
+		});
+
+		return this;
+	}
+	
+
+	@Override
+	public DagNodeNavigator findDescendants() {
+		List<DagNode> nodes = descendants();
+		startingNodes.clear();
+		
+		for (DagNode n : nodes) {
+			startingNodes.add((DagNodeImpl)n);
+		}
 		return this;
 	}
 	
@@ -224,7 +305,40 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		return paths;
 	}
 	
-	
+	@Override
+	public List<DagNode> descendants() {
+		if (startingNodes.isEmpty())
+			throw new DagGraphException("Either a from() or a fromBreadthFirst() is required");
+		
+		LinkRouteFinder routeFinder = newLinkRouteFinder();
+		
+		
+		List<DagNode> nodeList = new ArrayList<>();
+		
+		if (traversalDirectionType == TraversalDirectionType.TRAVERSE_STARTING_FROM_ENDING_TO) {
+			for (DagNodeImpl  startNode : startingNodes) {
+				NodeSearchResult result = routeFinder.discoverFromRelationships(startNode);
+				
+				LinkedHashSet<DagNode> nodeSet = new LinkedHashSet<DagNode>();
+				
+				for (DagNodePath path :result.getPaths()) {
+					nodeSet.add(path.getFromNode());
+					nodeSet.add(path.getToNode());
+				}
+				nodeList.addAll(nodeSet);
+			}
+			
+		} else if (traversalDirectionType == TraversalDirectionType.TRAVERSE_STARTING_FROM_BREADTH_FIRST){
+			
+			for (DagNodeImpl  startNode : startingNodes) {
+				nodeList.addAll(
+						routeFinder.discoverBreadthFromRelationships(startNode));
+			}
+			
+		}
+		return nodeList;
+		
+	}
 
 	@Override
 	public List<DagNode> nodes() {

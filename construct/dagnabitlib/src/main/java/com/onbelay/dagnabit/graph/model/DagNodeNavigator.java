@@ -16,32 +16,41 @@
 package com.onbelay.dagnabit.graph.model;
 
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 /**
  * Responsible for navigating the Directed Acyclic Graph (DAG) as defined in a DagModel.
- * Navigator is configure and initiate in a similar manner to streams.
+ * Navigator is configurable and initiated in a similar manner to streams.
  * 
- * The methods are called to configure return a DagNodeNavigator. 
+ * The methods that are called to configure return a DagNodeNavigator. 
  * 
  * The following commands will resolve the search to zero or more nodes:
- * nodes
  * paths 
- * 
- * get - will cause the navigator to fire and will result the results.
+ * descendants
+ * children
+ * parents
  *  
- * 
+ * nodes will return the current list of starting nodes.
  */
 public interface DagNodeNavigator {
 
 	/**
-	 * Required
+	 * One From Required 
 	 * set the starting node that will be navigated from using the "from" relationships
 	 * @param fromNode
 	 * @return a DagNodeNavigator set with the fromNode
 	 */
 	public DagNodeNavigator from (DagNode fromNode);
+	
+
+	/**
+	 * One From Required 
+	 * Set the starting node for a breadth first search.
+	 * @param fromNodeIn
+	 * @return
+	 */
+	public DagNodeNavigator fromBreadthFirst(DagNode fromNode);
+
 	
 	/**
 	 * Optionally specify a LinkType to filter the relationships that will be navigated.
@@ -56,16 +65,16 @@ public interface DagNodeNavigator {
 	 * @param filterLinkpredicate
 	 * @return
 	 */
-	public DagNodeNavigator by (Predicate<DagLink> filterLinkpredicate);
+	public DagNodeNavigator filterBy (Predicate<DagLink> filterLinkpredicate);
 	
 	
 	
 	/**
-	 * provide a function that will be called as it visits each link
+	 * provide a function that will be called as it visits each connection (startNode, link, endNode)
 	 * @param vistor
 	 * @return
 	 */
-	public DagNodeNavigator visitLinkWith (BiConsumer<DagContext, DagLink>  vistor);
+	public DagNodeNavigator visitWith (NodeVisitor vistor);
 	
 	/**
 	 * Optionally set the nodeType for the "To" node. If the "To" node nodeType is not equal to the specified nodeType then the navigation terminates at the previous node.
@@ -84,12 +93,13 @@ public interface DagNodeNavigator {
 	
 	
 	/**
-	 * Provide a function that is called when the navigator passes through a node.
-	 * @param vistor
+	 * Visit children nodes with the following visitor.
+	 * This method will not alter the starting nodes but will simply visit. 
+	 * @param linkType
+	 * @param visitor - a lambda that implements the NodeVisitor accept
 	 * @return
 	 */
-	public DagNodeNavigator visitNodeWith (BiConsumer<DagContext, DagNode>  vistor);
-
+	public DagNodeNavigator visitBy(DagLinkType linkType, NodeVisitor visitor);
 	
 	/**
 	 * Specify a class that implements a DagContext that will be provided to each visitor
@@ -107,23 +117,46 @@ public interface DagNodeNavigator {
 	
 	/**
 	 * End result
-	 * Generates a list of immediate child nodes that satisfies the previous criteria
+	 * Generates a list of immediate child nodes (navigates the from relationship).
 	 * @return
 	 */
 	public List<DagNode> children();
 	
+	/**
+	 * End result
+	 * Generates a list of immediate parent nodes (navigates the to relationship).
+	 * @return
+	 */
+	public List<DagNode> parents();
+	
 	
 	/**
-	 * Traverse the graph to immediate children and reset the startingNodes.
+	 * Traverse the graph using the from relationship to the immediate children and reset the startingNodes.
 	 * @return
 	 */
 	public DagNodeNavigator findChildren();
+
 	
+	/**
+	 * Navigate the to relationship to find the parents of this node abd reset the startingNodes.
+	 * @return
+	 */
+	public DagNodeNavigator findParents();
+
 	/**
 	 * Traverse the graph from starting nodes to descendants according to earlier instructions and reset the startingNodes.
 	 * @return
 	 */
 	public DagNodeNavigator findDescendants();
+	
+
+	/**
+	 * End Result
+	 * Return a list of descendants either in breadth  first or depth first order.
+	 * @return
+	 */
+	public List<DagNode> descendants();
+
 	
 	/**
 	 * Optionally set the "To" node. All other paths are ignored.

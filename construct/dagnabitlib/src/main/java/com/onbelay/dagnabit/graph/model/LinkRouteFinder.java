@@ -33,6 +33,8 @@ public interface LinkRouteFinder {
 	public DagPathRoutes findRoutes(DagNode fromNode, DagNode toNode);
 
 	public Map<DagNode, DagPathRoutes> findAllRoutesFrom(DagNode fromNode);
+	
+	public List<DagNode> discoverBreadthFromRelationships(DagNode rootNodeIn);
 
 	public NodeSearchResult discoverFromRelationships(DagNode startNode);
 	

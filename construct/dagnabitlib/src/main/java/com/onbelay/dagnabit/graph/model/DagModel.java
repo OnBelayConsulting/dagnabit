@@ -39,7 +39,7 @@ public interface DagModel {
     public LinkRouteFinder createDagLinkRouteFinder(
     		DagLinkType dagLinkType,
     		DagContext context,
-    		BiConsumer<DagContext, DagNode> nodeVisitor,
+    		NodeVisitor nodeVisitor,
     		Predicate<DagLink> filterLinkPredicate,
     		Predicate<DagNode> filterNodePredicate);
 
@@ -56,7 +56,7 @@ public interface DagModel {
     public LinkRouteFinder createDagLinkRouteFinder(
     		DagLinkType dagLinkType,
     		DagContext context,
-    		BiConsumer<DagContext, DagNode> nodeVisitor);
+    		NodeVisitor nodeVisitor);
 
     
     public List<DagNode> findRootNodes();

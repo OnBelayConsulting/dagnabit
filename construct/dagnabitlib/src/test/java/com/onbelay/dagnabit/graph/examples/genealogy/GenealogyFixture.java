@@ -6,12 +6,19 @@ import com.onbelay.dagnabit.graph.model.DagData;
 import com.onbelay.dagnabit.graph.model.DagModel;
 
 public class GenealogyFixture {
-	private static final String PERSON_TYPE = "PERSON";
-	private static final String LOCATION_TYPE = "LOCATION";
-	private static final String PARENT_REL = "IS_PARENT_OF";
-	private static final String IS_SPOUSE_REL = "IS_SPOUSE_OF";
+	public static final String PERSON_TYPE = "PERSON";
+	public static final String CITY_TYPE = "CITY";
+	public static final String SCHOOL_TYPE = "SCHOOL";
+	
+	
+	public static final String PARENT_REL = "IS_PARENT_OF";
+	public static final String IS_SPOUSE_REL = "IS_SPOUSE_OF";
 
-	private static final String WAS_BORN_IN_REL = "WAS_BORN_IN";
+	public static final String WAS_BORN_IN_REL = "WAS_BORN_IN";
+
+	public static final String ATTENDED_REL = "ATTENDED";
+
+	public static final String LOCATED_IN_REL = "LOCATED_IN";
 
 	
 	private DagModel model;
@@ -30,16 +37,36 @@ public class GenealogyFixture {
 			.setData(data);
 	}
 	
-	public void addLocation(String name) {
-		model.addNode(name, LOCATION_TYPE);
+	public void addCity(String name) {
+		model.addNode(name, CITY_TYPE);
 		
 	}
+
+	public void addSchool(String name) {
+		model.addNode(name, SCHOOL_TYPE);
+		
+	}
+
 	
 	public void addIsParentOf(String parentName, String childName) {
 		model.addRelationship(
 				model.getNode(parentName), 
 				PARENT_REL, 
 				model.getNode(childName));
+	}
+	
+	public void addIsLocatedIn(String nodeName, String locationName) {
+		model.addRelationship(
+				model.getNode(nodeName), 
+				LOCATED_IN_REL, 
+				model.getNode(locationName));
+	}
+	
+	public void addAttended(String personName, String schooName) {
+		model.addRelationship(
+				model.getNode(personName), 
+				ATTENDED_REL, 
+				model.getNode(schooName));
 	}
 
 	public void addWasBornIn(String personName, String locationName) {

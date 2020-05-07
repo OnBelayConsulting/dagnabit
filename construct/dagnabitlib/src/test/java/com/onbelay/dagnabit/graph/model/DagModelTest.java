@@ -139,7 +139,7 @@ public class DagModelTest  {
 			.from(model.getNode("A"))
 			.by(model.getLinkType("benchesTo"))
 			.using(context)
-			.visitNodeWith( (c, n) -> { ((DagTestContext) c).push(n.getName()); })
+			.visitWith( (c, s, l, e) -> { ((DagTestContext) c).push(e.getName()); })
 			.paths();
 		
 		logger.error(context.toString());
@@ -180,6 +180,37 @@ public class DagModelTest  {
 			logger.error(p.getRouteId());
 		}
 	}
+	
+	@Test
+	public void testNavigateToDescendants() {
+		
+		List<DagNode> nodes = model
+				.navigate()
+				.from(model.getNode("A"))
+				.by(model.getLinkType("benchesTo"))
+				.descendants();
+	
+		assertEquals(4, nodes.size());
+		for (DagNode p : nodes) {
+			logger.error(p.getName());
+		}
+	}
+	
+	@Test
+	public void testNavigateToDescendantsBreadthFirst() {
+		
+		List<DagNode> nodes = model
+				.navigate()
+				.fromBreadthFirst(model.getNode("A"))
+				.by(model.getLinkType("benchesTo"))
+				.descendants();
+	
+		assertEquals(4, nodes.size());
+		for (DagNode p : nodes) {
+			logger.error(p.getName());
+		}
+	}
+	
 	
 	@Test
 	public void testNavigateToRootFromLeaf() {
@@ -317,6 +348,18 @@ public class DagModelTest  {
 		}
 	}
 
+	@Test
+	public void testBreadthFromLinks() {
+		
+		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
+				model.getLinkType("benchesTo"));
+		List<DagNode> nodes = routeFinder.discoverBreadthFromRelationships(model.getNode("A"));
+		
+		logger.error(nodes);
+		assertEquals(4, nodes.size());
+	}
+
+
 	
 	@Test
 	public void testOneCycleWithAnalysisNoLinkFilter() {
@@ -355,6 +398,7 @@ public class DagModelTest  {
 		List<DagNode> neighbours = model
 			.navigate()
 			.from(model.getNode("A"))
+			.by(model.getLinkType("benchesTo"))
 			.children();
 		
 		assertTrue(neighbours.size() > 0);

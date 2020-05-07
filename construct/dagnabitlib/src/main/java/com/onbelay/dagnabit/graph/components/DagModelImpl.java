@@ -32,6 +32,7 @@ import com.onbelay.dagnabit.graph.model.DagNodeNavigator;
 import com.onbelay.dagnabit.graph.model.DagNodeType;
 import com.onbelay.dagnabit.graph.model.LinkAnalyser;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
+import com.onbelay.dagnabit.graph.model.NodeVisitor;
 
 /**
  * Container for all Directed Acyclic Graph (DAG) elements such as nodes and links (relationship, edge).
@@ -84,7 +85,7 @@ public class DagModelImpl implements DagModel {
     public LinkRouteFinder createDagLinkRouteFinder(
     		DagLinkType dagLinkType,
     		DagContext context,
-    		BiConsumer<DagContext, DagNode> nodeVisitor) {
+    		NodeVisitor nodeVisitor) {
     	
     	DagLinkRouteFinder navigator = new DagLinkRouteFinder(
     			this,
@@ -100,7 +101,7 @@ public class DagModelImpl implements DagModel {
     public LinkRouteFinder createDagLinkRouteFinder(
     		DagLinkType dagLinkType,
     		DagContext context,
-    		BiConsumer<DagContext, DagNode> nodeVisitor,
+    		NodeVisitor nodeVisitor,
     		Predicate<DagLink> filterLinkPredicate,
     		Predicate<DagNode> filterNodePredicate) {
     	
@@ -108,7 +109,9 @@ public class DagModelImpl implements DagModel {
     			this,
     			dagLinkType,
     			context,
-    			nodeVisitor);
+    			nodeVisitor,
+    			filterLinkPredicate,
+    			filterNodePredicate);
     	
     	
     	return navigator;

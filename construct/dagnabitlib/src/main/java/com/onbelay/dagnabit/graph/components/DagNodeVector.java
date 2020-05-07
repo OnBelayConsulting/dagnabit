@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.onbelay.dagnabit.graph.model.DagNode;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.NodePathLink;
 
@@ -85,6 +86,30 @@ public class DagNodeVector {
     	}
     	
     	return paths;
+    }
+    
+    public List<DagNode> fetchDagNodesBreadthFirst() {
+
+    	ArrayList<DagNode> nodeList = new ArrayList<DagNode>();
+    	if (connectors.isEmpty())
+    		return nodeList;
+    	
+    	
+    	DagNodeConnector firstConnector = connectors.get(0);
+
+    	DagNodeImpl currentStartNode = firstConnector.getFromNode();
+    	nodeList.add(currentStartNode);
+
+    	for (int i=1; i <connectors.size(); i++) {
+        	DagNodeConnector nextConnector = connectors.get(i);
+        	if (nextConnector.getFromNode().equals(currentStartNode) == false) {
+        		nodeList.add(nextConnector.getFromNode());
+        		currentStartNode = nextConnector.getFromNode(); 
+        	}
+        	nodeList.add(nextConnector.getToNode());
+    	}
+
+    	return nodeList;
     }
     
     public List<DagNodePath> createToPaths() {

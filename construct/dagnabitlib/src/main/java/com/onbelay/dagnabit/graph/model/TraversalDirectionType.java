@@ -26,7 +26,8 @@ import java.util.Map;
  */
 public enum TraversalDirectionType {
 	TRAVERSE_STARTING_TO_ENDING_FROM ("TO", " TO to FROM"),
-	TRAVERSE_STARTING_FROM_ENDING_TO ("FROM", "FROM to TO");
+	TRAVERSE_STARTING_FROM_ENDING_TO ("FROM", "FROM to TO"),
+	TRAVERSE_STARTING_FROM_BREADTH_FIRST ("FROM_BREADTH_FIRST", "FROM breadth first");
 
 	private final String code;
     private final String name;
