@@ -64,6 +64,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 	
 	private NodeVisitor nodeVisitor = (c, s, l, e) -> { ; };
 
+	private boolean noBacktracking = true;
 	
 	private DagContext context = new DagMapContext();
 	
@@ -404,6 +405,13 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 					continue;
 				}
 				
+				if (noBacktracking) {
+					if (searchState.hasPreviousNode()) {
+						if (searchState.getPreviousNode().equals(connector.getToNode()))
+							continue;
+					}
+				}
+				
 				nodeVisitor.accept(context, connector.getFromNode(), connector.getRelationship(linkType), connector.getToNode());
 				
 				foundNextLink = true;
@@ -507,6 +515,16 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 			searchState.fixCurrentVector();
 		
 
+	}
+
+
+	public boolean isNoBacktracking() {
+		return noBacktracking;
+	}
+
+
+	public void setNoBacktracking(boolean noBacktracking) {
+		this.noBacktracking = noBacktracking;
 	}
 
 }

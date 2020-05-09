@@ -109,6 +109,8 @@ public interface DagNodeNavigator {
 	public DagNodeNavigator using(DagContext context);
 
 	
+	public DagNodeNavigator setNoBacktracking(boolean backtracking);
+	
 	/**
 	 * Retrieve the current context
 	 * @return
@@ -172,6 +174,12 @@ public interface DagNodeNavigator {
 	 */
 	public List<DagNodePath> paths();
 	
+	/**
+	 * Return all the paths that result in a circular reference
+	 * @return
+	 */
+	public List<DagNodePath> cycles();
+
 	
 	/**
 	 * retrieve the current starting nodes

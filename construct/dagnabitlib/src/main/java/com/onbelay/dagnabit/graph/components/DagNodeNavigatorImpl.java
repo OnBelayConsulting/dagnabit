@@ -18,7 +18,6 @@ package com.onbelay.dagnabit.graph.components;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -56,6 +55,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 
 	private NodeVisitor nodeVisitor = (c, n, l, e) -> { ; } ;
 
+	private boolean noBacktracking = true;
 	
 	private DagModelImpl model;
 	
@@ -266,6 +266,22 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 				filterNodePredicate);
 	}
 	
+	
+	
+
+	@Override
+	public List<DagNodePath> cycles() {
+		if (startingNodes.isEmpty())
+			throw new DagGraphException("Cycles require at least one starting node");
+		
+		ArrayList<DagNodePath> cycles = new ArrayList<DagNodePath>();
+		for (DagNodeImpl startNode : startingNodes) {
+			LinkRouteFinder routeFinder = newLinkRouteFinder();
+			NodeSearchResult result = routeFinder.discoverFromRelationships(startNode);
+			cycles.addAll(result.getCycles());
+		}
+		return cycles;
+	}
 
 	@Override
 	public List<DagNodePath> paths() {
@@ -356,6 +372,15 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 
 	public void setContext(DagContext context) {
 		this.context = context;
+	}
+
+	public boolean isNoBacktracking() {
+		return noBacktracking;
+	}
+
+	public DagNodeNavigator setNoBacktracking(boolean noBacktracking) {
+		this.noBacktracking = noBacktracking;
+		return this;
 	}
 
 }

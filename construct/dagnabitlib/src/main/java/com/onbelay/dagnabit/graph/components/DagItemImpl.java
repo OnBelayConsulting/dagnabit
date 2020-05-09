@@ -21,7 +21,7 @@ public abstract class DagItemImpl {
 	
     protected String name;
     private DagData data;
-    
+    private int weight;
 
 	protected DagItemImpl(String name) {
 		super();
@@ -47,7 +47,15 @@ public abstract class DagItemImpl {
 
 
 
-    @Override
+    public int getWeight() {
+		return weight;
+	}
+
+	public void setWeight(int weight) {
+		this.weight = weight;
+	}
+
+	@Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;

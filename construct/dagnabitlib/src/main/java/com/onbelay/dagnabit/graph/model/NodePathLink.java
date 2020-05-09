@@ -1,24 +1,20 @@
 package com.onbelay.dagnabit.graph.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 public class NodePathLink {
 
 	private DagNode fromNode;
 	private DagNode toNode;
 	
-	private List<DagLinkType> linkTypes = new ArrayList<DagLinkType>();
+	private DagLink dagLink;
 	
 	public NodePathLink(
 			DagNode fromNode, 
-			Collection<DagLinkType> linkTypes, 
+			DagLink dagLink, 
 			DagNode toNode) {
 		
 		this.fromNode = fromNode;
 		this.toNode = toNode;
-		this.linkTypes.addAll(linkTypes);
+		this.dagLink = dagLink;
 	}
 
 	public DagNode getFromNode() {
@@ -29,12 +25,16 @@ public class NodePathLink {
 		return toNode;
 	}
 
-	public List<DagLinkType> getLinkTypes() {
-		return linkTypes;
+	public DagLinkType getLinkType() {
+		return dagLink.getDagLinkType();
 	}
 	
 	
+	public DagLink getDagLink() {
+		return dagLink;
+	}
+
 	public String toString() {
-		return fromNode.getName() + " - " + linkTypes + " -> " + toNode.getName();
+		return fromNode.getName() + " - " + dagLink.getDagLinkType() + " -> " + toNode.getName();
 	}
 }

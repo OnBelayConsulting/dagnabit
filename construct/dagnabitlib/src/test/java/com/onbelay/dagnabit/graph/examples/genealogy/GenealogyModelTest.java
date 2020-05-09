@@ -104,7 +104,7 @@ public class GenealogyModelTest  {
 				LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
 						linkType);
 				NodeSearchResult nodeSearchResult = routeFinder.discoverFromRelationships(node);
-				assertEquals(0, nodeSearchResult.getCycles());
+				assertEquals(0, nodeSearchResult.getCycles().size());
 			}
 		}
 

@@ -16,9 +16,12 @@
 package com.onbelay.dagnabit.graph.components;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.onbelay.dagnabit.graph.exception.DagGraphException;
+import com.onbelay.dagnabit.graph.model.DagLinkType;
 import com.onbelay.dagnabit.graph.model.DagNode;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.NodePathLink;
@@ -31,8 +34,10 @@ public class DagNodeVector {
     
     private List<DagNodeConnector> connectors = new ArrayList<DagNodeConnector>();
     
-    public DagNodeVector() {
-        
+    private DagLinkType linkType;
+    
+    public DagNodeVector(DagLinkType linkType) {
+        this.linkType = linkType;
     }
     
     public DagNodePath createPath() {
@@ -41,7 +46,7 @@ public class DagNodeVector {
     			.stream()
     				.map( c -> new NodePathLink(
     						c.getFromNode(), 
-    						c.getRelationships().keySet(), 
+    						c.getRelationship(linkType), 
     						c.getToNode()))
     				.collect(Collectors.toList());
     	
@@ -65,7 +70,7 @@ public class DagNodeVector {
     			startNode, 
     			new NodePathLink(
     					firstConnector.getFromNode(), 
-    					firstConnector.getRelationships().keySet(), 
+    					firstConnector.getRelationship(linkType), 
     					firstConnector.getToNode()));
     			
 		paths.add(last);
@@ -78,7 +83,7 @@ public class DagNodeVector {
         			last, 
         			new NodePathLink(
         					nextConnector.getFromNode(), 
-        					nextConnector.getRelationships().keySet(), 
+        					nextConnector.getRelationship(linkType), 
         					nextConnector.getToNode()));
         	
         	paths.add(next);
@@ -90,26 +95,21 @@ public class DagNodeVector {
     
     public List<DagNode> fetchDagNodesBreadthFirst() {
 
-    	ArrayList<DagNode> nodeList = new ArrayList<DagNode>();
-    	if (connectors.isEmpty())
-    		return nodeList;
+    	if (connectors.isEmpty( ))
+    		return new ArrayList<DagNode>();
+
+    	
+    	LinkedHashSet<DagNode> nodeSet = new LinkedHashSet<DagNode>();
     	
     	
-    	DagNodeConnector firstConnector = connectors.get(0);
-
-    	DagNodeImpl currentStartNode = firstConnector.getFromNode();
-    	nodeList.add(currentStartNode);
-
-    	for (int i=1; i <connectors.size(); i++) {
-        	DagNodeConnector nextConnector = connectors.get(i);
-        	if (nextConnector.getFromNode().equals(currentStartNode) == false) {
-        		nodeList.add(nextConnector.getFromNode());
-        		currentStartNode = nextConnector.getFromNode(); 
-        	}
-        	nodeList.add(nextConnector.getToNode());
+    	for (DagNodeConnector connector : connectors) {
+    		nodeSet.add(connector.getFromNode());
+    		nodeSet.add(connector.getToNode());
     	}
-
-    	return nodeList;
+    	
+    	List<DagNode> list = new ArrayList<DagNode>();
+    	list.addAll(nodeSet);
+    	return list;
     }
     
     public List<DagNodePath> createToPaths() {
@@ -123,7 +123,7 @@ public class DagNodeVector {
     			firstConnector.getToNode(), 
     			new NodePathLink(
     					firstConnector.getToNode(), 
-    					firstConnector.getRelationships().keySet(), 
+    					firstConnector.getRelationship(linkType), 
     					firstConnector.getFromNode()));
     			
     	
@@ -133,7 +133,7 @@ public class DagNodeVector {
         	path.addToPathLink(
         			new NodePathLink(
         					nextConnector.getToNode(), 
-        					nextConnector.getRelationships().keySet(), 
+        					nextConnector.getRelationship(linkType), 
         					nextConnector.getFromNode()));
         	
     	}
@@ -143,9 +143,13 @@ public class DagNodeVector {
     
 
     
-    public DagNodeVector(DagNodeVector copy) {
-        if (copy != null)
+    public DagNodeVector(DagLinkType linkType, DagNodeVector copy) {
+    	this.linkType = linkType;
+        if (copy != null) {
         	connectors.addAll(copy.connectors);
+        	if (linkType.equals(copy.linkType) == false)
+        		throw new DagGraphException("LinkTypes don't match: " + linkType + " vs " + copy.linkType );
+        }
     }
     
     public void add(DagNodeConnector connector) {

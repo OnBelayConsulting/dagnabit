@@ -72,6 +72,13 @@ public class DagNodePath {
         return toNode;
     }
     
+    public int calculateTotalWeight() {
+    	int totalWeight = 0;
+    	for (NodePathLink c : links) {
+    		totalWeight = totalWeight + c.getDagLink().getWeight();
+    	}
+    	return totalWeight;
+    }
 
     public String getRouteId() {
     	return getFromNode() + ":" + getToNode();

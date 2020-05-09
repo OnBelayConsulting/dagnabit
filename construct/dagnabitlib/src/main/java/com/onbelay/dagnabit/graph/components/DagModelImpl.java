@@ -241,7 +241,7 @@ public class DagModelImpl implements DagModel {
     	return nodeMap.get(code);
     }
     
-    public void addRelationship(
+    public DagLink addRelationship(
     		DagNode fromNodeIn, 
     		String relationshipName, 
     		DagNode toNodeIn) {
@@ -256,9 +256,11 @@ public class DagModelImpl implements DagModel {
     	 DagNodeImpl fromNode = nodeMap.get(fromNodeIn.getName());
     	 DagNodeImpl toNode = nodeMap.get(toNodeIn.getName());
     	
-         fromNode.addFromThisNodeRelationshipToNode(
+         DagNodeConnector connector = fromNode.addFromThisNodeRelationshipToNode(
         		 dagLinkType, 
         		 toNode);
+         
+         return connector.getRelationship(dagLinkType);
     }
     
     public DagLinkType getLinkType(String name) {

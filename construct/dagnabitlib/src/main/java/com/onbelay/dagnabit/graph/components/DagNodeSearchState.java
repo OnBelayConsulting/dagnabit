@@ -33,6 +33,7 @@ public class DagNodeSearchState {
     
     private DagNode endingNode;
     
+    private DagNodeImpl previousNode;
     private DagNodeImpl currentNode;
 
     public DagNodeSearchState(
@@ -62,10 +63,11 @@ public class DagNodeSearchState {
     	
     	this.endingNode = copy.endingNode;
     	this.dagLinkType = copy.dagLinkType;
+    	this.previousNode = copy.currentNode;
         this.currentNode = currentNode;
         this.visited.putAll(copy.visited);
         this.vectors = copy.vectors;
-        this.vector = new DagNodeVector(copy.vector);
+        this.vector = new DagNodeVector(dagLinkType, copy.vector);
         addNodeRelationshipLink(relationship);
         visited.put(currentNode.getName(), currentNode);
         this.cycles = copy.cycles;
@@ -81,7 +83,7 @@ public class DagNodeSearchState {
 
     public void addNodeRelationshipLink(DagNodeConnector connector) {
         if (vector == null)
-            vector = new DagNodeVector();
+            vector = new DagNodeVector(dagLinkType);
         vector.add(connector);
     }
     
@@ -93,8 +95,12 @@ public class DagNodeSearchState {
         return currentNode;
     }
     
-    public void setCurrentNode(DagNodeImpl node) {
-        this.currentNode = node;
+    public boolean hasPreviousNode() {
+    	return previousNode != null;
+    }
+    
+    public DagNodeImpl getPreviousNode() {
+    	return previousNode;
     }
 
 	public List<DagNodeVector> getVectors() {
@@ -106,7 +112,7 @@ public class DagNodeSearchState {
     		vector.add(connector);
     		vectors.add(vector);
     	} else {
-	    	vector = new DagNodeVector();
+	    	vector = new DagNodeVector(dagLinkType);
 	        vector.add(connector);
 	        vectors.add(vector);
     	}
@@ -123,13 +129,7 @@ public class DagNodeSearchState {
     }
     
     public void addCycle(DagNodeVector currentVector, DagNodeConnector connector, DagLinkType linkType) {
-    	DagNodeVector cyclicVector = new DagNodeVector(currentVector);
-    	cyclicVector.add(connector);
-        cycles.add(cyclicVector);
-    }
-    
-    public void addCycle(DagNodeVector currentVector, DagNodeConnector connector) {
-    	DagNodeVector cyclicVector = new DagNodeVector(currentVector);
+    	DagNodeVector cyclicVector = new DagNodeVector(linkType, currentVector);
     	cyclicVector.add(connector);
         cycles.add(cyclicVector);
     }

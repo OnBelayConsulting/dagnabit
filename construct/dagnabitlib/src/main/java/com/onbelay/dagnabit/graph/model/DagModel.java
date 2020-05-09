@@ -78,7 +78,7 @@ public interface DagModel {
 
     public DagNode getNode(String code);
     
-    public void addRelationship(
+    public DagLink addRelationship(
     		DagNode fromNode, 
     		String relationshipName, 
     		DagNode toNode);
