@@ -15,4 +15,6 @@ public interface DagNode {
 	
 	public DagData getData();
 	
+	public int compareTo(DagNode c2);
+	
 }

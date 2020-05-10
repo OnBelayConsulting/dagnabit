@@ -46,16 +46,18 @@ public class DagModelTest  {
 		model.addNode("C");
 		
 		model.addNode("D");
-		
-		model.addRelationship(
-				model.getNode("A"), 
-				"benchesTo", 
-				model.getNode("B"));
+
 		
 		model.addRelationship(
 				model.getNode("A"), 
 				"benchesTo", 
 				model.getNode("D"));
+		
+		
+		model.addRelationship(
+				model.getNode("A"), 
+				"benchesTo", 
+				model.getNode("B"));
 		
 		
 		model.addRelationship(
@@ -188,6 +190,22 @@ public class DagModelTest  {
 				.navigate()
 				.from(model.getNode("A"))
 				.by(model.getLinkType("benchesTo"))
+				.descendants();
+	
+		assertEquals(4, nodes.size());
+		for (DagNode p : nodes) {
+			logger.error(p.getName());
+		}
+	}
+	
+	@Test
+	public void testNavigateToDescendantsSorted() {
+		
+		List<DagNode> nodes = model
+				.navigate()
+				.from(model.getNode("A"))
+				.by(model.getLinkType("benchesTo"))
+				.sorted()
 				.descendants();
 	
 		assertEquals(4, nodes.size());

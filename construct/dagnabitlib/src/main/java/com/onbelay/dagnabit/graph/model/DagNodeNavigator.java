@@ -15,6 +15,7 @@
  */
 package com.onbelay.dagnabit.graph.model;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -34,6 +35,16 @@ import java.util.function.Predicate;
  */
 public interface DagNodeNavigator {
 
+	
+	/**
+	 * A variation of from that takes a list of nodes.
+	 * Note that the results of each traversal are simply appended.
+	 * @param fromNodes
+	 * @return
+	 */
+	public DagNodeNavigator from (List<DagNode> fromNodes);
+
+	
 	/**
 	 * One From Required 
 	 * set the starting node that will be navigated from using the "from" relationships
@@ -66,7 +77,27 @@ public interface DagNodeNavigator {
 	 * @return
 	 */
 	public DagNodeNavigator filterBy (Predicate<DagLink> filterLinkpredicate);
+
 	
+	/**
+	 * Sort according to natural order
+	 * @return
+	 */
+	public DagNodeNavigator sorted();
+
+	
+	/**
+	 * Sort according to the provide comparator
+	 * @param comparator
+	 * @return
+	 */
+	public DagNodeNavigator sorted(Comparator<DagNode> comparator);
+	
+	/**
+	 * Reset all the visitors, predicates and sort criteria
+	 * @return
+	 */
+	public DagNodeNavigator reset();
 	
 	
 	/**

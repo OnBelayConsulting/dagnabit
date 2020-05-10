@@ -16,6 +16,7 @@
 package com.onbelay.dagnabit.graph.components;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.function.Predicate;
@@ -55,6 +56,8 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 
 	private NodeVisitor nodeVisitor = (c, n, l, e) -> { ; } ;
 
+	private Comparator<DagNode> nodeComparator = null;
+	
 	private boolean noBacktracking = true;
 	
 	private DagModelImpl model;
@@ -66,6 +69,22 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		this.model = model;
 	}
 
+	@Override
+	public DagNodeNavigator from(List<DagNode> fromNodes) {
+		this.startingNodes.clear();
+		
+		if (traversalDirectionType != null)
+			throw new DagGraphException("A list of from nodes may not be the target of a starting To node");
+			
+		traversalDirectionType = TraversalDirectionType.TRAVERSE_STARTING_FROM_ENDING_TO;
+
+		
+		for (DagNode n : fromNodes)
+			startingNodes.add(model.getNodeImplementation(n.getName()));
+		return this;
+	}
+
+	
 	@Override
 	public DagNodeNavigator from(DagNode fromNodeIn) {
 		
@@ -137,6 +156,33 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		
 		return this;
 	}
+	
+	@Override
+	public DagNodeNavigator sorted() {
+		nodeComparator = (c1, c2) -> c1.compareTo(c2); 
+		return this;
+	}
+
+	
+	@Override
+	public DagNodeNavigator sorted(Comparator<DagNode> comparator) {
+		this.nodeComparator = comparator;
+		return this;
+	}
+	
+	@Override
+	public DagNodeNavigator reset() {
+		this.nodeComparator = null;
+		this.filterLinkPredicate = null;
+		this.filterNodePredicate = null;
+		this.nodeVisitor = null;
+		return this;
+	}
+	
+	private List<DagNodeImpl> sortNodes(List<DagNode> endingNodes) {
+		
+		return endingNodes.stream().sorted(nodeComparator).map(n ->(DagNodeImpl)n).collect(Collectors.toList());
+	}
 
 	@Override
 	public List<DagNode> children() {
@@ -154,8 +200,12 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 				.filter(c -> c.hasRelationship(linkType) && filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
 				.map(d -> d.getToNode())
 				.collect(Collectors.toList()));
-		 });
-		return endingNodes;
+		});
+		
+		if (nodeComparator == null)
+			return endingNodes;
+		else
+			return endingNodes.stream().sorted(nodeComparator).collect(Collectors.toList());
 	}
 
 	@Override
@@ -175,7 +225,10 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 				.map(d -> d.getFromNode())
 				.collect(Collectors.toList()));
 		 });
-		return endingNodes;
+		if (nodeComparator == null)
+			return endingNodes;
+		else
+			return endingNodes.stream().sorted(nodeComparator).collect(Collectors.toList());
 	}
 	
 	@Override
@@ -185,7 +238,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		
 		ArrayList<DagNodeImpl> endingNodes = new ArrayList<>();
 		
-		 startingNodes.forEach( startNode -> {
+		startingNodes.forEach( startNode -> {
 			 
 		 	endingNodes.addAll(startNode
 				.getFromThisNodeConnectors()
@@ -193,8 +246,13 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 				.filter(c -> c.hasRelationship(linkType) && filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
 				.map(d -> d.getToNode())
 				.collect(Collectors.toList()));
-		 });
-		startingNodes = endingNodes; 
+		});
+		
+		if (nodeComparator == null)
+			startingNodes = endingNodes;
+		else
+			startingNodes = endingNodes.stream().sorted(nodeComparator).collect(Collectors.toList());
+		
 		return this;
 
 	}
@@ -206,7 +264,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		
 		ArrayList<DagNodeImpl> endingNodes = new ArrayList<>();
 		
-		 startingNodes.forEach( startNode -> {
+		startingNodes.forEach( startNode -> {
 			 
 		 	endingNodes.addAll(startNode
 				.getToThisNodeConnectors()
@@ -214,8 +272,12 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 				.filter(c -> filterNodePredicate.test(c.getFromNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
 				.map(d -> d.getFromNode())
 				.collect(Collectors.toList()));
-		 });
-		startingNodes = endingNodes; 
+		});
+		if (nodeComparator == null)
+			startingNodes = endingNodes;
+		else
+			startingNodes = endingNodes.stream().sorted(nodeComparator).collect(Collectors.toList());
+		
 		return this;
 
 	}
@@ -352,7 +414,10 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 			}
 			
 		}
-		return nodeList;
+		if (nodeComparator == null)
+			return nodeList;
+		else
+			return nodeList.stream().sorted(nodeComparator).collect(Collectors.toList());
 		
 	}
 

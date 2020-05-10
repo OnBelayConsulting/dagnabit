@@ -160,6 +160,11 @@ public class DagNodeImpl extends DagItemImpl implements DagNode {
     public List<DagNodeConnector> getToThisNodeConnectors() {
         return toThisConnectorFromNodes;
     }
+    
+	public int compareTo(DagNode c2) {
+		return name.compareTo(c2.getName());
+	}
+
 
 	@Override
 	public int hashCode() {
