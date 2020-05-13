@@ -252,13 +252,21 @@ public class DagModelImpl implements DagModel {
     
     @Override
     public  void addDefaultRelationship(
-    		DagNode fromNodeIn, 
-    		DagNode toNodeIn) {
+    			DagNode fromNodeIn, 
+    			DagNode toNodeIn) {
     	
-    	addRelationship(
-    			fromNodeIn, 
-    			DagLinkType.DEFAULT_TYPE, 
-    			toNodeIn);
+	   	DagLinkType dagLinkType = linkTypeMap.get(DagLinkType.DEFAULT_TYPE);
+	   	if (dagLinkType == null) {
+	   		dagLinkType = new DagLinkType(DagLinkType.DEFAULT_TYPE);
+	   		linkTypeMap.put(DagLinkType.DEFAULT_TYPE, dagLinkType);
+	   	}
+	   	 
+	   	DagNodeImpl fromNode = nodeMap.get(fromNodeIn.getName());
+	   	DagNodeImpl toNode = nodeMap.get(toNodeIn.getName());
+	   	
+	   	fromNode.addFromThisNodeRelationshipToNode(
+	       		 dagLinkType, 
+	       		 toNode);
     }
     
     @Override

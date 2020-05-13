@@ -15,8 +15,6 @@
  */
 package com.onbelay.dagnabit.graph.examples.travelingsales;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -28,11 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.onbelay.dagnabit.graph.model.DagModel;
-import com.onbelay.dagnabit.graph.model.DagNode;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
-import com.onbelay.dagnabit.graph.model.DagPathRoutes;
-import com.onbelay.dagnabit.graph.model.DagTestContext;
-import com.onbelay.dagnabit.graph.model.LinkAnalysis;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
 import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 

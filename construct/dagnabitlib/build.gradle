@@ -16,6 +16,18 @@ jar {
 	}
 }
 
+
+task srcZip (type: Zip) {
+	
+	classifier = 'src'
+	from projectDir
+	include 'src/**/*'
+	
+}
+
+task construct (dependsOn: ["build", "srcZip"])
+
+
 repositories {
     mavenCentral()
 }

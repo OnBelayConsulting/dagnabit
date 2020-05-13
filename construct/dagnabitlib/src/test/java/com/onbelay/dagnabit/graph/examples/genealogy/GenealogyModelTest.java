@@ -229,7 +229,7 @@ public class GenealogyModelTest  {
 		
 		DagGenealogyContext context = new DagGenealogyContext();
 		
-		List<DagNode> nodes = model
+			model
 									.navigate()
 									.from(model.getNode("John Smith"))
 									.by(model.getLinkType(GenealogyFixture.PARENT_REL))
@@ -247,6 +247,7 @@ public class GenealogyModelTest  {
 											model.getLinkType(GenealogyFixture.LOCATED_IN_REL), 
 											DagGenealogyContext::accept)
 									.nodes();
+		
 		logger.error(context.getPersonNames());
 	}
 	

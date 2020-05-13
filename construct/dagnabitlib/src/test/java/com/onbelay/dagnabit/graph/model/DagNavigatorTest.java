@@ -43,6 +43,7 @@ public class DagNavigatorTest  {
 	@Before
 	public void beforeRun() throws Throwable {
 		// Solitary nodes
+		model = factory.newModel();
 		model.addNode("S", "special");
 		model.addNode("R", "ordinary");
 
@@ -247,7 +248,7 @@ public class DagNavigatorTest  {
 				.by(model.getLinkType("benchesTo"))
 				.descendants();
 	
-		assertEquals(4, nodes.size());
+		assertEquals(3, nodes.size());
 		for (DagNode p : nodes) {
 			logger.error(p.getName());
 		}
@@ -370,7 +371,7 @@ public class DagNavigatorTest  {
 		List<DagNode> nodes = routeFinder.findDescendantsBreadthFirst(model.getNode("A"));
 		
 		logger.error(nodes);
-		assertEquals(4, nodes.size());
+		assertEquals(3, nodes.size());
 	}
 
 
