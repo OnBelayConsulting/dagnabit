@@ -16,11 +16,9 @@
 package com.onbelay.dagnabit.graph.model;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +27,11 @@ import org.junit.Test;
 
 import com.onbelay.dagnabit.graph.factories.DagModelFactory;
 
+/**
+ * Test the basic methods to build a graph model and the methods to interrogate it.
+ * @author lefeu
+ *
+ */
 public class DagModelTest  {
 	private static Logger logger = LogManager.getLogger();
 
@@ -38,6 +41,11 @@ public class DagModelTest  {
 	@Before
 	public void beforeRun() throws Throwable {
 		model = factory.newModel();
+
+		// Solitary nodes
+		model.addNode("S", "special");
+		model.addNode("R", "ordinary");
+
 		
 		model.addNode("A");
 		
@@ -76,385 +84,84 @@ public class DagModelTest  {
 				model.getNode("C"), 
 				"basisTo", 
 				model.getNode("D"));
+		
+		model.addNode("V");
+		model.addNode("Y");
+		
+		
+		model.addRelationship(
+				model.getNode("V"), 
+				"benchesTo", 
+				model.getNode("Y"));
+
 	}
-
-
+	
+	
 	@Test
-	public void testNoCycles() {
-
-		for (DagNode node : model.findRootNodes()) {
-			for (DagLinkType linkType : model.getLinkTypes()) {
-				
-				LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-						linkType);
-				NodeSearchResult nodeSearchResult = routeFinder.discoverFromRelationships(node);
-				assertFalse(nodeSearchResult.isCyclic());
-			}
-		}
-
+	public void testGetNodes() {
+		
+		assertEquals(8, model.getNodes().size());
 	}
+	
 	
 	@Test
 	/*
-	 * Should find A -> B directly A -> C via B and A -> D directly
+	 * Note this will find the default link type as well.
 	 */
-	public void testNavigateFromRoot() {
+	public void testFindLinkTypes() {
 		
-		List<DagNodePath> paths = model
-									.navigate()
-									.from(model.getNode("A"))
-									.by(model.getLinkType("benchesTo"))
-									.paths();
+		List<DagLinkType> linkTypes = model.getLinkTypes();
+		assertEquals(3, linkTypes.size());
 		
+		assertEquals(1, linkTypes.stream().filter( n -> n.getName().equals("benchesTo")).collect(Collectors.toList()).size());
 		
-		DagNodePath pathAToB = null;
-		DagNodePath pathAToC = null;
-		DagNodePath pathAToD = null;
+		assertEquals(1, linkTypes.stream().filter( n -> n.getName().equals("basisTo")).collect(Collectors.toList()).size());
 		
-		for (DagNodePath p : paths) {
-			logger.error(p.getRouteId());
-			
-			if (p.getRouteId().equals("A:B"))
-				pathAToB = p;
-			
-			if (p.getRouteId().equals("A:C"))
-				pathAToC = p;
-			
-			if (p.getRouteId().equals("A:D"))
-				pathAToD = p;
-		}
-		
-		assertNotNull(pathAToB);
-		assertNotNull(pathAToC);
-		assertNotNull(pathAToD);
-		
-		assertEquals(2, pathAToC.getLinks().size());
+		assertEquals(1, linkTypes.stream().filter( n -> n.getName().equals("link")).collect(Collectors.toList()).size());
 	}
 	
 	@Test
-	public void testNodeVisitor() {
+	public void testFindNodeTypes() {
+		List<DagNodeType> nodeTypes = model.getNodeTypes();
+		assertEquals(3, nodeTypes.size());
 		
-		DagTestContext context = new DagTestContext();
+		assertEquals(1, nodeTypes.stream().filter( n -> n.getTypeName().equals("special")).collect(Collectors.toList()).size());
 		
-		model
-			.navigate()
-			.from(model.getNode("A"))
-			.by(model.getLinkType("benchesTo"))
-			.using(context)
-			.visitWith( (c, s, l, e) -> { ((DagTestContext) c).push(e.getName()); })
-			.paths();
+		assertEquals(1, nodeTypes.stream().filter( n -> n.getTypeName().equals("ordinary")).collect(Collectors.toList()).size());
 		
-		logger.error(context.toString());
-		
-	}
-	
-	@Test
-	/*
-	 * Should find A -> B 
-	 */
-	public void testNavigateFromRootToLeaf() {
-		
-		List<DagNodePath> paths = model
-									.navigate()
-									.from(model.getNode("A"))
-									.to(model.getNode("B"))
-									.by(model.getLinkType("benchesTo"))
-									.paths();
-		
-
-		assertEquals(1, paths.size());
-		DagNodePath pathAToB = paths.get(0);
-		assertEquals("A", pathAToB.getFromNode().getName());
-		assertEquals("B", pathAToB.getToNode().getName());
-	}
-	
-	@Test
-	public void testNavigateToRoot() {
-		
-		List<DagNodePath> paths = model
-				.navigate()
-				.to(model.getNode("A"))
-				.by(model.getLinkType("benchesTo"))
-				.paths();
-	
-		assertEquals(3, paths.size());
-		for (DagNodePath p : paths) {
-			logger.error(p.getRouteId());
-		}
-	}
-	
-	@Test
-	public void testNavigateToDescendants() {
-		
-		List<DagNode> nodes = model
-				.navigate()
-				.from(model.getNode("A"))
-				.by(model.getLinkType("benchesTo"))
-				.descendants();
-	
-		assertEquals(4, nodes.size());
-		for (DagNode p : nodes) {
-			logger.error(p.getName());
-		}
-	}
-	
-	@Test
-	public void testNavigateToDescendantsSorted() {
-		
-		List<DagNode> nodes = model
-				.navigate()
-				.from(model.getNode("A"))
-				.by(model.getLinkType("benchesTo"))
-				.sorted()
-				.descendants();
-	
-		assertEquals(4, nodes.size());
-		for (DagNode p : nodes) {
-			logger.error(p.getName());
-		}
-	}
-	
-	@Test
-	public void testNavigateToDescendantsBreadthFirst() {
-		
-		List<DagNode> nodes = model
-				.navigate()
-				.fromBreadthFirst(model.getNode("A"))
-				.by(model.getLinkType("benchesTo"))
-				.descendants();
-	
-		assertEquals(4, nodes.size());
-		for (DagNode p : nodes) {
-			logger.error(p.getName());
-		}
-	}
-	
-	
-	@Test
-	public void testNavigateToRootFromLeaf() {
-		
-		List<DagNodePath> paths = model
-				.navigate()
-				.to(model.getNode("A"))
-				.from(model.getNode("C"))
-				.by(model.getLinkType("benchesTo"))
-				.paths();
-	
-		assertEquals(1, paths.size());
-		DagNodePath path  = paths.get(0);
-		assertEquals("A", path.getToNode().getName());
-		assertEquals("C", path.getFromNode().getName());
-	}
-	
-	
-	@Test
-	public void testNoCyclesWithAnalysis() {
-		LinkAnalysis analysis = model
-								.analyse()
-								.result();
-		
-		assertEquals(false, analysis.isCyclic());	
-	}
-	
-
-	@Test
-	public void testFromLinksWithOneCycle() {
-		// add additional path
-		model.addRelationship(
-				model.getNode("C"), 
-				"benchesTo", 
-				model.getNode("A"));
-
-		
-		DagNode rootNode = model.getNode("A");
-		
-		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("benchesTo"));
-		
-		NodeSearchResult result = routeFinder.discoverFromRelationships(rootNode);
-		assertTrue(result.isCyclic());
-		
-		assertEquals(3, result.getPaths().size());
-		DagNodePath pathAToB = null;
-		DagNodePath pathAToC = null;
-		DagNodePath pathAToD = null;
-		
-		for (DagNodePath p : result.getPaths()) {
-			logger.error(p.getRouteId());
-			
-			if (p.getRouteId().equals("A:B"))
-				pathAToB = p;
-			
-			if (p.getRouteId().equals("A:C"))
-				pathAToC = p;
-			
-			if (p.getRouteId().equals("A:D"))
-				pathAToD = p;
-		}
-		
-		assertNotNull(pathAToB);
-		assertNotNull(pathAToC);
-		assertNotNull(pathAToD);
-		
-		assertEquals(1, result.getCycles().size());
-		DagNodePath cycle = result.getCycles().get(0);
-		assertEquals("A", cycle.getToNode().getName());
+		assertEquals(1, nodeTypes.stream().filter( n -> n.getTypeName().equals("node")).collect(Collectors.toList()).size());
 	}
 
 
 	@Test
-	public void testToLinksWithOneCycle() {
-		// add additional path
-		model.addRelationship(
-				model.getNode("C"), 
-				"benchesTo", 
-				model.getNode("A"));
+	public void testFindSolitaryNodes() {
+		List<DagNode> solitaryNodes = model.findSolitaryNodes();
+		assertEquals(2, solitaryNodes.size());
+		
+		assertEquals(1, solitaryNodes.stream().filter( n -> n.getName().equals("R")).collect(Collectors.toList()).size());
 
-		
-		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("benchesTo"));
-		NavigationResult result = routeFinder.discoverToRelationships(model.getNode("A"));
-		
-		DagNodePath pathBtoA = null;
-		DagNodePath pathCToA = null;
-		DagNodePath pathDToA = null;
-		
-		for (NodeSearchResult nodeSearchResult : result.getNodeSearchResults().values()) {
-			for (DagNodePath path : nodeSearchResult.getPaths()) {
-				if (path.getFromNode().getName().equals("B"))
-					pathBtoA = path;
-				if (path.getFromNode().getName().equals("C"))
-					pathCToA = path;
-				if (path.getFromNode().getName().equals("D"))
-					pathDToA = path;
-			}
-		}
-		
-		
-		assertNotNull(pathBtoA);
-		assertNotNull(pathCToA);
-		assertNotNull(pathDToA);
-	}
-
-	@Test
-	public void testToLinks() {
-		
-		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("benchesTo"));
-		NavigationResult result = routeFinder.discoverToRelationships(model.getNode("A"));
-		
-		NodeSearchResult nodeSearchResultCtoA =  result.getNodeSearchResult(model.getNode("C"));
-		NodeSearchResult nodeSearchResultBtoA =  result.getNodeSearchResult(model.getNode("B"));
-		NodeSearchResult nodeSearchResultDtoA =  result.getNodeSearchResult(model.getNode("D"));
-		
-		
-		assertNotNull(nodeSearchResultCtoA);
-		assertNotNull(nodeSearchResultBtoA);
-		assertNotNull(nodeSearchResultDtoA);
-
-		
-		for (DagNodePath p : nodeSearchResultCtoA.getPaths()) {
-			logger.error("C to A " + " " + p.getRouteId());
-		}
-		
-		for (DagNodePath p : nodeSearchResultBtoA.getPaths()) {
-			logger.error("B to A " + " " + p.getRouteId());
-		}
-		
-		for (DagNodePath p : nodeSearchResultDtoA.getPaths()) {
-			logger.error("D to A " + " " + p.getRouteId());
-		}
-	}
-
-	@Test
-	public void testBreadthFromLinks() {
-		
-		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("benchesTo"));
-		List<DagNode> nodes = routeFinder.discoverBreadthFromRelationships(model.getNode("A"));
-		
-		logger.error(nodes);
-		assertEquals(4, nodes.size());
-	}
-
-
-	
-	@Test
-	public void testOneCycleWithAnalysisNoLinkFilter() {
-		// add additional path
-		model.addRelationship(
-				model.getNode("C"), 
-				"benchesTo", 
-				model.getNode("A"));
-		
-		LinkAnalysis analysis = model
-								.analyse()
-								.result();
-		
-		assertEquals(true, analysis.isCyclic());
+		assertEquals(1, solitaryNodes.stream().filter( n -> n.getName().equals("S")).collect(Collectors.toList()).size());
 	}
 	
 	@Test
-	public void testOneCycleWithAnalysisWithLinkFilter() {
-		// add additional path
-		model.addRelationship(
-				model.getNode("C"), 
-				"benchesTo", 
-				model.getNode("A"));
+	public void testFindRootNodes() {
+		List<DagNode> rootNodes = model.findRootNodes();
+		assertEquals(2, rootNodes.size());
 		
-		LinkAnalysis analysis = model
-								.analyse()
-								.by(model.getLinkType("benchesTo"))
-								.result();
-		
-		assertEquals(true, analysis.isCyclic());
-	}
+		assertEquals(1, rootNodes.stream().filter( n -> n.getName().equals("A")).collect(Collectors.toList()).size());
 
-	@Test
-	public void testAdjacent() {
-		
-		List<DagNode> neighbours = model
-			.navigate()
-			.from(model.getNode("A"))
-			.by(model.getLinkType("benchesTo"))
-			.children();
-		
-		assertTrue(neighbours.size() > 0);
-	}
-
-	@Test
-	public void testFindRoutesFromNode() {
-		// add additional path
-		model.addRelationship(
-				model.getNode("A"), 
-				"benchesTo", 
-				model.getNode("C"));
-		
-		
-		DagNode rootNode = model.getNode("A");
-		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("benchesTo"));
-		
-		for (DagPathRoutes pathRoutes : routeFinder.findAllRoutesFrom(rootNode).values()) {
-			logger.error(pathRoutes.toString());
-		}
-		
+		assertEquals(1, rootNodes.stream().filter( n -> n.getName().equals("V")).collect(Collectors.toList()).size());
 		
 	}
 	
 	@Test
-	public void testNavigateRelationship() {
+	public void testFindLeafNodes() {
+		List<DagNode> leafNodes = model.findLeafNodes();
+		assertEquals(2, leafNodes.size());
 		
-		
-		DagNode rootNode = model.getNode("A");
-		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("benchesTo"));
-		
-		NodeSearchResult result = routeFinder.discoverFromRelationships(rootNode);
-		for (DagNodePath p : result.getPaths()) {
-			logger.error("path " + " " + p.getId());
-		}
-		
-	}
+		assertEquals(1, leafNodes.stream().filter( n -> n.getName().equals("D")).collect(Collectors.toList()).size());
 
+		assertEquals(1, leafNodes.stream().filter( n -> n.getName().equals("Y")).collect(Collectors.toList()).size());
+	}
+	
 }

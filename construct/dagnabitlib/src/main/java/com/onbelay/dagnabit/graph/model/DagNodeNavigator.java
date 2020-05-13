@@ -17,6 +17,7 @@ package com.onbelay.dagnabit.graph.model;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 /**
@@ -55,12 +56,11 @@ public interface DagNodeNavigator {
 	
 
 	/**
-	 * One From Required 
-	 * Set the starting node for a breadth first search.
-	 * @param fromNodeIn
+	 * Change the default traversal strategy to breadth first from depth first. 
+	 * @param
 	 * @return
 	 */
-	public DagNodeNavigator fromBreadthFirst(DagNode fromNode);
+	public DagNodeNavigator breadthFirst();
 
 	
 	/**
@@ -162,27 +162,14 @@ public interface DagNodeNavigator {
 	 */
 	public List<DagNode> parents();
 	
-	
-	/**
-	 * Traverse the graph using the from relationship to the immediate children and reset the startingNodes.
-	 * @return
-	 */
-	public DagNodeNavigator findChildren();
-
-	
-	/**
-	 * Navigate the to relationship to find the parents of this node abd reset the startingNodes.
-	 * @return
-	 */
-	public DagNodeNavigator findParents();
 
 	/**
-	 * Traverse the graph from starting nodes to descendants according to earlier instructions and reset the startingNodes.
+	 * Navigate the "To" relationships to find all ancestors.
 	 * @return
 	 */
-	public DagNodeNavigator findDescendants();
-	
+	public List<DagNode> ancestors();
 
+	
 	/**
 	 * End Result
 	 * Return a list of descendants either in breadth  first or depth first order.
@@ -192,11 +179,54 @@ public interface DagNodeNavigator {
 
 	
 	/**
-	 * Optionally set the "To" node. All other paths are ignored.
-	 * @param toNode
-	 * @return a DagNodeNavigator set with the toNode
+	 * End result
+	 * Generate a distinct list of all the nodes that are from and to this node. This operation ignores the linkType set by the "By" operation and will navigate the 
+	 * default linkType that by default is added to every relationship. (may be added explicitly if you turn this behavior off.)
+	 * Note that combining  ...by(model.getDefaultLinkType()).children() and ...by(model.getDefaultLinkType()).ancestors() will yield similar results. (may have duplicates)  
+	 * @return a list of distinct nodes.
 	 */
-	public DagNodeNavigator to (DagNode toNode);
+	public List<DagNode> adjacent();
+
+	
+	/**
+	 * Traverse the graph using the from relationship to the immediate children and reset the starting Nodes.
+	 * @return
+	 */
+	public DagNodeNavigator findChildren();
+
+	
+	/**
+	 * Navigate the to relationship to find the parents of this node abd reset the starting Nodes.
+	 * @return
+	 */
+	public DagNodeNavigator findParents();
+
+	/**
+	 * Traverse the graph from starting nodes to descendants according to earlier instructions and reset the starting Nodes.
+	 * @return
+	 */
+	public DagNodeNavigator findDescendants();
+
+	
+	/**
+	 * Navigate the "To" relationships to find all ancestors and reset the starting Nodes.
+	 * @return
+	 */
+	public DagNodeNavigator findAncestors();
+	
+	
+	/**
+	 * Traverse the graph according the method adjacent() above and then reset the starting Nodes.
+	 * @return
+	 */
+	public DagNodeNavigator findAdjacent();
+	
+	/**
+	 * Optionally set an end condition to the traversal
+	 * @param a predicate that will return false if the navigation is to halt
+	 * @return
+	 */
+	public DagNodeNavigator until (BiPredicate<DagContext, DagNode> endPredicate);
 	
 	/**
 	 * End result
@@ -204,6 +234,14 @@ public interface DagNodeNavigator {
 	 * @return
 	 */
 	public List<DagNodePath> paths();
+	
+	
+	/**
+	 * End Result
+	 * Return paths to the given node.
+	 * @return
+	 */
+	public List<DagNodePath> pathsTo();
 	
 	/**
 	 * Return all the paths that result in a circular reference

@@ -17,10 +17,11 @@ package com.onbelay.dagnabit.graph.components;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +36,6 @@ import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.DagNodeType;
 import com.onbelay.dagnabit.graph.model.DagPathRoutes;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
-import com.onbelay.dagnabit.graph.model.NavigationResult;
 import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 import com.onbelay.dagnabit.graph.model.NodeVisitor;
 
@@ -221,13 +221,10 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 	}
 	
 	@Override
-	public List<DagNodePath> findAllPathsTo(DagNode endingNode) {
-		ArrayList<DagNodePath> paths = new ArrayList<DagNodePath>();
-		NavigationResult navResult = discoverToRelationships(endingNode);
-		for (NodeSearchResult s : navResult.getNodeSearchResults().values()) {
-			paths.addAll(s.getPaths());
-		}
-		return paths;
+	public List<DagNodePath> findAllPathsTo(DagNode startingNode) {
+		
+		NodeSearchResult navResult = discoverToRelationships(startingNode);
+		return navResult.getPaths();	
 	}
 	
 	@Override
@@ -252,7 +249,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		return result.getPaths();
 	}
 
-
+	@Override
 	public DagPathRoutes findRoutes(DagNode fromNode, DagNode toNode) {
 		
 		NodeSearchResult result = discoverFromRelationships(fromNode);
@@ -265,6 +262,27 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		}
 		
 		return pathRoutes;
+	}
+	
+	@Override
+	public List<DagNode> findDescendants(DagNode startNode) {
+		DagNodeImpl rootNode = model.getNodeImplementation(startNode.getName());
+		
+		DagNodeSearchState searchState = new DagNodeSearchState(
+				linkType, 
+				rootNode);
+
+		followFromRelationship(searchState);
+
+		HashSet<DagNode> nodes = new HashSet<DagNode>();
+		
+		for (DagNodeVector v : searchState.getVectors()) {
+			for (DagNodeConnector c : v.getConnectors()) {
+				nodes.add(c.getToNode());
+			}
+		}
+		
+		return nodes.stream().collect(Collectors.toList());
 	}
 
 	@Override
@@ -297,12 +315,12 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 
 
 	/**
-	 * Move through a hierarchy using a breadth first search.
+	 * Find all the descendants (traversing from the "from" relationship) using a breadth first search.
 	 * @param rootNodeIn
 	 * @return a 
 	 */
 	@Override
-	public List<DagNode> discoverBreadthFromRelationships(DagNode rootNodeIn) {
+	public List<DagNode> findDescendantsBreadthFirst(DagNode rootNodeIn) {
 
 		DagNodeImpl rootNode = model.getNodeImplementation(rootNodeIn.getName());
 		
@@ -315,41 +333,32 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		moveFromRelationship(startingNodes, searchState);
 		
 		DagNodeVector v = searchState.getVector();
-		return v.fetchDagNodesBreadthFirst();
+		return v.fetchDagNodesBreadthFirst(rootNodeIn);
 	}
 
 	@Override
-	public NavigationResult discoverToRelationships(DagNode endingNode) {
+	public DagNodeSearchResult discoverToRelationships(DagNode startingNode) {
 
-		NavigationResult navigationResult = new NavigationResult();
 
-		for (DagNodeImpl node : model.getNodeMap().values()) {
+		DagNodeSearchState searchState = new DagNodeSearchState(
+				linkType, 
+				model.getNodeImplementation(startingNode.getName()));
 
-			if (endingNode.getName().equals(node.getName()))
-				continue;
-			
-			DagNodeSearchState searchState = new DagNodeSearchState(
-					linkType, 
-					node,
-					endingNode);
+		followToRelationship(searchState);
 
-			followToRelationship(searchState);
-
-			DagNodeSearchResult searchResult = new DagNodeSearchResult(linkType, node);
-			
-			for (DagNodeVector c : searchState.getCycles()) {
-				searchResult.addCycle(c.createPath());
-			}
-			
-			for (DagNodeVector v : searchState.getVectors()) {
-				searchResult.addPaths(v.createToPaths());
-			}
-			
-			
-			navigationResult.add(node, searchResult);
+		DagNodeSearchResult searchResult = new DagNodeSearchResult(linkType, startingNode);
+		
+		for (DagNodeVector c : searchState.getCycles()) {
+			searchResult.addCycle(c.createPath());
 		}
+		
+		for (DagNodeVector v : searchState.getVectors()) {
+			searchResult.addPaths(v.createToPaths());
+		}
+		
+		
 
-		return navigationResult;
+		return searchResult;
 	}
 
 	
@@ -493,12 +502,6 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 				}
 				
 				nodeVisitor.accept(context, connector.getFromNode(), connector.getRelationship(linkType), connector.getToNode());
-				
-				
-				if (connector.getFromNode().getName().equals(searchState.getEndingNode().getName())) {
-					searchState.fixCurrentVector(connector);
-					return;
-				}
 				
 				foundNextLink = true;
 				

@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,10 +27,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.onbelay.dagnabit.graph.factories.DagModelFactory;
+import com.onbelay.dagnabit.graph.model.DagData;
 import com.onbelay.dagnabit.graph.model.DagLinkType;
 import com.onbelay.dagnabit.graph.model.DagModel;
 import com.onbelay.dagnabit.graph.model.DagNode;
-import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
 import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 
@@ -65,32 +66,61 @@ public class GenealogyModelTest  {
 		fixture.addSchool("U of T");
 		fixture.addIsLocatedIn("U of T", "Toronto");
 		
-		fixture.addPerson("David Jones", LocalDate.of(1961, 3, 15));
-		fixture.addAttended("David Jones", "University of Waterloo");
-		fixture.addWasBornIn("David Jones", "Toronto");
+		fixture.addPerson("John Smith", LocalDate.of(1969, 4, 3));
+		fixture.addAttended("John Smith", "University of Waterloo");
+		fixture.addWasBornIn("John Smith", "Toronto");
 		
-		fixture.addPerson("Cathy Jones", LocalDate.of(1961, 7, 11));
-		fixture.addIsSpouseOf("David Jones", "Cathy Jones");
-		fixture.addAttended("Cathy Jones", "U of T");
-		fixture.addWasBornIn("Cathy Jones", "Montreal");
-
-		fixture.addPerson("Andrew Jones", LocalDate.of(1999, 4, 14));
-		fixture.addAttended("Andrew Jones", "U of T");
-		fixture.addWasBornIn("Andrew Jones", "Toronto");
-		
-		fixture.addPerson("Shannon Jones", LocalDate.of(2001, 3, 10));
-		fixture.addAttended("Shannon Jones", "University of Waterloo");
-		fixture.addWasBornIn("Shannon Jones", "Montreal");
-		
-		fixture.addIsParentOf("David Jones", "Andrew Jones");
-		fixture.addIsParentOf("Cathy Jones", "Andrew Jones");
-		
-		fixture.addIsParentOf("David Jones", "Shannon Jones");
-		fixture.addIsParentOf("Cathy Jones", "Shannon Jones");
+		fixture.addPerson("Jane Smith", LocalDate.of(1967, 6, 23));
+		fixture.addIsSpouseOf("John Smith", "Jane Smith");
+		fixture.addAttended("Jane Smith", "U of T");
+		fixture.addWasBornIn("Jane Smith", "Montreal");
 
 		
-		fixture.addPerson("Mary Gifford-Jones", LocalDate.of(1970, 1, 17));
+		fixture.addPerson("Andrew Smith", LocalDate.of(1991, 6, 13));
+		fixture.addAttended("Andrew Smith", "U of T");
+		fixture.addWasBornIn("Andrew Smith", "Toronto");
+		
+		fixture.addIsParentOf("John Smith", "Andrew Smith");
+		fixture.addIsParentOf("Jane Smith", "Andrew Smith");
+		
+		fixture.addPerson("Anna Colvy-Smith", LocalDate.of(1992, 3, 11));
+		fixture.addAttended("Anna Colvy-Smith", "U of T");
+		fixture.addWasBornIn("Anna Colvy-Smith", "Toronto");
 
+		fixture.addPerson("William Colvy-Smith", LocalDate.of(2012, 1, 18));
+		fixture.addAttended("William Colvy-Smith", "UBCO");
+		fixture.addWasBornIn("William Colvy-Smith", "Toronto");
+
+		fixture.addIsParentOf("Andrew Smith", "William Colvy-Smith");
+		fixture.addIsParentOf("Anna Colvy-Smith", "William Colvy-Smith");
+		
+		fixture.addPerson("Susan Smith", LocalDate.of(2001, 3, 10));
+		fixture.addAttended("Susan Smith", "University of Waterloo");
+		fixture.addWasBornIn("Susan Smith", "Montreal");
+		
+		fixture.addIsParentOf("John Smith", "Susan Smith");
+		fixture.addIsParentOf("Jane Smith", "Susan Smith");
+		
+		fixture.addPerson("Mary Smith", LocalDate.of(1942, 1, 17));
+		fixture.addPerson("Robert Smith", LocalDate.of(1941, 1, 17));
+
+		// Grandparents
+		fixture.addIsParentOf("Robert Smith", "John Smith");
+		fixture.addIsParentOf("Mary Smith", "John Smith");
+		
+		// The Colvys
+		fixture.addPerson("William Colvy", LocalDate.of(2070, 10, 18));
+		fixture.addAttended("William Colvy", "UBCO");
+		fixture.addWasBornIn("William Colvy", "Toronto");
+		
+		fixture.addPerson("Sally Colvy", LocalDate.of(2070, 5, 6));
+		fixture.addAttended("Sally Colvy", "U of T");
+		fixture.addWasBornIn("Sally Colvy", "Montreal");
+		
+		fixture.addIsParentOf("William Colvy", "Anna Colvy-Smith");
+		fixture.addIsParentOf("Sally Colvy", "Anna Colvy-Smith");
+		
+		
 		
 	}
 
@@ -111,11 +141,51 @@ public class GenealogyModelTest  {
 	}
 	
 	@Test
+	public void testAncestors() {
+		
+		List<DagNode> nodes = model
+				.navigate()
+				.from(model.getNode("William Colvy-Smith"))
+				.by(model.getLinkType(GenealogyFixture.PARENT_REL))
+				.ancestors();
+		
+		for (DagNode p : nodes) {
+			logger.error(p.getName());
+		}
+		
+		
+	}
+	
+	@Test
+	public void testPredicate() {
+		
+		final LocalDate date = LocalDate.of(1970, 1, 1);
+		
+		Predicate<DagNode> nodePredicate = n -> {
+			
+			DagData data = n.getData();
+			PersonData personData = (PersonData)data; 
+			return personData.getBirthDate().isAfter(date);
+		};
+		
+		List<DagNode> nodes = model
+				.navigate()
+				.from(model.getNode("John Smith"))
+				.by(model.getLinkType(GenealogyFixture.PARENT_REL))
+				.forOnly(nodePredicate)
+				.descendants();
+		
+		for (DagNode p : nodes) {
+			logger.error(p.getName());
+		}
+	}
+	
+	@Test
 	public void testNavigateToSchool() {
 		
 		List<DagNode> nodes = model
 									.navigate()
-									.from(model.getNode("David Jones"))
+									.from(model.getNode("John Smith"))
 									.by(model.getLinkType(GenealogyFixture.ATTENDED_REL))
 									.findChildren()
 									.nodes();
@@ -129,7 +199,7 @@ public class GenealogyModelTest  {
 		
 		List<DagNode> nodes = model
 									.navigate()
-									.from(model.getNode("David Jones"))
+									.from(model.getNode("John Smith"))
 									.by(model.getLinkType(GenealogyFixture.ATTENDED_REL))
 									.findChildren()
 									.by(model.getLinkType(GenealogyFixture.ATTENDED_REL))
@@ -138,6 +208,22 @@ public class GenealogyModelTest  {
 			logger.error(p.getName());
 		}
 	}
+	
+	
+	@Test
+	public void testParents() {
+		List<DagNode> nodes = model
+				.navigate()
+				.from(model.getNode("Andrew Smith"))
+				.by(model.getLinkType(GenealogyFixture.PARENT_REL))
+				.parents();
+		
+		for (DagNode p : nodes) {
+			logger.error(p.getName());
+		}
+	}
+	
+	
 	@Test
 	public void testFindChildrenAttendingSchoolInCityBornIn() {
 		
@@ -145,7 +231,7 @@ public class GenealogyModelTest  {
 		
 		List<DagNode> nodes = model
 									.navigate()
-									.from(model.getNode("David Jones"))
+									.from(model.getNode("John Smith"))
 									.by(model.getLinkType(GenealogyFixture.PARENT_REL))
 									.using(context)
 									.findChildren()

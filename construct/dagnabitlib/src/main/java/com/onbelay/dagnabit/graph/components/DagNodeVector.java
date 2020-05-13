@@ -93,7 +93,7 @@ public class DagNodeVector {
     	return paths;
     }
     
-    public List<DagNode> fetchDagNodesBreadthFirst() {
+    public List<DagNode> fetchDagNodesBreadthFirst(DagNode rootNode) {
 
     	if (connectors.isEmpty( ))
     		return new ArrayList<DagNode>();
@@ -107,6 +107,7 @@ public class DagNodeVector {
     		nodeSet.add(connector.getToNode());
     	}
     	
+    	nodeSet.remove(rootNode);
     	List<DagNode> list = new ArrayList<DagNode>();
     	list.addAll(nodeSet);
     	return list;

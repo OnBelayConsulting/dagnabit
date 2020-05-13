@@ -21,13 +21,12 @@ import java.util.Map;
 
 
 /**
- * Defines Report direction for reports
+ * Defines whether the graph should be traversed depth first or breadth first.
  *
  */
 public enum TraversalDirectionType {
-	TRAVERSE_STARTING_TO_ENDING_FROM ("TO", " TO to FROM"),
-	TRAVERSE_STARTING_FROM_ENDING_TO ("FROM", "FROM to TO"),
-	TRAVERSE_STARTING_FROM_BREADTH_FIRST ("FROM_BREADTH_FIRST", "FROM breadth first");
+	TRAVERSE_DEPTH_FIRST ("DEPTH_FIRST", "Depth-First"),
+	TRAVERSE_BREADTH_FIRST ("BREADTH_FIRST", "Breadth-first");
 
 	private final String code;
     private final String name;
