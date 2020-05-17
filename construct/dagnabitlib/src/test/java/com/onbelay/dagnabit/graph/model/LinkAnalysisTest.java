@@ -17,8 +17,8 @@ package com.onbelay.dagnabit.graph.model;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,7 +30,7 @@ import com.onbelay.dagnabit.graph.factories.DagModelFactory;
  *
  */
 public class LinkAnalysisTest  {
-	private static Logger logger = LogManager.getLogger();
+	private static Logger logger = LoggerFactory.getLogger(LinkAnalysisTest.class);
 
 	private DagModelFactory factory = new DagModelFactory();
 	private DagModel model;

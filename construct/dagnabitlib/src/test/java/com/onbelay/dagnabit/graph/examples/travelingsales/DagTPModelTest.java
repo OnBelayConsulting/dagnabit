@@ -20,8 +20,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
 import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 
 public class DagTPModelTest  {
-	private static Logger logger = LogManager.getLogger();
+	private static Logger logger = LoggerFactory.getLogger(DagTPModelTest.class);
 
 	private DagModel model;
 	

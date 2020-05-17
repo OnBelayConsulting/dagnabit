@@ -22,8 +22,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ import com.onbelay.dagnabit.graph.factories.DagModelFactory;
  *
  */
 public class DagLinkRouteFinderTest  {
-	private static Logger logger = LogManager.getLogger();
+	private static Logger logger = LoggerFactory.getLogger(DagLinkRouteFinderTest.class);
 
 	private DagModelFactory factory = new DagModelFactory();
 	private DagModel model;
@@ -146,7 +146,7 @@ public class DagLinkRouteFinderTest  {
 		
 		assertEquals(1, paths.size());
 		
-		logger.error(paths.get(0));
+		logger.error(paths.get(0).getId());
 	}
 
 	
@@ -160,7 +160,7 @@ public class DagLinkRouteFinderTest  {
 				model.getLinkType("benchesTo"));
 		List<DagNode> nodes = routeFinder.findDescendantsBreadthFirst(model.getNode("A"));
 		
-		logger.error(nodes);
+		logger.error(nodes.toString());
 		assertEquals(3, nodes.size());
 		String id = nodes
 				.stream()
@@ -201,7 +201,7 @@ public class DagLinkRouteFinderTest  {
 		assertNotNull(pathAD);
 		
 		
-		logger.error(nodeSearchResult.getPaths());
+		logger.error(nodeSearchResult.getPaths().toString());
 		String id = nodeSearchResult.getPaths()
 				.stream()
 				.map( n -> n.getToNode().getName())

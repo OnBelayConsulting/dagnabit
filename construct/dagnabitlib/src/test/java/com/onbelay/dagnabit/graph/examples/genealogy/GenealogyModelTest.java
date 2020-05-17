@@ -21,8 +21,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Predicate;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
 import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 
 public class GenealogyModelTest  {
-	private static Logger logger = LogManager.getLogger();
+	private static Logger logger = LoggerFactory.getLogger(GenealogyModelTest.class);
 
 	private DagModel model;
 	
@@ -248,7 +248,7 @@ public class GenealogyModelTest  {
 											DagGenealogyContext::accept)
 									.nodes();
 		
-		logger.error(context.getPersonNames());
+		logger.error(context.getPersonNames().toString());
 	}
 	
 	

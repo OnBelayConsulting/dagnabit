@@ -20,8 +20,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -33,7 +33,7 @@ import com.onbelay.dagnabit.graph.factories.DagModelFactory;
  *
  */
 public class DagModelTest  {
-	private static Logger logger = LogManager.getLogger();
+	private static Logger logger = LoggerFactory.getLogger(DagModelTest.class);
 
 	private DagModelFactory factory = new DagModelFactory();
 	private DagModel model;

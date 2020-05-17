@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import com.onbelay.dagnabit.graph.exception.DagGraphException;
 import com.onbelay.dagnabit.graph.model.DagContext;
@@ -52,7 +52,7 @@ import com.onbelay.dagnabit.graph.model.NodeVisitor;
  *
  */
 public class DagLinkRouteFinder implements LinkRouteFinder {
-	private static final Logger logger = LogManager.getLogger(DagLinkRouteFinder.class);
+	private static final Logger logger = LoggerFactory.getLogger(DagLinkRouteFinder.class);
 
 	private DagModelImpl model;
 
