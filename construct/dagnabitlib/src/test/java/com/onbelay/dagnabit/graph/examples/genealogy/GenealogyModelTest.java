@@ -21,16 +21,17 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Predicate;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.onbelay.dagnabit.graph.factories.DagModelFactory;
 import com.onbelay.dagnabit.graph.model.DagData;
 import com.onbelay.dagnabit.graph.model.DagLinkType;
 import com.onbelay.dagnabit.graph.model.DagModel;
 import com.onbelay.dagnabit.graph.model.DagNode;
+import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
 import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 
@@ -251,5 +252,23 @@ public class GenealogyModelTest  {
 		logger.error(context.getPersonNames().toString());
 	}
 	
-	
+	@Test
+	public void testRouteFinderDiscoverFromRel() {
+		
+		LinkRouteFinder finder = model.createDagLinkRouteFinder(model.getLinkType(GenealogyFixture.PARENT_REL));
+		
+		NodeSearchResult searchResult = finder.discoverFromRelationships(model.getNode("John Smith"));
+		
+		for (DagNodePath path : searchResult.getPaths()) {
+			
+			logger.error(path.getId());
+			
+		}
+		
+		
+		
+		
+		
+		
+	}
 }
