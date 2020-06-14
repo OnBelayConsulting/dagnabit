@@ -38,35 +38,59 @@ public class DagTPModelTest  {
 	@Before
 	public void beforeRun() throws Throwable {
 		
-		model = TPFixture.buildTPModel();
 	}
 
 
 	@Test
 	public void testForCycles() {
 
+		model = TPFixture.buildTPModel();
 				
 		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(model.getLinkType("connects"));
 		NodeSearchResult nodeSearchResult = routeFinder.discoverFromRelationships(model.getNode("1"));
 		assertTrue(nodeSearchResult.isCyclic());
 		
 		for (DagNodePath path : nodeSearchResult.getPaths()) {
-			logger.error(path.getId());
+			logger.error(path.toString());
 		}
 		
 		//assertEquals(2, nodeSearchResult.getCycles().size());
 		
 		for (DagNodePath p : nodeSearchResult.getCycles()) {
-			logger.error(p.getId());
+			logger.error(p.toString());
 		}
 		
 	}
+	@Test
+	public void testForCyclesLargeModel() {
+
+		model = TPFixture.buildLargeTPMode();
+				
+		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(model.getLinkType("connects"));
+		NodeSearchResult nodeSearchResult = routeFinder.discoverFromRelationships(model.getNode("1"));
+		assertTrue(nodeSearchResult.isCyclic());
+		
+//		for (DagNodePath path : nodeSearchResult.getPaths()) {
+//			logger.error(path.getId());
+//		}
+		
+		//assertEquals(2, nodeSearchResult.getCycles().size());
+		
+		logger.error("Number of cycles/routes: " + nodeSearchResult.getCycles().size());
+		
+//		for (DagNodePath p : nodeSearchResult.getCycles()) {
+//			logger.error(p.getId());
+//		}
+		
+	}
+	
 	
 	@Test
 	/*
 	 * Should find 
 	 */
 	public void testNavigateFromRootForCycles() {
+		model = TPFixture.buildTPModel();
 		
 		List<DagNodePath> paths = model
 									.navigate()
@@ -76,7 +100,7 @@ public class DagTPModelTest  {
 		
 		List<DagNodePath> filtered = paths
 										.stream()
-										.filter(p -> p.getToNode().equals(model.getNode("1")))
+										.filter(p -> p.getEndNode().equals(model.getNode("1")))
 										.filter(p -> p.getLinks().size() == 4)
 										.collect(Collectors.toList());
 		
@@ -90,19 +114,53 @@ public class DagTPModelTest  {
 			}
 		}
 		
-		logger.error("Shortest path: " + shortestPath.getId() + " with weight " + totalCost);
+		logger.error("Shortest path: " + shortestPath.toString() + " with weight " + totalCost);
+	}
+	
+	/*
+	 * Should find 
+	 */
+	public void testNavigateFromRootForCyclesLargeModel() {
+		model = TPFixture.buildLargeTPMode();
+		
+		List<DagNodePath> paths = model
+									.navigate()
+									.from(model.getNode("1"))
+									.by(model.getLinkType("connects"))
+									.cycles();
+		
+		List<DagNodePath> filtered = paths
+										.stream()
+										.filter(p -> p.getEndNode().equals(model.getNode("1")))
+										.filter(p -> p.getLinks().size() == 12)
+										.collect(Collectors.toList());
+		
+		logger.error("number of paths: " + paths.size());
+		
+		DagNodePath shortestPath = null;
+		int totalCost = 100000;
+		for (DagNodePath p : filtered) {
+			int totalWeight = p.calculateTotalWeight();
+			if (totalWeight < totalCost) {
+				totalCost = totalWeight;
+				shortestPath = p;
+			}
+		}
+		
+		logger.error("Shortest path: " + shortestPath.toString() + " with weight " + totalCost);
 	}
 	
 
 	@Test
 	public void testToLinks() {
+		model = TPFixture.buildTPModel();
 		
 		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
 				model.getLinkType("connects"));
 		NodeSearchResult result = routeFinder.discoverToRelationships(model.getNode("1"));
 		
 		for (DagNodePath p : result.getPaths()) {
-			logger.error(p.getId());
+			logger.error(p.toString());
 		}
 		
 	}

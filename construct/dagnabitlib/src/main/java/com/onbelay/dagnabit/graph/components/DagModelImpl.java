@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,9 @@ import com.onbelay.dagnabit.graph.model.DagNodeNavigator;
 import com.onbelay.dagnabit.graph.model.DagNodeType;
 import com.onbelay.dagnabit.graph.model.LinkAnalyser;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
+import com.onbelay.dagnabit.graph.model.MinimumSpanningTreeFinder;
 import com.onbelay.dagnabit.graph.model.NodeVisitor;
+import com.onbelay.dagnabit.graph.model.ShortestPathFinder;
 
 /**
  * Implementation of the DagModel: Container for all Directed Acyclic Graph (DAG) elements such as nodes and links (relationship, edge).
@@ -44,6 +47,12 @@ public class DagModelImpl implements DagModel {
     private Map<String, DagNodeType> nodeTypeMap = new HashMap<String, DagNodeType>();
     
     private Map<String, DagLinkType> linkTypeMap = new  HashMap<>();
+    
+    private List<DagLink> links  = new ArrayList<DagLink>();
+    
+    private List<DagLink> defaultLinks  = new ArrayList<DagLink>();
+    
+    private Map<String, DagLink> defaultLinkMap = new HashMap<String, DagLink>();
     
     private boolean createDefaultLink = true;
     
@@ -71,6 +80,52 @@ public class DagModelImpl implements DagModel {
     	return new LinkAnalyserImpl(this);
     }
 
+    @Override
+    public ShortestPathFinder createShortestPathFinder(DagLinkType dagLinkType) {
+    	return new DagShortestPathRouteFinder(this, dagLinkType);
+    }
+    
+    @Override
+    public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(DagLinkType linkType) {
+    	return new DagMinimumSpanningTreeFinder(this, linkType);
+    }
+    
+    @Override
+    public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(
+    		DagLinkType linkType, 
+    		Predicate<DagNode> filterNodePredicate) {
+    	
+    	return new DagMinimumSpanningTreeFinder(
+    			this, 
+    			linkType, 
+    			filterNodePredicate);
+    }
+    
+    @Override
+    public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(
+    		DagLinkType linkType, 
+    		DagLinkType mstLinkType) {
+    	
+    	return new DagMinimumSpanningTreeFinder(
+    			this, 
+    			linkType, 
+    			mstLinkType);
+    }
+    
+    @Override
+    public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(
+    		DagLinkType linkType, 
+    		DagLinkType mstLinkType, 
+    		Predicate<DagNode> filterNodePredicate) {
+    	
+    	return new DagMinimumSpanningTreeFinder(
+    			this, 
+    			linkType, 
+    			mstLinkType, 
+    			filterNodePredicate);
+    }
+    
+    
     @Override
     public LinkRouteFinder createDagLinkRouteFinder(
     		DagLinkType dagLinkType) {
@@ -104,6 +159,7 @@ public class DagModelImpl implements DagModel {
     		DagLinkType dagLinkType,
     		DagContext context,
     		NodeVisitor nodeVisitor,
+    		BiPredicate<DagContext, DagNode> endPredicate,
     		Predicate<DagLink> filterLinkPredicate,
     		Predicate<DagNode> filterNodePredicate) {
     	
@@ -112,6 +168,7 @@ public class DagModelImpl implements DagModel {
     			dagLinkType,
     			context,
     			nodeVisitor,
+    			endPredicate,
     			filterLinkPredicate,
     			filterNodePredicate);
     	
@@ -251,7 +308,7 @@ public class DagModelImpl implements DagModel {
     }
     
     @Override
-    public  void addDefaultRelationship(
+    public  DagLink addDefaultRelationship(
     			DagNode fromNodeIn, 
     			DagNode toNodeIn) {
     	
@@ -264,12 +321,44 @@ public class DagModelImpl implements DagModel {
 	   	DagNodeImpl fromNode = nodeMap.get(fromNodeIn.getName());
 	   	DagNodeImpl toNode = nodeMap.get(toNodeIn.getName());
 	   	
-	   	fromNode.addFromThisNodeRelationshipToNode(
+	   	DagNodeConnector connector = fromNode.addFromThisNodeRelationshipToNode(
 	       		 dagLinkType, 
 	       		 toNode);
+        DagLink link = connector.getRelationship(dagLinkType);
+        defaultLinks.add(link);
+        defaultLinkMap.put(
+        		createLinkKey(
+        				fromNode.getName(), 
+        				toNode.getName()), 
+        		link);
+        
+        return link;
     }
     
+    private String createLinkKey(String fromNodeName, String toNodeName) {
+    	return fromNodeName + ":" + toNodeName;
+    }
+    
+    
+    
     @Override
+	public DagLink addInverse(DagLink dagLink) {
+   	 DagLinkType dagLinkType = linkTypeMap.get(dagLink.getDagLinkType().getName());
+   	 
+   	 DagNodeImpl fromNode = nodeMap.get(dagLink.getToNode().getName());
+   	 DagNodeImpl toNode = nodeMap.get(dagLink.getFromNode().getName());
+   	
+        DagNodeConnector connector = fromNode.addFromThisNodeRelationshipToNode(
+       		 dagLinkType, 
+       		 toNode);
+        
+        DagLink link =  connector.getRelationship(dagLinkType);
+        link.setWeight(dagLink.getWeight());
+        links.add(link);
+        return link;
+	}
+
+	@Override
     public DagLink addRelationship(
     		DagNode fromNodeIn, 
     		String linkTypeName, 
@@ -292,12 +381,24 @@ public class DagModelImpl implements DagModel {
          if (createDefaultLink)
         	 addDefaultRelationship(fromNodeIn, toNodeIn);
          
-         return connector.getRelationship(dagLinkType);
+         DagLink link =  connector.getRelationship(dagLinkType);
+         links.add(link);
+         return link;
     }
     
     @Override
     public DagLinkType getLinkType(String name) {
-    	return linkTypeMap.get(name);
+    	DagLinkType link =  linkTypeMap.get(name);
+    	if (link == null) {
+    		link = new DagLinkType(name);
+    		linkTypeMap.put(name, link);
+    	}
+    	return link;
+    }
+    
+    @Override
+    public List<DagLink> getLinks() {
+    	return links;
     }
 
     protected Map<String, DagNodeImpl> getNodeMap() {
@@ -307,4 +408,25 @@ public class DagModelImpl implements DagModel {
     protected Map<String, DagLinkType> getLinkTypeMap() {
     	return linkTypeMap; 
     }
+
+	@Override
+	public List<DagLink> getLinks(DagNode fromNode) {
+		
+		return getNodeImplementation(fromNode.getName())
+				.getFromThisNodeConnectors()
+				.stream()
+				.map( c -> c.getRelationship(getDefaultLinkType()))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public DagLink getDefaultLink(DagNode fromNode, DagNode toNode) {
+		
+		return defaultLinkMap.get(
+				createLinkKey(
+						fromNode.getName(),
+						toNode.getName()));
+	}
+    
+    
 }

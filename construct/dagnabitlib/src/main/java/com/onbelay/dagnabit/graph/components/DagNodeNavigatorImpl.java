@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -34,9 +35,9 @@ import com.onbelay.dagnabit.graph.model.DagNodeNavigator;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.DagNodeType;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
-import com.onbelay.dagnabit.graph.model.NodePathLink;
 import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 import com.onbelay.dagnabit.graph.model.NodeVisitor;
+import com.onbelay.dagnabit.graph.model.ShortestPathFinder;
 import com.onbelay.dagnabit.graph.model.TraversalDirectionType;
 
 /**
@@ -52,7 +53,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 	
 	private DagContext context = new DagMapContext();
 
-	private BiPredicate<DagContext, DagNode> endPredicate = (d, c) -> true;
+	private BiPredicate<DagContext, DagNode> endPredicate;
 
 	private Predicate<DagNode> filterNodePredicate = c -> true;
 
@@ -160,7 +161,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 	@Override
 	public DagNodeNavigator reset() {
 		this.nodeComparator = null;
-		this.endPredicate = (d, c) -> true;
+		this.endPredicate = null;
 		this.filterLinkPredicate = c -> true;
 		this.filterNodePredicate = c -> true;
 		this.nodeVisitor = (c, n, l, e) -> { ; } ;
@@ -359,6 +360,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 				linkType,
 				context,
 				nodeVisitor,
+				endPredicate,
 				filterLinkPredicate,
 				filterNodePredicate);
 	}
@@ -429,8 +431,8 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 			LinkedHashSet<DagNode> nodeSet = new LinkedHashSet<DagNode>();
 			
 			for (DagNodePath path :result.getPaths()) {
-				for (NodePathLink link : path.getLinks()) {
-					nodeSet.add(link.getToNode());
+				for (DagLink link : path.getLinks()) {
+					nodeSet.add(link.getFromNode());
 				}
 			}
 			nodeSet.removeAll(startingNodes);
@@ -457,8 +459,8 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 				LinkedHashSet<DagNode> nodeSet = new LinkedHashSet<DagNode>();
 				
 				for (DagNodePath path :result.getPaths()) {
-					nodeSet.add(path.getFromNode());
-					nodeSet.add(path.getToNode());
+					nodeSet.add(path.getStartNode());
+					nodeSet.add(path.getEndNode());
 				}
 				nodeSet.removeAll(startingNodes);
 				nodeList.addAll(nodeSet);
@@ -477,6 +479,35 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		else
 			return nodeList.stream().sorted(nodeComparator).collect(Collectors.toList());
 		
+	}
+	
+	public DagNodeNavigator findShortestPaths(DagNode toNode) {
+
+		ShortestPathFinder finder = model.createShortestPathFinder(linkType);
+
+		Set<DagNode> uniqueNodes = new HashSet<DagNode>();
+		
+		for (DagNode startingNode : startingNodes) {
+			List<DagNode> nodes = finder.findShortestPath(startingNode, toNode);
+			uniqueNodes.addAll(nodes);
+		}
+		
+		startingNodes = uniqueNodes
+							.stream()
+							.map(n -> (DagNodeImpl)n)
+							.collect(Collectors.toList());
+		
+		return this;
+	}
+	
+	public List<DagNodePath> shortestPath(DagNode toNode) {
+		ArrayList<DagNodePath> paths = new ArrayList<DagNodePath>();
+		ShortestPathFinder finder = model.createShortestPathFinder(linkType);
+		
+		for (DagNode startingNode : startingNodes) {
+			paths.add(finder.findShortestRoute(startingNode, toNode));
+		}
+		return paths;
 	}
 
 	@Override

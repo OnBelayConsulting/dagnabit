@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,8 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 	private Predicate<DagLink> filterLinkPredicate = c -> true;
 	
 	private Predicate<DagNode> filterNodePredicate = c -> true;
+	
+	private BiPredicate<DagContext, DagNode> endPredicate;
 	
 	private NodeVisitor nodeVisitor = (c, s, l, e) -> { ; };
 
@@ -117,6 +120,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 			DagLinkType dagLinkTypeIn,
 			DagContext context,
 			NodeVisitor nodeVisitor,
+			BiPredicate<DagContext, DagNode> endPredicate,
 			Predicate<DagLink> filterLinkPredicate,
 			Predicate<DagNode> filterNodePredicate) {
 		super();
@@ -125,6 +129,8 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		if (dagLinkTypeIn == null) 
 			throw new DagGraphException("Link is required");
 
+		
+		this.endPredicate = endPredicate;
 		this.linkType = dagLinkTypeIn;
 		this.filterLinkPredicate = filterLinkPredicate;
 		this.filterNodePredicate = filterNodePredicate;
@@ -199,11 +205,11 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		NodeSearchResult result = discoverFromRelationships(fromNode);
 		
 		for (DagNodePath path : result.getPaths()) {
-			DagPathRoutes pathRoutes = routeMap.get(path.getToNode());
+			DagPathRoutes pathRoutes = routeMap.get(path.getEndNode());
 					
 			if (pathRoutes == null) {
-				pathRoutes = new DagPathRoutes(fromNode, path.getToNode());
-				routeMap.put(path.getToNode(), pathRoutes);
+				pathRoutes = new DagPathRoutes(fromNode, path.getEndNode());
+				routeMap.put(path.getEndNode(), pathRoutes);
 			}
 					
 			pathRoutes.addPath(path);
@@ -235,7 +241,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		
 		for (DagNodePath path : result.getPaths()) {
 			
-			if (path.getToNode().equals(endNode))
+			if (path.getEndNode().equals(endNode))
 				paths.add(path);
 		}
 		
@@ -257,7 +263,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		
 		for (DagNodePath path : result.getPaths()) {
 				
-			if (path.getToNode().equals(toNode))
+			if (path.getEndNode().equals(toNode))
 				pathRoutes.addPath(path);
 		}
 		
@@ -399,6 +405,9 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		DagNodeImpl currentNode = searchState.getCurrentNode();
 		boolean foundNextLink = false;
 		
+		if (searchState.isHalting())
+			return;
+		
 		if (currentNode.hasFromThisNodeConnectors()) {
 
 			for (DagNodeConnector connector : currentNode.getFromThisNodeConnectors()) {
@@ -425,6 +434,19 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 				
 				foundNextLink = true;
 				
+				if (endPredicate != null) {
+					
+					if (endPredicate.test(context, connector.getToNode())) {
+						foundNextLink = false;
+						searchState.setHalting(true);
+						searchState.addNodeRelationshipLink(connector);
+						searchState.fixCurrentVector();
+						return;
+					}
+					
+				}
+					
+				
 				if (searchState.hasVisited(connector.getToNode().getName())) {
 					searchState.addCycle(searchState.getVector(), connector, linkType);
 					foundNextLink = false;
@@ -445,6 +467,8 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		
 		List<DagNodeImpl> endingNodes = new ArrayList<DagNodeImpl>();
 		
+		if (searchState.isHalting())
+			return;
 	
 		
 		for (DagNodeImpl currentNode : startingNodes) {
@@ -467,6 +491,17 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 					
 					searchState.addNodeRelationshipLink(connector);
 					
+					if (endPredicate != null) {
+						
+						if (endPredicate.test(context, connector.getToNode())) {
+							searchState.setHalting(true);
+							searchState.addNodeRelationshipLink(connector);
+							return;
+						}
+							
+						
+					}
+					
 					if (searchState.hasVisited(connector.getToNode().getName())) {
 						searchState.addCycle(searchState.getVector(), connector, linkType);
 					} else {
@@ -476,7 +511,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 			}
 		}
 		
-		if (endingNodes.isEmpty() == false)
+		if ( (searchState.isHalting() == false) && (endingNodes.isEmpty() == false) )
 			moveFromRelationship(endingNodes, searchState);
 
 	}
@@ -486,6 +521,9 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		DagNodeImpl currentNode = searchState.getCurrentNode();
 		
 		boolean foundNextLink = false;
+		
+		if (searchState.isHalting())
+			return;
 		
 		if (currentNode.hasToThisNodeConnectors()) {
 
@@ -504,6 +542,19 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 				nodeVisitor.accept(context, connector.getFromNode(), connector.getRelationship(linkType), connector.getToNode());
 				
 				foundNextLink = true;
+				
+				if (endPredicate != null) {
+					
+					if (endPredicate.test(context, connector.getFromNode())) {
+						foundNextLink = false;
+						searchState.setHalting(true);
+						searchState.addNodeRelationshipLink(connector);
+						searchState.fixCurrentVector();
+						return;
+					}
+						
+					
+				}
 				
 				if (searchState.hasVisited(connector.getFromNode().getName())) {
 					searchState.addCycle(searchState.getVector(), connector, linkType);

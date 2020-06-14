@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.onbelay.dagnabit.graph.exception.DagGraphException;
+import com.onbelay.dagnabit.graph.model.DagLink;
 import com.onbelay.dagnabit.graph.model.DagLinkType;
 import com.onbelay.dagnabit.graph.model.DagNode;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
-import com.onbelay.dagnabit.graph.model.NodePathLink;
 
 /**
  * Contains a list of DagNodeConnectors representing a vector from a from to a to node.
@@ -40,14 +40,25 @@ public class DagNodeVector {
         this.linkType = linkType;
     }
     
+    public DagNodeVector(DagLinkType linkType, DagNodeConnector connector) {
+        this.linkType = linkType;
+        connectors.add(connector);
+    }
+    
+    public DagNodeVector(DagNodeVector vector, DagNodeConnector connector) {
+        this.linkType = vector.linkType;
+        connectors.addAll(vector.getConnectors());
+        connectors.add(connector);
+    }
+    
+    
+    
+    
     public DagNodePath createPath() {
     	
-    	List<NodePathLink> links = connectors
+    	List<DagLink> links = connectors
     			.stream()
-    				.map( c -> new NodePathLink(
-    						c.getFromNode(), 
-    						c.getRelationship(linkType), 
-    						c.getToNode()))
+    				.map( c -> 	c.getRelationship(linkType)) 
     				.collect(Collectors.toList());
     	
     	return new DagNodePath(
@@ -68,10 +79,8 @@ public class DagNodeVector {
     	
     	last = new DagNodePath(
     			startNode, 
-    			new NodePathLink(
-    					firstConnector.getFromNode(), 
-    					firstConnector.getRelationship(linkType), 
-    					firstConnector.getToNode()));
+    			firstConnector.getRelationship(linkType),
+    			firstConnector.getToNode()); 
     			
 		paths.add(last);
     	
@@ -81,10 +90,8 @@ public class DagNodeVector {
         	DagNodePath next = new DagNodePath(
         			startNode, 
         			last, 
-        			new NodePathLink(
-        					nextConnector.getFromNode(), 
-        					nextConnector.getRelationship(linkType), 
-        					nextConnector.getToNode()));
+        			nextConnector.getRelationship(linkType),
+        			nextConnector.getToNode()); 
         	
         	paths.add(next);
     		last = next;
@@ -121,21 +128,14 @@ public class DagNodeVector {
     	DagNodeConnector firstConnector = connectors.get(0);
     	
     	DagNodePath path = new DagNodePath(
-    			firstConnector.getToNode(), 
-    			new NodePathLink(
-    					firstConnector.getToNode(), 
-    					firstConnector.getRelationship(linkType), 
-    					firstConnector.getFromNode()));
-    			
+    			firstConnector.getFromNode(), 
+    			firstConnector.getRelationship(linkType),
+    			firstConnector.getToNode());
     	
     	for (int i=1; i <connectors.size(); i++) {
         	DagNodeConnector nextConnector = connectors.get(i);
         	
-        	path.addToPathLink(
-        			new NodePathLink(
-        					nextConnector.getToNode(), 
-        					nextConnector.getRelationship(linkType), 
-        					nextConnector.getFromNode()));
+        	path.addToPathLink(nextConnector.getRelationship(linkType)); 
         	
     	}
     	paths.add(path);

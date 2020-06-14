@@ -1,10 +1,15 @@
 package com.onbelay.dagnabit.graph.examples.travelingsales;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.onbelay.dagnabit.graph.factories.DagModelFactory;
 import com.onbelay.dagnabit.graph.model.DagLink;
 import com.onbelay.dagnabit.graph.model.DagModel;
+import com.onbelay.dagnabit.graph.model.DagNode;
 
 public class TPFixture {
+	private static Logger logger = LoggerFactory.getLogger(TPFixture.class);
 
 	public static DagModel buildCircularModel() {
 		DagModelFactory factory = new DagModelFactory();
@@ -132,5 +137,59 @@ public class TPFixture {
 		
 		return model;
 
+	}
+	
+	public static DagModel buildLargeTPMode() {
+		DagModel model = buildTPModel();
+		
+		model.addNode("5");
+		
+		model.addNode("6");
+		
+		model.addNode("7");
+		
+		model.addNode("8");
+		
+		model.addNode("9");
+		
+		model.addNode("10");
+		
+		model.addNode("11");
+		
+		model.addNode("12");
+
+		
+		for (int i=5; i <9; i++) {
+			DagNode node = model.getNode(""+i); 
+			
+			for (int j=1; j < 9; j++) {
+				DagNode secondNode = model.getNode(""+j);
+				if (node.equals(secondNode) == false) {
+					int weight = i*3 + j*5;
+					DagLink firstLink =  model.addRelationship(
+							node, 
+							"connects", 
+							secondNode);
+					firstLink.setWeight(weight);
+					DagLink secondLink =  model.addRelationship(
+							secondNode, 
+							"connects", 
+							node);
+					secondLink.setWeight(weight);
+					
+				}
+			}
+			
+		}
+		
+		logger.error("total nodes: " + model.getNodes());
+		
+		logger.error("Total links: " + model.getLinks().size());
+		
+//		for (DagLink link : model.getLinks()) {
+//			logger.error("Link " + link.getName() );
+//		}
+		
+		return model;
 	}
 }

@@ -16,7 +16,10 @@
 package com.onbelay.dagnabit.graph.components;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -67,7 +70,7 @@ public class DagNodeImpl extends DagItemImpl implements DagNode {
     	toNode.addToThisNodeRelationshipFromNode(connector);
     	
     	if (toNode.checkForReciprical(this, dagLinkType)) {
-    		logger.warn("reciprical relationship exists " + this.getName() + "-" + dagLinkType.getName() + "-" + toNode.getName());
+    		logger.debug("reciprical relationship exists " + this.getName() + "-" + dagLinkType.getName() + "-" + toNode.getName());
     	}
     			
     	
@@ -154,6 +157,15 @@ public class DagNodeImpl extends DagItemImpl implements DagNode {
 
     public List<DagNodeConnector> getFromThisNodeConnectors() {
         return fromThisConnectorToNodes;
+    }
+    
+    public List<DagNodeConnector> getSortedFromThisNodeConnectors(Comparator<DagNodeConnector> sorter) {
+    	
+    	return fromThisConnectorToNodes
+    		.stream()
+    		.sorted(sorter)
+    		.collect(Collectors.toList());
+    	
     }
 
 

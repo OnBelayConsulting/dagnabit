@@ -18,90 +18,154 @@ package com.onbelay.dagnabit.graph.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DagNodePath defines a path from the fromNode to the toNode as a set of zero to many DagLinks.
+ * The list of DagLinks will be empty if there is no path between the two nodes.
+ * @author lefeu
+ *
+ */
 public class DagNodePath {
     
-    private DagNode fromNode;
-    private DagNode toNode;
+    private DagNode startNode;
+    private DagNode endNode;
     
-    private List<NodePathLink> links = new ArrayList<>();
+    private List<DagLink> links = new ArrayList<>();
     
     public DagNodePath(
-    		DagNode fromNode, 
-    		List<NodePathLink> links, 
-    		DagNode toNode) {
+    		DagNode startNode, 
+    		List<DagLink> links, 
+    		DagNode endNode) {
     	
-    	this.fromNode = fromNode;
+    	this.startNode = startNode;
     	this.links = links;
-    	this.toNode = toNode;
+    	this.endNode = endNode;
     	
     }
 
-    public DagNodePath(DagNode startNode, NodePathLink link) {
+    public DagNodePath(DagNode startNode, DagLink link, DagNode endNode) {
         super();
-        this.fromNode = startNode;
-        this.toNode = link.getToNode();
+        this.startNode = startNode;
+        this.endNode = endNode;
         links.add(link);
     }
     
-    public DagNodePath(DagNode startNode, DagNodePath lastPath, NodePathLink link) {
+    public DagNodePath(
+    		DagNode startNode, 
+    		DagNodePath lastPath, 
+    		DagLink link,
+    		DagNode endNode) {
+    	
     	links.addAll(lastPath.getLinks());
-        this.fromNode = startNode;
-        this.toNode = link.getToNode();
+        this.startNode = startNode;
+        this.endNode = endNode;
         links.add(link);
     }
 
-    public void addPathLink(NodePathLink v) {
+    public void addPathLink(DagLink v) {
     	links.add(v);
     }
     
-    public void addToPathLink(NodePathLink v) {
-    	this.toNode = v.getToNode();
+    public void addToPathLink(DagLink v) {
+    	this.startNode = v.getFromNode();
     	links.add(v);
     }
     
+    /**
+     * returns true if there is a path (links is not empty) from the fromNode to the toNode.
+     * @return true if path exists
+     */
+    public boolean pathExists() {
+    	return links.isEmpty() == false;
+    }
     
-    public List<NodePathLink> getLinks() {
+    /**
+     * Returns a list of DagLinks that describes the path in order from the fromNode to the toNode.
+     * @return a list of DagLinks. The list will be empty if there is no path.
+     */
+    public List<DagLink> getLinks() {
         return links;
     }
 
-    public DagNode getFromNode() {
-        return fromNode;
+    public DagNode getStartNode() {
+        return startNode;
     }
 
-    public DagNode getToNode() {
-        return toNode;
+    public DagNode getEndNode() {
+        return endNode;
     }
     
+    /**
+     * Calculate the total weight of the path based on the weights of the links.
+     * @return 0 if no links or total weight.
+     */
     public int calculateTotalWeight() {
     	int totalWeight = 0;
-    	for (NodePathLink c : links) {
-    		totalWeight = totalWeight + c.getDagLink().getWeight();
+    	for (DagLink c : links) {
+    		totalWeight = totalWeight + c.getWeight();
     	}
     	return totalWeight;
     }
 
+    /**
+     * Returns an id based on the from and to node names. This is not unique for models that have multiple link types.
+     * @return
+     */
     public String getRouteId() {
-    	return getFromNode() + ":" + getToNode();
+    	return startNode.getName() + ":" + endNode.getName();
     }
     
-    public String getId() {
-    	StringBuffer buffer = new StringBuffer(getFromNode().getName());
-    	for (NodePathLink c : links) {
+    /**
+     * Returns an id based on the list of links. This id is unique for any combination of fromNode and toNode.
+     * @return
+     */
+    public String toString() {
+    	if (pathExists()) {
+	    	StringBuffer buffer = new StringBuffer("Path:[ ");
+	    	buffer.append(getStartNode().getName());
+	    	buffer.append( " --> "); 
+	    	buffer.append(getEndNode().getName());
+	    	buffer.append("]     Via: ");
+	    	
+	    	DagLink c = links.get(0);
+    		buffer.append(c.getFromNode().getName());
     		buffer.append(" -> ");
     		buffer.append(c.getToNode().getName());
+	    	
+	    	for (int i=1; i < links.size(); i++) {
+	    		c = links.get(i);
+	    		buffer.append(", ");
+	    		buffer.append(c.getFromNode().getName());
+	    		buffer.append(" -> ");
+	    		buffer.append(c.getToNode().getName());
+	    	}
+	    	return buffer.toString();
+    	} else {
+    		return startNode.getName() + " <> " + endNode.getName();
     	}
-    	return buffer.toString();
     }
     
-    public String toString() {
-    	return getId();
+    public String toStringWithWeights() {
+    	if (pathExists()) {
+	    	StringBuffer buffer = new StringBuffer(getStartNode().getName());
+	    	for (DagLink c : links) {
+	    		buffer.append(" - ");
+	    		buffer.append(c.getWeight());
+	    		buffer.append(" > ");
+	    		buffer.append(c.getToNode().getName());
+	    	}
+	    	return buffer.toString();
+    	} else {
+    		return startNode.getName() + " <> " + endNode.getName();
+    	}
+    	
     }
+    
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + getId().hashCode();
+		result = prime * result + toString().hashCode();
 		return result;
 	}
 
@@ -114,7 +178,7 @@ public class DagNodePath {
 		if (getClass() != obj.getClass())
 			return false;
 		DagNodePath other = (DagNodePath) obj;
-		return getId().equals(other.getId());
+		return toString().equals(other.toString());
 	}
 
     

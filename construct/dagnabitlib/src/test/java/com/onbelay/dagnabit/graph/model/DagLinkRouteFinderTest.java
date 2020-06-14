@@ -130,8 +130,8 @@ public class DagLinkRouteFinderTest  {
 		
 		DagNodePath pathCToA = result.getPaths().get(0);
 		
-		assertEquals("C", pathCToA.getFromNode().getName());
-		assertEquals("A", pathCToA.getToNode().getName());
+		assertEquals("A", pathCToA.getStartNode().getName());
+		assertEquals("C", pathCToA.getEndNode().getName());
 		
 		assertFalse(result.isCyclic());
 	}
@@ -146,7 +146,7 @@ public class DagLinkRouteFinderTest  {
 		
 		assertEquals(1, paths.size());
 		
-		logger.error(paths.get(0).getId());
+		logger.error(paths.get(0).toString());
 	}
 
 	
@@ -180,31 +180,35 @@ public class DagLinkRouteFinderTest  {
 				model.getLinkType("benchesTo"));
 		NodeSearchResult nodeSearchResult = routeFinder.discoverFromRelationships(model.getNode("A"));
 		
-		String pathAB = null;
-		String pathABC = null;
-		String pathAD = null;
+		boolean pathAB = false;
+		boolean pathABC = false;
+		boolean pathAD = false;
 		
 		assertEquals(3, nodeSearchResult.getPaths().size());
 		
 		for (DagNodePath p : nodeSearchResult.getPaths()) {
-			logger.error(p.getId());
-			if (p.getId().equals("A -> B"))
-				pathAB = p.getId();
-			if (p.getId().equals("A -> B -> C"))
-				pathABC = p.getId();
-			if (p.getId().equals("A -> D"))
-				pathAD = p.getId();
+			logger.error(p.toString());
+			
+			if ( (p.getStartNode().getName().equals("A")) && (p.getEndNode().getName().equals("B")) )
+				pathAB = true;
+			
+			if ( (p.getStartNode().getName().equals("A")) && (p.getEndNode().getName().equals("C")) )
+				pathABC = true;
+			
+			if ( (p.getStartNode().getName().equals("A")) && (p.getEndNode().getName().equals("D")) )
+				pathAD = true;
+			
 		}
 		
-		assertNotNull(pathAB);
-		assertNotNull(pathABC);
-		assertNotNull(pathAD);
+		assertTrue(pathAB);
+		assertTrue(pathABC);
+		assertTrue(pathAD);
 		
 		
 		logger.error(nodeSearchResult.getPaths().toString());
 		String id = nodeSearchResult.getPaths()
 				.stream()
-				.map( n -> n.getToNode().getName())
+				.map( n -> n.getEndNode().getName())
 				.reduce("",  (s, t) -> s + t); 
 		assertEquals("BCD", id);
 		
@@ -252,7 +256,7 @@ public class DagLinkRouteFinderTest  {
 		
 		assertEquals(1, result.getCycles().size());
 		DagNodePath cycle = result.getCycles().get(0);
-		assertEquals("A", cycle.getToNode().getName());
+		assertEquals("A", cycle.getEndNode().getName());
 	}
 
 
@@ -273,12 +277,12 @@ public class DagLinkRouteFinderTest  {
 		
 		DagNodePath pathCToA = result.getPaths().get(0);
 		
-		assertEquals("C", pathCToA.getFromNode().getName());
-		assertEquals("A", pathCToA.getToNode().getName());
+		assertEquals("A", pathCToA.getStartNode().getName());
+		assertEquals("C", pathCToA.getEndNode().getName());
 		
 		assertEquals(1, result.getCycles().size());
 		DagNodePath cycle = result.getCycles().get(0);
-		assertEquals("A", cycle.getToNode().getName());
+		assertEquals("A", cycle.getEndNode().getName());
 	}
 
 	@Test
@@ -311,7 +315,7 @@ public class DagLinkRouteFinderTest  {
 		
 		NodeSearchResult result = routeFinder.discoverFromRelationships(rootNode);
 		for (DagNodePath p : result.getPaths()) {
-			logger.error("path " + " " + p.getId());
+			logger.error("path " + " " + p.toString());
 		}
 		
 	}

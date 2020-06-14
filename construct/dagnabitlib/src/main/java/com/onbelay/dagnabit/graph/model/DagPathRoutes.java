@@ -33,9 +33,9 @@ public class DagPathRoutes {
 	}
 	
 	public void addPath(DagNodePath path) {
-		DagNodePath exists = pathMap.get(path.getId());
+		DagNodePath exists = pathMap.get(path.toString());
 		if (exists == null) {
-			pathMap.put(path.getId(), path);
+			pathMap.put(path.toString(), path);
 		}
 
 	}

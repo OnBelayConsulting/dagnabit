@@ -21,7 +21,7 @@ public abstract class DagItemImpl {
 	
     protected String name;
     private DagData data;
-    private int weight;
+    private int weight = 0;
 
 	protected DagItemImpl(String name) {
 		super();

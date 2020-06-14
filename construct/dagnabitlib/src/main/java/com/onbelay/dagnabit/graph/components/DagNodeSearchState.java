@@ -31,6 +31,8 @@ public class DagNodeSearchState {
     private List<DagNodeVector> vectors = new ArrayList<DagNodeVector>();
     private List<DagNodeVector> cycles = new ArrayList<DagNodeVector>();
     
+    private boolean isHalting = false;
+    
     private DagNode endingNode;
     
     private DagNodeImpl previousNode;
@@ -62,6 +64,7 @@ public class DagNodeSearchState {
     		DagNodeConnector relationship) {
     	
     	this.endingNode = copy.endingNode;
+    	this.isHalting = copy.isHalting;
     	this.dagLinkType = copy.dagLinkType;
     	this.previousNode = copy.currentNode;
         this.currentNode = currentNode;
@@ -148,6 +151,14 @@ public class DagNodeSearchState {
 
 	public DagNode getEndingNode() {
 		return endingNode;
+	}
+
+	public boolean isHalting() {
+		return isHalting;
+	}
+
+	public void setHalting(boolean isHalting) {
+		this.isHalting = isHalting;
 	}
 
 }

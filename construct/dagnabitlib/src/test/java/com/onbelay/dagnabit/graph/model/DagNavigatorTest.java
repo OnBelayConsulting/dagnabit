@@ -22,10 +22,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.onbelay.dagnabit.graph.factories.DagModelFactory;
 
@@ -188,8 +188,8 @@ public class DagNavigatorTest  {
 
 		assertEquals(1, paths.size());
 		DagNodePath pathAToB = paths.get(0);
-		assertEquals("A", pathAToB.getFromNode().getName());
-		assertEquals("B", pathAToB.getToNode().getName());
+		assertEquals("A", pathAToB.getStartNode().getName());
+		assertEquals("B", pathAToB.getEndNode().getName());
 	}
 	
 	@Test
@@ -266,7 +266,7 @@ public class DagNavigatorTest  {
 	
 		assertEquals(1, paths.size());
 		DagNodePath aPath =  paths.get(0);
-		assertEquals("A", aPath.getToNode().getName());
+		assertEquals("A", aPath.getStartNode().getName());
 	}
 	
 	
@@ -321,7 +321,7 @@ public class DagNavigatorTest  {
 		
 		assertEquals(1, result.getCycles().size());
 		DagNodePath cycle = result.getCycles().get(0);
-		assertEquals("A", cycle.getToNode().getName());
+		assertEquals("A", cycle.getEndNode().getName());
 	}
 
 
@@ -342,8 +342,8 @@ public class DagNavigatorTest  {
 		
 		DagNodePath pathCToA = result.getPaths().get(0);
 		
-		assertEquals("C", pathCToA.getFromNode().getName());
-		assertEquals("A", pathCToA.getToNode().getName());
+		assertEquals("A", pathCToA.getStartNode().getName());
+		assertEquals("C", pathCToA.getEndNode().getName());
 		
 	}
 
@@ -358,8 +358,10 @@ public class DagNavigatorTest  {
 		
 		DagNodePath pathCToA = result.getPaths().get(0);
 		
-		assertEquals("C", pathCToA.getFromNode().getName());
-		assertEquals("A", pathCToA.getToNode().getName());
+		assertEquals("A", pathCToA.getStartNode().getName());
+		assertEquals("C", pathCToA.getEndNode().getName());
+		
+		logger.error(pathCToA.toString());
 		
 	}
 
@@ -449,7 +451,7 @@ public class DagNavigatorTest  {
 		
 		NodeSearchResult result = routeFinder.discoverFromRelationships(rootNode);
 		for (DagNodePath p : result.getPaths()) {
-			logger.error("path " + " " + p.getId());
+			logger.error("path " + " " + p.toString());
 		}
 		
 	}

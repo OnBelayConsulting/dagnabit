@@ -16,6 +16,7 @@
 package com.onbelay.dagnabit.graph.model;
 
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 
@@ -42,6 +43,55 @@ public interface DagModel {
     public LinkAnalyser analyse();
     
     /**
+     * Create a route finder that finds the shortest path based on weights between two nodes.
+     * @param dagLinkType
+     * @return
+     */
+    public ShortestPathFinder createShortestPathFinder(DagLinkType dagLinkType);
+
+    /**
+     * create a MinimumSpanningTreeFinder to find the minimum spanning tree
+     * @param linkType - linkType to navigate
+     * @return an instance of a MST finder.
+     */
+    public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(DagLinkType linkType);
+    
+    
+    /**
+     * 
+     * create a MinimumSpanningTreeFinder to find the minimum spanning tree
+     * @param linkType - linkType to navigate
+     * @param filterNodePredicate - filter toNodes based on this predicate.
+     * @return an instance of a MST finder.
+     */
+    public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(
+    		DagLinkType linkType, 
+    		Predicate<DagNode> filterNodePredicate);
+    
+    /**
+     * 
+     * create a MinimumSpanningTreeFinder to find the minimum spanning tree and create a subgraph that based on the mstLinkType.
+     * @param linkType - linkType to navigate
+     * @param mstLinkType - link the nodes in the MST using this linkType 
+     * @return an instance of a MST finder.
+     */
+    public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(DagLinkType linkType, DagLinkType mstLinkType);
+
+    
+    /**
+     * 
+     * create a MinimumSpanningTreeFinder to find the minimum spanning tree and create a subgraph that based on the mstLinkType.
+     * @param linkType - linkType to navigate
+     * @param mstLinkType - link the nodes in the MST using this linkType 
+     * @param filterNodePredicate - filter toNodes based on this predicate.
+     * @return an instance of a MST finder.
+     */
+    public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(
+    		DagLinkType linkType, 
+    		DagLinkType mstLinkType, 
+    		Predicate<DagNode> filterNodePredicate);
+    
+    /**
      * Create a LinkRouteFinder to navigate the model. This is a lower level alternative to the navigate fluent style.
      * @param linkType - the relationship or link type to navigate.
      * @return an instance of LinkRouteFinder
@@ -62,6 +112,7 @@ public interface DagModel {
     		DagLinkType linkType,
     		DagContext context,
     		NodeVisitor nodeVisitor,
+    		BiPredicate<DagContext, DagNode> endPredicate,
     		Predicate<DagLink> filterLinkPredicate,
     		Predicate<DagNode> filterNodePredicate);
 
@@ -128,6 +179,30 @@ public interface DagModel {
      */
     public DagNodeType getNodeType(String nodeTypeName);
 
+    
+    /**
+     * Return a list of all the relationships (links) added to the model.
+     * @return
+     */
+    public List<DagLink> getLinks();
+
+
+    /**
+     * Get all the links from this node.
+     * @param fromNode
+     * @return
+     */
+    public List<DagLink> getLinks(DagNode fromNode);
+
+    
+    /**
+     * Get the default link if there is any between these two nodes.
+     * @param fromNode
+     * @param toNode
+     * @return DagLink or null if there isn't one.
+     */
+    public DagLink getDefaultLink(DagNode fromNode, DagNode toNode);
+    
     /**
      * Return a list of all the node types registered in th model.
      * @return
@@ -163,7 +238,7 @@ public interface DagModel {
      * @param fromNode create a default relationship using DagLinkType.DEFAULT_REL from fromNode to
      * @param toNode -the toNode
      */
-    public void addDefaultRelationship(
+    public DagLink addDefaultRelationship(
     		DagNode fromNode, 
     		DagNode toNode);
     
@@ -186,6 +261,13 @@ public interface DagModel {
      * @return
      */
     public DagLinkType getLinkType(String name);
+
+    
+    /**
+     * Add the inverse of the link given in dagLink;
+     * @param ln
+     */
+	public DagLink addInverse(DagLink dagLink);
 
     
 }

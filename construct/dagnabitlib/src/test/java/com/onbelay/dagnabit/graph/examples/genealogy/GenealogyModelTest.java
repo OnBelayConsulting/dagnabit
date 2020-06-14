@@ -19,6 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import org.junit.Before;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.onbelay.dagnabit.graph.factories.DagModelFactory;
+import com.onbelay.dagnabit.graph.model.DagContext;
 import com.onbelay.dagnabit.graph.model.DagData;
 import com.onbelay.dagnabit.graph.model.DagLinkType;
 import com.onbelay.dagnabit.graph.model.DagModel;
@@ -110,11 +112,11 @@ public class GenealogyModelTest  {
 		fixture.addIsParentOf("Mary Smith", "John Smith");
 		
 		// The Colvys
-		fixture.addPerson("William Colvy", LocalDate.of(2070, 10, 18));
+		fixture.addPerson("William Colvy", LocalDate.of(1970, 10, 18));
 		fixture.addAttended("William Colvy", "UBCO");
 		fixture.addWasBornIn("William Colvy", "Toronto");
 		
-		fixture.addPerson("Sally Colvy", LocalDate.of(2070, 5, 6));
+		fixture.addPerson("Sally Colvy", LocalDate.of(1970, 5, 6));
 		fixture.addAttended("Sally Colvy", "U of T");
 		fixture.addWasBornIn("Sally Colvy", "Montreal");
 		
@@ -180,6 +182,68 @@ public class GenealogyModelTest  {
 			logger.error(p.getName());
 		}
 	}
+	
+	@Test
+	/**
+	 * Find the first descendant who was born after Jan 1, 1970 with a depth first search
+	 */
+	public void testDepthFirstSearch() {
+		final LocalDate date = LocalDate.of(1970, 1, 1);
+		
+		BiPredicate<DagContext, DagNode> haltingPredicate = (c,n) -> {
+			DagData data = n.getData();
+			PersonData personData = (PersonData)data;
+			return personData.getBirthDate().isAfter(date);
+		};
+		
+		List<DagNode> nodes = model
+				.navigate()
+				.from(model.getNode("Robert Smith"))
+				.by(model.getLinkType(GenealogyFixture.PARENT_REL))
+				.until(haltingPredicate)  
+				.descendants();
+		
+		// Will be the last node.
+		for (DagNode p : nodes) {
+			logger.error(p.getName());
+		}
+		assertEquals(2, nodes.size());
+		DagNode lastNode = nodes.get(nodes.size() - 1);
+		assertEquals("Andrew Smith", lastNode.getName());
+		
+	}
+	
+	@Test
+	/**
+	 * Find the first descendant who was born after Jan 1, 1970 with a breadth first search
+	 */
+	public void testBreadthFirstSearch() {
+		final LocalDate date = LocalDate.of(1970, 1, 1);
+		
+		BiPredicate<DagContext, DagNode> haltingPredicate = (c,n) -> {
+			DagData data = n.getData();
+			PersonData personData = (PersonData)data;
+			return personData.getBirthDate().isAfter(date);
+		};
+		
+		List<DagNode> nodes = model
+				.navigate()
+				.from(model.getNode("Robert Smith"))
+				.breadthFirst()
+				.by(model.getLinkType(GenealogyFixture.PARENT_REL))
+				.until(haltingPredicate)  
+				.descendants();
+		
+		// Will be the last node.
+		for (DagNode p : nodes) {
+			logger.error(p.getName());
+		}
+		assertEquals(2, nodes.size());
+		DagNode lastNode = nodes.get(nodes.size() - 1);
+		assertEquals("Andrew Smith", lastNode.getName());
+		
+	}
+	
 	
 	@Test
 	public void testNavigateToSchool() {
@@ -261,7 +325,7 @@ public class GenealogyModelTest  {
 		
 		for (DagNodePath path : searchResult.getPaths()) {
 			
-			logger.error(path.getId());
+			logger.error(path.toString());
 			
 		}
 		

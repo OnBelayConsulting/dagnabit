@@ -18,4 +18,6 @@ public interface DagLink {
 	
 	public DagData getData();
 	
+	
+	
 }
