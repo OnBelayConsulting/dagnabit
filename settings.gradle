@@ -1,0 +1,3 @@
+rootProject.name = 'dagnabit'
+include ':construct:dagnabitlib',
+        ':construct:testapp'

@@ -1,13 +1,9 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
+plugins {
+	id 'org.springframework.boot' version '2.6.6'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'idea'
 }
-
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-
 jar {
 	baseName = 'DAGNabitlib'
 	version = '1.0.0-SNAPSHOT'
@@ -32,13 +28,15 @@ repositories {
     mavenCentral()
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 dependencies {
-    testCompile 'junit:junit:4.12'
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.28'
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.8'
+	testImplementation("org.junit.vintage:junit-vintage-engine") {
+		exclude group: "org.hamcrest", module: "hamcrest-core"
+	}
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.28'
+	implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.8'
 }
 
 

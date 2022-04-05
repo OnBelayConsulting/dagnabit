@@ -1,0 +1,54 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'idea'
+}
+
+group 'dagnabit.testapp'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	implementation project(':construct:dagnabitlib')
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation('org.springframework.boot:spring-boot-starter-log4j2')
+    implementation "com.fasterxml.jackson.core:jackson-core"
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-json-org"
+    implementation group: "org.apache.commons", name: "commons-lang3", version: "3.12.0"
+    implementation group: "org.apache.commons", name: "commons-collections4", version: "4.4"
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.23'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux' // For WebClient
+    implementation 'org.projectreactor:reactor-spring:1.0.1.RELEASE'      // For WebClient
+
+    testImplementation('org.springframework.security:spring-security-test')
+    testImplementation("org.junit.vintage:junit-vintage-engine") {
+        exclude group: "org.hamcrest", module: "hamcrest-core"
+    }
+}
+
+
+configurations {
+    all*.exclude group: 'org.springframework.boot',
+            module: 'spring-boot-starter-logging'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+bootRun {
+    systemProperties = System.properties
+}
+
+
