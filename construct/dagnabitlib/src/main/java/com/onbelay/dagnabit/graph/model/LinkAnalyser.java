@@ -17,9 +17,9 @@ package com.onbelay.dagnabit.graph.model;
 
 public interface LinkAnalyser {
 
-	public LinkAnalyser by (DagLinkType linkType);
+	public LinkAnalyser by (DagRelationshipType type);
 	
-	public LinkAnalyser forNodeType(DagNodeType nodeType);
+	public LinkAnalyser forNodeType(DagNodeCategory category);
 	
 	public LinkAnalysis result();
 }

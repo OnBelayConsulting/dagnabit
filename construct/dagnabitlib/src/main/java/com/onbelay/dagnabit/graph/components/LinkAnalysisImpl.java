@@ -20,23 +20,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagRelationshipType;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.LinkAnalysis;
 
 public class LinkAnalysisImpl  implements LinkAnalysis {
 	
-	private Map<DagLinkType, List<DagNodePath>> cyclesByLinkType = new HashMap<DagLinkType, List<DagNodePath>>();
+	private Map<DagRelationshipType, List<DagNodePath>> cyclesByRelationshipType = new HashMap<DagRelationshipType, List<DagNodePath>>();
 
 	public void addCycleByLinkType(
-			DagLinkType linkType, 
+			DagRelationshipType relationshipType,
 			List<DagNodePath> cycles) {
 		
-		List<DagNodePath> existingCycles = cyclesByLinkType.get(linkType);
+		List<DagNodePath> existingCycles = cyclesByRelationshipType.get(relationshipType);
 		if (existingCycles != null) {
 			existingCycles.addAll(cycles);
 		} else {
-			cyclesByLinkType.put(linkType, cycles);
+			cyclesByRelationshipType.put(relationshipType, cycles);
 		}
 	}
 	
@@ -44,7 +44,7 @@ public class LinkAnalysisImpl  implements LinkAnalysis {
 	public List<DagNodePath> getCycles() {
 		List<DagNodePath> cycles = new ArrayList<DagNodePath>();
 		
-		for (List<DagNodePath> connectors : cyclesByLinkType.values()) {
+		for (List<DagNodePath> connectors : cyclesByRelationshipType.values()) {
 			cycles.addAll(connectors);
 		}
 		
@@ -52,12 +52,12 @@ public class LinkAnalysisImpl  implements LinkAnalysis {
 	}
 	
 	@Override
-	public Map<DagLinkType, List<DagNodePath>> getCyclesByLinkType() {
-		return cyclesByLinkType;
+	public Map<DagRelationshipType, List<DagNodePath>> getCyclesByRelationshipType() {
+		return cyclesByRelationshipType;
 	}
 
-	public void setCyclesByLinkType(Map<DagLinkType, List<DagNodePath>> cyclesByLinkType) {
-		this.cyclesByLinkType = cyclesByLinkType;
+	public void setCyclesByRelationshipType(Map<DagRelationshipType, List<DagNodePath>> cyclesByRelationshipType) {
+		this.cyclesByRelationshipType = cyclesByRelationshipType;
 	}
 	
 	@Override
@@ -66,8 +66,8 @@ public class LinkAnalysisImpl  implements LinkAnalysis {
 	}
 	
 	@Override
-	public boolean isCyclic(DagLinkType linkType) {
-		return (cyclesByLinkType.containsKey(linkType));
+	public boolean isCyclic(DagRelationshipType relationshipType) {
+		return (cyclesByRelationshipType.containsKey(relationshipType));
 		
 	}
 	

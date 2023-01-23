@@ -29,12 +29,12 @@ import org.slf4j.Logger;
 
 import com.onbelay.dagnabit.graph.exception.DagGraphException;
 import com.onbelay.dagnabit.graph.model.DagContext;
-import com.onbelay.dagnabit.graph.model.DagLink;
-import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagRelationship;
+import com.onbelay.dagnabit.graph.model.DagRelationshipType;
 import com.onbelay.dagnabit.graph.model.DagMapContext;
 import com.onbelay.dagnabit.graph.model.DagNode;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
-import com.onbelay.dagnabit.graph.model.DagNodeType;
+import com.onbelay.dagnabit.graph.model.DagNodeCategory;
 import com.onbelay.dagnabit.graph.model.DagPathRoutes;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
 import com.onbelay.dagnabit.graph.model.NodeSearchResult;
@@ -57,9 +57,9 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 
 	private DagModelImpl model;
 
-	private DagLinkType linkType;
+	private DagRelationshipType relationshipType;
 	
-	private Predicate<DagLink> filterLinkPredicate = c -> true;
+	private Predicate<DagRelationship> filterLinkPredicate = c -> true;
 	
 	private Predicate<DagNode> filterNodePredicate = c -> true;
 	
@@ -73,27 +73,27 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 	
 	protected DagLinkRouteFinder(
 			DagModelImpl model,
-			DagLinkType dagLinkTypeIn) {
+			DagRelationshipType relationshipType) {
 		
 		this.model = model;
-		if (dagLinkTypeIn == null) 
+		if (relationshipType == null)
 			throw new DagGraphException("Link is required");
 
-		this.linkType = dagLinkTypeIn;
+		this.relationshipType = relationshipType;
 	}
 	
 	
 	protected DagLinkRouteFinder(
 			DagModelImpl model,
-			DagLinkType dagLinkTypeIn,
+			DagRelationshipType relationshipType,
 			DagContext context,
 			NodeVisitor nodeVisitor) {
 		
 		this.model = model;
-		if (dagLinkTypeIn == null) 
+		if (relationshipType == null)
 			throw new DagGraphException("Link is required");
 
-		this.linkType = dagLinkTypeIn;
+		this.relationshipType = relationshipType;
 		if (context != null)
 			this.context = context;
 		
@@ -102,36 +102,36 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 
 	protected DagLinkRouteFinder(
 			DagModelImpl model,
-			DagLinkType dagLinkTypeIn,
+			DagRelationshipType relationshipType,
 			Predicate<DagNode> filterNodePredicate) {
 		super();
 		this.model = model;
 
-		if (dagLinkTypeIn == null) 
+		if (relationshipType == null)
 			throw new DagGraphException("Link is required");
 
-		this.linkType = dagLinkTypeIn;
+		this.relationshipType = relationshipType;
 		this.filterNodePredicate = filterNodePredicate;
 	}
 
 
 	protected DagLinkRouteFinder(
 			DagModelImpl model,
-			DagLinkType dagLinkTypeIn,
+			DagRelationshipType relationshipType,
 			DagContext context,
 			NodeVisitor nodeVisitor,
 			BiPredicate<DagContext, DagNode> endPredicate,
-			Predicate<DagLink> filterLinkPredicate,
+			Predicate<DagRelationship> filterLinkPredicate,
 			Predicate<DagNode> filterNodePredicate) {
 		super();
 		this.model = model;
 
-		if (dagLinkTypeIn == null) 
+		if (relationshipType == null)
 			throw new DagGraphException("Link is required");
 
 		
 		this.endPredicate = endPredicate;
-		this.linkType = dagLinkTypeIn;
+		this.relationshipType = relationshipType;
 		this.filterLinkPredicate = filterLinkPredicate;
 		this.filterNodePredicate = filterNodePredicate;
 		if (context != null)
@@ -146,22 +146,22 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 	/**
 	 * Create a RouteFinder with two predicates
 	 * @param model - required
-	 * @param linkType
+	 * @param relationshipType
 	 * @param filterLinkPredicate - required. return true to navigate as default
 	 * @param filterNodePredicate - required, return true to navigate as default
 	 */
 	protected DagLinkRouteFinder(
 			DagModelImpl model,
-			DagLinkType dagLinkTypeIn,
-			Predicate<DagLink> filterLinkPredicate,
+			DagRelationshipType relationshipType,
+			Predicate<DagRelationship> filterLinkPredicate,
 			Predicate<DagNode> filterNodePredicate) {
 		super();
 		this.model = model;
 
-		if (dagLinkTypeIn == null) 
+		if (relationshipType == null)
 			throw new DagGraphException("Link is required");
 
-		this.linkType = dagLinkTypeIn;
+		this.relationshipType = relationshipType;
 		this.filterLinkPredicate = filterLinkPredicate;
 		this.filterNodePredicate = filterNodePredicate;
 	}
@@ -172,25 +172,25 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 	 * Create a DagLinkRouteFinder for a given model
 	 * Create predicates for filtering based on the optional nodeType and linkType
 	 * @param model - required. DagModel to navigate
-	 * @param dagLinkType - required. restricts the link to navigate to.
-	 * @param dagNodeType - required. restricts the toNode to navigate to.
+	 * @param relationshipType - required. restricts the link to navigate to.
+	 * @param dagNodeCategory - required. restricts the toNode to navigate to.
 	 */
 	protected DagLinkRouteFinder(
 			DagModelImpl model,
-			DagLinkType dagLinkTypeIn,
-			DagNodeType dagNodeType) {
+			DagRelationshipType relationshipType,
+			DagNodeCategory dagNodeCategory) {
 		
 		super();
 		this.model = model;
 		
-		if (dagNodeType != null) {
-			this.filterNodePredicate = c ->  c.getNodeType().equals(dagNodeType); 
+		if (dagNodeCategory != null) {
+			this.filterNodePredicate = c ->  c.getCategory().equals(dagNodeCategory);
 		}
 		
-		if (dagLinkTypeIn == null) 
+		if (relationshipType == null)
 			throw new DagGraphException("Link is required");
 		
-		this.linkType = dagLinkTypeIn;
+		this.relationshipType = relationshipType;
 		
 		initialize();
 	}
@@ -275,7 +275,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		DagNodeImpl rootNode = model.getNodeImplementation(startNode.getName());
 		
 		DagNodeSearchState searchState = new DagNodeSearchState(
-				linkType, 
+				relationshipType,
 				rootNode);
 
 		followFromRelationship(searchState);
@@ -297,12 +297,12 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		DagNodeImpl rootNode = model.getNodeImplementation(rootNodeIn.getName());
 		
 		DagNodeSearchState searchState = new DagNodeSearchState(
-				linkType, 
+				relationshipType,
 				rootNode);
 
 		followFromRelationship(searchState);
 		
-		DagNodeSearchResult searchResult = new DagNodeSearchResult(linkType, rootNode);
+		DagNodeSearchResult searchResult = new DagNodeSearchResult(relationshipType, rootNode);
 
 		for (DagNodeVector v : searchState.getVectors()) {
 			searchResult.addPaths(v.createFromPaths());
@@ -331,7 +331,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		DagNodeImpl rootNode = model.getNodeImplementation(rootNodeIn.getName());
 		
 		DagNodeSearchState searchState = new DagNodeSearchState(
-				linkType, 
+				relationshipType,
 				rootNode);
 
 		ArrayList<DagNodeImpl> startingNodes = new ArrayList<DagNodeImpl>();
@@ -347,12 +347,12 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 
 
 		DagNodeSearchState searchState = new DagNodeSearchState(
-				linkType, 
+				relationshipType,
 				model.getNodeImplementation(startingNode.getName()));
 
 		followToRelationship(searchState);
 
-		DagNodeSearchResult searchResult = new DagNodeSearchResult(linkType, startingNode);
+		DagNodeSearchResult searchResult = new DagNodeSearchResult(relationshipType, startingNode);
 		
 		for (DagNodeVector c : searchState.getCycles()) {
 			searchResult.addCycle(c.createPath());
@@ -372,7 +372,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 	public DagNodeSearchResult discoverToRelationships(DagNode startingNode, DagNode endingNode) {
 
 
-		DagNodeSearchResult searchResult = new DagNodeSearchResult(linkType, startingNode);
+		DagNodeSearchResult searchResult = new DagNodeSearchResult(relationshipType, startingNode);
 
 
 		if (endingNode.getName().equals(startingNode.getName()))
@@ -383,7 +383,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 		}
 		
 		DagNodeSearchState searchState = new DagNodeSearchState(
-				linkType, 
+				relationshipType,
 				model.getNodeImplementation(startingNode.getName()),
 				endingNode);
 
@@ -412,10 +412,10 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 
 			for (DagNodeConnector connector : currentNode.getFromThisNodeConnectors()) {
 				
-				if (connector.hasRelationship(linkType) == false)
+				if (connector.hasRelationship(relationshipType) == false)
 					continue;
 				
-				if (filterLinkPredicate.test(connector.getRelationship(linkType)) == false)
+				if (filterLinkPredicate.test(connector.getRelationship(relationshipType)) == false)
 					continue;
 				
 				
@@ -430,7 +430,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 					}
 				}
 				
-				nodeVisitor.accept(context, connector.getFromNode(), connector.getRelationship(linkType), connector.getToNode());
+				nodeVisitor.accept(context, connector.getFromNode(), connector.getRelationship(relationshipType), connector.getToNode());
 				
 				foundNextLink = true;
 				
@@ -448,7 +448,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 					
 				
 				if (searchState.hasVisited(connector.getToNode().getName())) {
-					searchState.addCycle(searchState.getVector(), connector, linkType);
+					searchState.addCycle(searchState.getVector(), connector, relationshipType);
 					foundNextLink = false;
 				} else {
 					followFromRelationship(new DagNodeSearchState(searchState, connector.getToNode(), connector));
@@ -477,17 +477,17 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 	
 				for (DagNodeConnector connector : currentNode.getFromThisNodeConnectors()) {
 					
-					if (connector.hasRelationship(linkType) == false)
+					if (connector.hasRelationship(relationshipType) == false)
 						continue;
 					
-					if (filterLinkPredicate.test(connector.getRelationship(linkType)) == false)
+					if (filterLinkPredicate.test(connector.getRelationship(relationshipType)) == false)
 						continue;
 					
 					if (filterNodePredicate.test(connector.getToNode()) == false) {
 						continue;
 					}
 					
-					nodeVisitor.accept(context, connector.getFromNode(), connector.getRelationship(linkType), connector.getToNode());
+					nodeVisitor.accept(context, connector.getFromNode(), connector.getRelationship(relationshipType), connector.getToNode());
 					
 					searchState.addNodeRelationshipLink(connector);
 					
@@ -503,7 +503,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 					}
 					
 					if (searchState.hasVisited(connector.getToNode().getName())) {
-						searchState.addCycle(searchState.getVector(), connector, linkType);
+						searchState.addCycle(searchState.getVector(), connector, relationshipType);
 					} else {
 						endingNodes.add(connector.getToNode());
 					}
@@ -529,17 +529,17 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 
 			for (DagNodeConnector connector : currentNode.getToThisNodeConnectors()) {
 				
-				if (connector.hasRelationship(linkType) == false)
+				if (connector.hasRelationship(relationshipType) == false)
 					continue;
 				
-				if (filterLinkPredicate.test(connector.getRelationship(linkType)) == false)
+				if (filterLinkPredicate.test(connector.getRelationship(relationshipType)) == false)
 					continue;
 				
 				if (filterNodePredicate.test(connector.getFromNode()) == false) {
 					continue;
 				}
 				
-				nodeVisitor.accept(context, connector.getFromNode(), connector.getRelationship(linkType), connector.getToNode());
+				nodeVisitor.accept(context, connector.getFromNode(), connector.getRelationship(relationshipType), connector.getToNode());
 				
 				foundNextLink = true;
 				
@@ -557,7 +557,7 @@ public class DagLinkRouteFinder implements LinkRouteFinder {
 				}
 				
 				if (searchState.hasVisited(connector.getFromNode().getName())) {
-					searchState.addCycle(searchState.getVector(), connector, linkType);
+					searchState.addCycle(searchState.getVector(), connector, relationshipType);
 					foundNextLink = false;
 				} else {
 					followToRelationship(new DagNodeSearchState(searchState, connector.getFromNode(), connector));

@@ -15,14 +15,15 @@
  */
 package com.onbelay.dagnabit.graph.model;
 
-import static org.junit.Assert.assertEquals;
-
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
+import com.onbelay.dagnabit.graph.components.DagModelImpl;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.onbelay.dagnabit.graph.factories.DagModelFactory;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test the LinkAnalysis
@@ -32,12 +33,11 @@ import com.onbelay.dagnabit.graph.factories.DagModelFactory;
 public class LinkAnalysisTest  {
 	private static Logger logger = LoggerFactory.getLogger(LinkAnalysisTest.class);
 
-	private DagModelFactory factory = new DagModelFactory();
 	private DagModel model;
 	
 	@Before
 	public void beforeRun() throws Throwable {
-		model = factory.newModel();
+		model = new DagModelImpl("test");
 		// Solitary nodes
 		model.addNode("S", "special");
 		model.addNode("R", "ordinary");
@@ -121,12 +121,31 @@ public class LinkAnalysisTest  {
 		
 		LinkAnalysis analysis = model
 								.analyse()
-								.by(model.getLinkType("benchesTo"))
+								.by(model.getRelationshipType("benchesTo"))
 								.result();
 		
 		assertEquals(true, analysis.isCyclic());
 	}
 
 
-	
+	@Test
+	public void testOneCycleWithAnalysis() {
+		// add additional path
+		model.addRelationship(
+				model.getNode("C"),
+				"benchesTo",
+				model.getNode("A"));
+
+		LinkAnalysis analysis = model
+				.analyse()
+				.result();
+
+		assertEquals(true, analysis.isCyclic());
+		List<DagNodePath> paths = analysis.getCycles();
+		assertEquals(1, paths.size());
+	}
+
+
+
+
 }

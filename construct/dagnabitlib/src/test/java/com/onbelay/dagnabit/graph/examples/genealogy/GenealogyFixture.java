@@ -1,9 +1,9 @@
 package com.onbelay.dagnabit.graph.examples.genealogy;
 
-import java.time.LocalDate;
-
 import com.onbelay.dagnabit.graph.model.DagData;
 import com.onbelay.dagnabit.graph.model.DagModel;
+
+import java.time.LocalDate;
 
 public class GenealogyFixture {
 	public static final String PERSON_TYPE = "PERSON";

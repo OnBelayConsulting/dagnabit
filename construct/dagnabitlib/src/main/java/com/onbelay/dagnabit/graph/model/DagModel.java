@@ -26,9 +26,11 @@ import java.util.function.Predicate;
  * A Dag model acts as a Container for all Directed Acyclic Graph (DAG) elements such as nodes and links (vertices, edges).
  * 
  */
-public interface DagModel {
+public interface DagModel extends Comparable<DagModel> {
     
-    
+
+    public String getModelName();
+
 	/**
 	 * Create a navigator to be used in the fluent style of navigating this model.
 	 * See DagNodeNavigor for more information.
@@ -44,64 +46,66 @@ public interface DagModel {
     
     /**
      * Create a route finder that finds the shortest path based on weights between two nodes.
-     * @param dagLinkType
+     * @param relationshipType
      * @return
      */
-    public ShortestPathFinder createShortestPathFinder(DagLinkType dagLinkType);
+    public ShortestPathFinder createShortestPathFinder(DagRelationshipType relationshipType);
 
     /**
      * create a MinimumSpanningTreeFinder to find the minimum spanning tree
-     * @param linkType - linkType to navigate
+     * @param relationshipType - relationshipType to navigate
      * @return an instance of a MST finder.
      */
-    public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(DagLinkType linkType);
+    public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(DagRelationshipType relationshipType);
     
     
     /**
      * 
      * create a MinimumSpanningTreeFinder to find the minimum spanning tree
-     * @param linkType - linkType to navigate
+     * @param relationshipType - relationshipType to navigate
      * @param filterNodePredicate - filter toNodes based on this predicate.
      * @return an instance of a MST finder.
      */
     public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(
-    		DagLinkType linkType, 
+    		DagRelationshipType relationshipType,
     		Predicate<DagNode> filterNodePredicate);
     
     /**
      * 
      * create a MinimumSpanningTreeFinder to find the minimum spanning tree and create a subgraph that based on the mstLinkType.
-     * @param linkType - linkType to navigate
-     * @param mstLinkType - link the nodes in the MST using this linkType 
+     * @param relationshipType - relationshipType to navigate
+     * @param mstLinkType - link the nodes in the MST using this relationshipType
      * @return an instance of a MST finder.
      */
-    public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(DagLinkType linkType, DagLinkType mstLinkType);
+    public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(
+            DagRelationshipType relationshipType,
+            DagRelationshipType mstLinkType);
 
     
     /**
      * 
      * create a MinimumSpanningTreeFinder to find the minimum spanning tree and create a subgraph that based on the mstLinkType.
-     * @param linkType - linkType to navigate
-     * @param mstLinkType - link the nodes in the MST using this linkType 
+     * @param relationshipType - relationshipType to navigate
+     * @param mstLinkType - link the nodes in the MST using this relationshipType
      * @param filterNodePredicate - filter toNodes based on this predicate.
      * @return an instance of a MST finder.
      */
     public MinimumSpanningTreeFinder createMinimumSpanningTreeFinder(
-    		DagLinkType linkType, 
-    		DagLinkType mstLinkType, 
+    		DagRelationshipType relationshipType,
+    		DagRelationshipType mstLinkType,
     		Predicate<DagNode> filterNodePredicate);
     
     /**
      * Create a LinkRouteFinder to navigate the model. This is a lower level alternative to the navigate fluent style.
-     * @param linkType - the relationship or link type to navigate.
+     * @param relationshipType - the relationship or link type to navigate.
      * @return an instance of LinkRouteFinder
      */
     public LinkRouteFinder createDagLinkRouteFinder(
-    		DagLinkType linkType);
+    		DagRelationshipType relationshipType);
 
     /**
      * Create a LinkRouteFinder to navigate the model. This is a lower level alternative to the navigate fluent style.
-     * @param linkType - the relationship or link type to navigate.
+     * @param relationshipType - the relationship or link type to navigate.
      * @param context - a user provided implementation of DagContext that is passed in to the nodeVisitor.
      * @param nodeVisitor - a lambda that implements the NodeVisitor interface that is called the graph traverses from one node to the other.
      * @param filterLinkPredicate - a lambda predicate based on a DagLink will return a true or false on whether the relationship should be navigated.
@@ -109,32 +113,32 @@ public interface DagModel {
      * @return an instance of LinkRouteFinder
      */
     public LinkRouteFinder createDagLinkRouteFinder(
-    		DagLinkType linkType,
+    		DagRelationshipType relationshipType,
     		DagContext context,
     		NodeVisitor nodeVisitor,
     		BiPredicate<DagContext, DagNode> endPredicate,
-    		Predicate<DagLink> filterLinkPredicate,
+    		Predicate<DagRelationship> filterLinkPredicate,
     		Predicate<DagNode> filterNodePredicate);
 
     /**
      * Create a LinkRouteFinder to navigate the model. This is a lower level alternative to the navigate fluent style.
-     * @param linkType - the relationship or link type to navigate.
+     * @param relationshipType - the relationship or link type to navigate.
      * @param nodeType - use the nodeType of the targetNode to determine if the relationship should be traversed. Similar to the filterNodePredicate but checks nodeType.
      * @return an instance of LinkRouteFinder
      */
     public LinkRouteFinder createDagLinkRouteFinder(
-    		DagLinkType linkType,
-    		DagNodeType nodeType);
+    		DagRelationshipType relationshipType,
+    		DagNodeCategory nodeType);
 
     /**
      * Create a LinkRouteFinder to navigate the model. This is a lower level alternative to the navigate fluent style.
-     * @param linkType - the relationship or link type to navigate.
+     * @param relationshipType - the relationship or link type to navigate.
      * @param context - a user provided implementation of DagContext that is passed in to the nodeVisitor.
      * @param nodeVisitor - a lambda that implements the NodeVisitor interface that is called the graph traverses from one node to the other.
      * @return an instance of LinkRouteFinder
      */
     public LinkRouteFinder createDagLinkRouteFinder(
-    		DagLinkType linkType,
+    		DagRelationshipType relationshipType,
     		DagContext context,
     		NodeVisitor nodeVisitor);
 
@@ -163,28 +167,28 @@ public interface DagModel {
     public List<DagNode> findSolitaryNodes();
     
     /**
-     * Return a list of linkTypes that were used to create relationships.
+     * Return a list of relationshipTypes that were used to create relationships.
      * @return
      */
     
-	public DagLinkType getDefaultLinkType();
+	public DagRelationshipType getDefaultRelationshipType();
 	
 
-    public List<DagLinkType> getLinkTypes();
+    public List<DagRelationshipType> getRelationshipTypes();
     
     /**
-     * Return a DagNodeType based on the node type name. Note that node type names are registered when a node is added with a node type.
-     * @param nodeTypeName
-     * @return
+     * Returns the existing DagNodeCategory for the given name
+     * @param category
+     * @return DagNodeCategory
      */
-    public DagNodeType getNodeType(String nodeTypeName);
+    public DagNodeCategory getNodeCategory(String category);
 
     
     /**
      * Return a list of all the relationships (links) added to the model.
      * @return
      */
-    public List<DagLink> getLinks();
+    public List<DagRelationship> getRelationships();
 
 
     /**
@@ -192,7 +196,7 @@ public interface DagModel {
      * @param fromNode
      * @return
      */
-    public List<DagLink> getLinks(DagNode fromNode);
+    public List<DagRelationship> getRelationships(DagNode fromNode);
 
     
     /**
@@ -201,13 +205,13 @@ public interface DagModel {
      * @param toNode
      * @return DagLink or null if there isn't one.
      */
-    public DagLink getDefaultLink(DagNode fromNode, DagNode toNode);
+    public DagRelationship getDefaultRelationship(DagNode fromNode, DagNode toNode);
     
     /**
      * Return a list of all the node types registered in th model.
      * @return
      */
-    public List<DagNodeType> getNodeTypes();
+    public List<DagNodeCategory> getNodeCategories();
     
     /**
      * Add a new node with the given nodeName. This will create a DagNode internally.
@@ -219,10 +223,12 @@ public interface DagModel {
     /**
      * Add a new node with a node type name. The node will be created and the node type will be registered.
      * @param nodeName - name of node to create
-     * @param nodeTypeName - name of node type to register if not already registered.
+     * @param category - name of node category to register if not already registered.
      * @return
      */
-    public DagNode addNode(String nodeName, String nodeTypeName);
+    public DagNode addNode(
+            String nodeName,
+            String category);
     
 
     /**
@@ -238,36 +244,36 @@ public interface DagModel {
      * @param fromNode create a default relationship using DagLinkType.DEFAULT_REL from fromNode to
      * @param toNode -the toNode
      */
-    public DagLink addDefaultRelationship(
+    public DagRelationship addDefaultRelationship(
     		DagNode fromNode, 
     		DagNode toNode);
     
     /**
-     * Add a named relationship between to nodes. This method will register the linkTypeName if it hasn't been used before.
+     * Add a named relationship between to nodes. This method will register the relationshipTypeName if it hasn't been used before.
      * @param fromNode
-     * @param linkTypeName - the linkType name for example "isParentOf". This not the same as the daglink name which which is automatically created as
-     * 						fromNode.name + "-" linkTypeName + ">" + toNode.name
+     * @param relationshipTypeName - the relationshipType name for example "isParentOf". This not the same as the daglink name which which is automatically created as
+     * 						fromNode.name + "-" relationshipTypeName + ">" + toNode.name
      * @param toNode
      * @return a DagLink representing the link between the two nodes.
      */
-    public DagLink addRelationship(
+    public DagRelationship addRelationship(
     		DagNode fromNode, 
-    		String linkTypeName, 
+    		String relationshipTypeName,
     		DagNode toNode);
     
     /**
-     * Return a DagLinkType for a previously registered linkType. Note adding a relationship with a new 
-     * @param name
+     * Return a DagRelationshipType for a previously registered relationshipTypeName. Note adding a relationship with a new
+     * @param relationshipTypeName - name of the relationshipType
      * @return
      */
-    public DagLinkType getLinkType(String name);
+    public DagRelationshipType getRelationshipType(String relationshipTypeName);
 
     
     /**
      * Add the inverse of the link given in dagLink;
-     * @param ln
+     * @param dagRelationship - identifies a link.
      */
-	public DagLink addInverse(DagLink dagLink);
+	public DagRelationship addInverse(DagRelationship dagRelationship);
 
     
 }

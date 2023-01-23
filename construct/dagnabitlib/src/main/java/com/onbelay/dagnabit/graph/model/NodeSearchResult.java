@@ -21,7 +21,7 @@ public interface NodeSearchResult {
 
     public DagNode getRootNode();
     
-	public DagLinkType getDagLinkType();
+	public DagRelationshipType getRelationshipType();
 
 	public List<DagNodePath> getCycles();
 

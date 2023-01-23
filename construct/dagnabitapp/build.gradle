@@ -1,0 +1,87 @@
+plugins {
+	id 'org.springframework.boot' version '2.7.5'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'idea'
+}
+dependencyManagement {
+
+	imports {
+		mavenBom 'org.springframework.boot:spring-boot-dependencies:2.7.5'
+	}
+
+	dependencies {
+
+	}
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+task srcZip (type: Zip) {
+	
+	classifier = 'src'
+	from projectDir
+	include 'src/**/*'
+	
+}
+
+task construct (dependsOn: ["build", "srcZip"])
+
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+dependencies {
+	implementation project(':construct:dagnabitlib')
+	testImplementation project(path: ':construct:dagnabitlib', configuration: 'tests')
+
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	//implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	implementation('org.springframework.boot:spring-boot-starter-actuator')
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+	implementation "com.fasterxml.jackson.core:jackson-core"
+	implementation "com.fasterxml.jackson.core:jackson-databind"
+	implementation "com.fasterxml.jackson.datatype:jackson-datatype-json-org"
+	implementation group: "org.apache.commons", name: "commons-lang3", version: "3.12.0"
+	implementation group: "org.apache.commons", name: "commons-collections4", version: "4.4"
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
+	//testImplementation('org.springframework.security:spring-security-test')
+	testImplementation("org.junit.vintage:junit-vintage-engine")
+	implementation('org.springframework.boot:spring-boot-starter-log4j2')
+
+}
+
+
+configurations {
+	all*.exclude group:'org.springframework.boot',
+			module:'spring-boot-starter-logging'
+	tests
+}
+test {
+	useJUnitPlatform()
+}
+
+bootRun {
+	systemProperties = System.properties
+}
+
+
+jar {
+	baseName = 'DAGNabitApp'
+	version = '1.0.0-SNAPSHOT'
+	manifest {
+		attributes("Implementation-Title": "DagnabitApp", "Implementation-Version": "1.0", "Created-By": "OnBelay Consulting")
+	}
+}
+
+
+
+
+
+

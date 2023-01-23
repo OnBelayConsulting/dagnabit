@@ -15,20 +15,19 @@
  */
 package com.onbelay.dagnabit.graph.examples.travelingsales;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.onbelay.dagnabit.graph.model.DagModel;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
 import com.onbelay.dagnabit.graph.model.NodeSearchResult;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertTrue;
 
 public class DagTPModelTest  {
 	private static Logger logger = LoggerFactory.getLogger(DagTPModelTest.class);
@@ -46,7 +45,7 @@ public class DagTPModelTest  {
 
 		model = TPFixture.buildTPModel();
 				
-		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(model.getLinkType("connects"));
+		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(model.getRelationshipType("connects"));
 		NodeSearchResult nodeSearchResult = routeFinder.discoverFromRelationships(model.getNode("1"));
 		assertTrue(nodeSearchResult.isCyclic());
 		
@@ -66,7 +65,7 @@ public class DagTPModelTest  {
 
 		model = TPFixture.buildLargeTPMode();
 				
-		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(model.getLinkType("connects"));
+		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(model.getRelationshipType("connects"));
 		NodeSearchResult nodeSearchResult = routeFinder.discoverFromRelationships(model.getNode("1"));
 		assertTrue(nodeSearchResult.isCyclic());
 		
@@ -95,13 +94,13 @@ public class DagTPModelTest  {
 		List<DagNodePath> paths = model
 									.navigate()
 									.from(model.getNode("1"))
-									.by(model.getLinkType("connects"))
+									.by(model.getRelationshipType("connects"))
 									.cycles();
 		
 		List<DagNodePath> filtered = paths
 										.stream()
 										.filter(p -> p.getEndNode().equals(model.getNode("1")))
-										.filter(p -> p.getLinks().size() == 4)
+										.filter(p -> p.getRelationships().size() == 4)
 										.collect(Collectors.toList());
 		
 		DagNodePath shortestPath = null;
@@ -126,13 +125,13 @@ public class DagTPModelTest  {
 		List<DagNodePath> paths = model
 									.navigate()
 									.from(model.getNode("1"))
-									.by(model.getLinkType("connects"))
+									.by(model.getRelationshipType("connects"))
 									.cycles();
 		
 		List<DagNodePath> filtered = paths
 										.stream()
 										.filter(p -> p.getEndNode().equals(model.getNode("1")))
-										.filter(p -> p.getLinks().size() == 12)
+										.filter(p -> p.getRelationships().size() == 12)
 										.collect(Collectors.toList());
 		
 		logger.error("number of paths: " + paths.size());
@@ -156,7 +155,7 @@ public class DagTPModelTest  {
 		model = TPFixture.buildTPModel();
 		
 		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("connects"));
+				model.getRelationshipType("connects"));
 		NodeSearchResult result = routeFinder.discoverToRelationships(model.getNode("1"));
 		
 		for (DagNodePath p : result.getPaths()) {

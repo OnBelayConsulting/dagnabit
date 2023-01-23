@@ -15,8 +15,8 @@
  */
 package com.onbelay.dagnabit.graph.components;
 
-import com.onbelay.dagnabit.graph.model.DagLinkType;
-import com.onbelay.dagnabit.graph.model.DagNodeType;
+import com.onbelay.dagnabit.graph.model.DagRelationshipType;
+import com.onbelay.dagnabit.graph.model.DagNodeCategory;
 import com.onbelay.dagnabit.graph.model.LinkAnalyser;
 import com.onbelay.dagnabit.graph.model.LinkAnalysis;
 import com.onbelay.dagnabit.graph.model.NavigationResult;
@@ -24,8 +24,8 @@ import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 
 public class LinkAnalyserImpl implements LinkAnalyser {
 
-	private DagLinkType linkType;
-	private DagNodeType nodeType;
+	private DagRelationshipType relationshipType;
+	private DagNodeCategory nodeCategory;
 	
 	private DagModelImpl model;
 	
@@ -37,14 +37,14 @@ public class LinkAnalyserImpl implements LinkAnalyser {
 	}
 
 	@Override
-	public LinkAnalyser by(DagLinkType linkType) {
-		this.linkType = linkType;
+	public LinkAnalyser by(DagRelationshipType relationshipType) {
+		this.relationshipType = relationshipType;
 		return this;
 	}
 
 	@Override
-	public LinkAnalyser forNodeType(DagNodeType nodeType) {
-		this.nodeType = nodeType;
+	public LinkAnalyser forNodeType(DagNodeCategory nodeCategory) {
+		this.nodeCategory = nodeCategory;
 		return this;
 	}
 
@@ -52,17 +52,17 @@ public class LinkAnalyserImpl implements LinkAnalyser {
 	public LinkAnalysis result() {
     	LinkAnalysisImpl analysisResult = new LinkAnalysisImpl();
     	
-    	if (linkType == null) {
-	    	for (DagLinkType linkType : model.getLinkTypeMap().values()) {
+    	if (relationshipType == null) {
+	    	for (DagRelationshipType linkType : model.getLinkTypeMap().values()) {
 	        	DagLinkRouteFinder finder = new DagLinkRouteFinder(
 	        			model,
 	        			linkType,
-	        			nodeType);
+						nodeCategory);
 	        	NavigationResult result = traverseFromRoot(finder);
 	        	
 	        	for (NodeSearchResult nodeSearchResult : result.getNodeSearchResults().values()) {
 	        		analysisResult.addCycleByLinkType(
-	        				nodeSearchResult.getDagLinkType(),
+	        				nodeSearchResult.getRelationshipType(),
 	        				nodeSearchResult.getCycles());
 	        	}
 	        	
@@ -70,13 +70,13 @@ public class LinkAnalyserImpl implements LinkAnalyser {
     	} else {
         	DagLinkRouteFinder finder = new DagLinkRouteFinder(
         			model,
-        			linkType,
-        			nodeType);
+					relationshipType,
+					nodeCategory);
         	NavigationResult result = traverseFromRoot(finder);
         	
         	for (NodeSearchResult nodeSearchResult : result.getNodeSearchResults().values()) {
         		analysisResult.addCycleByLinkType(
-        				nodeSearchResult.getDagLinkType(),
+        				nodeSearchResult.getRelationshipType(),
         				nodeSearchResult.getCycles());
         	}
     	}

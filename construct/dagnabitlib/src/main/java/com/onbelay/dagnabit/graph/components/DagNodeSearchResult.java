@@ -3,7 +3,7 @@ package com.onbelay.dagnabit.graph.components;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagRelationshipType;
 import com.onbelay.dagnabit.graph.model.DagNode;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.NodeSearchResult;
@@ -11,15 +11,18 @@ import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 public class DagNodeSearchResult implements NodeSearchResult {
 
 	private DagNode rootNode;
-	private DagLinkType linkType;
+	private DagRelationshipType relationshipType;
 	
 	private List<DagNodePath> paths = new ArrayList<>(); 
 	
 	private List<DagNodePath> cycles = new ArrayList<DagNodePath>();
 
-	public DagNodeSearchResult(DagLinkType linkType, DagNode rootNode) {
+	public DagNodeSearchResult(
+			DagRelationshipType relationshipType,
+			DagNode rootNode) {
+
 		super();
-		this.linkType = linkType;
+		this.relationshipType = relationshipType;
 		this.rootNode = rootNode;
 	}
 
@@ -29,8 +32,8 @@ public class DagNodeSearchResult implements NodeSearchResult {
 	}
 
 	@Override
-	public DagLinkType getDagLinkType() {
-		return linkType;
+	public DagRelationshipType getRelationshipType() {
+		return relationshipType;
 	}
 
 	@Override

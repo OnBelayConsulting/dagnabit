@@ -1,14 +1,13 @@
 package com.onbelay.dagnabit.graph.examples.mst;
 
-import java.util.ArrayList;
-
+import com.onbelay.dagnabit.graph.components.DagModelImpl;
+import com.onbelay.dagnabit.graph.model.DagModel;
+import com.onbelay.dagnabit.graph.model.DagRelationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.onbelay.dagnabit.graph.factories.DagModelFactory;
-import com.onbelay.dagnabit.graph.model.DagLink;
-import com.onbelay.dagnabit.graph.model.DagModel;
-import com.onbelay.dagnabit.graph.model.DagNode;
+import java.util.ArrayList;
+
 /**
  * The basic model for this is abased on 
  * 		/7  B	-6-	D	5\		
@@ -25,9 +24,8 @@ public class ModelFixture {
 
 	
 	public static DagModel buildBasicModel() {
-		
-		DagModelFactory factory = new DagModelFactory();
-		DagModel model = factory.newModel();
+
+		DagModel model = new DagModelImpl("test");
 		
 		
 		model.addNode("A");
@@ -42,9 +40,9 @@ public class ModelFixture {
 		
 		model.addNode("F");
 		
-		ArrayList<DagLink> links = new ArrayList<DagLink>();
+		ArrayList<DagRelationship> links = new ArrayList<DagRelationship>();
 		
-		DagLink link = model.addDefaultRelationship(
+		DagRelationship link = model.addDefaultRelationship(
 				model.getNode("A"), 
 				model.getNode("B"));
 		link.setWeight(7);
@@ -104,9 +102,9 @@ public class ModelFixture {
 		links.add(link);
 
 		// Make Bidirectional
-		for (DagLink ln : links) {
+		for (DagRelationship ln : links) {
 			
-			DagLink inverse = model.addInverse(ln);
+			DagRelationship inverse = model.addInverse(ln);
 			
 		}
 		
@@ -134,9 +132,9 @@ public class ModelFixture {
 		
 		model.addNode("L");
 
-		ArrayList<DagLink> links = new ArrayList<DagLink>();
+		ArrayList<DagRelationship> links = new ArrayList<DagRelationship>();
 		
-		DagLink link = model.addDefaultRelationship(
+		DagRelationship link = model.addDefaultRelationship(
 				model.getNode("A"), 
 				model.getNode("H"));
 		link.setWeight(1);
@@ -183,9 +181,9 @@ public class ModelFixture {
 		links.add(link);
 		
 		// Make Bidirectional
-		for (DagLink ln : links) {
+		for (DagRelationship ln : links) {
 			
-			DagLink inverse = model.addInverse(ln);
+			DagRelationship inverse = model.addInverse(ln);
 			
 		}
 		

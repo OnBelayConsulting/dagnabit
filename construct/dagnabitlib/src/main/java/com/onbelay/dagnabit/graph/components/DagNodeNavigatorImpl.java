@@ -27,13 +27,13 @@ import java.util.stream.Collectors;
 
 import com.onbelay.dagnabit.graph.exception.DagGraphException;
 import com.onbelay.dagnabit.graph.model.DagContext;
-import com.onbelay.dagnabit.graph.model.DagLink;
-import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagRelationship;
+import com.onbelay.dagnabit.graph.model.DagRelationshipType;
 import com.onbelay.dagnabit.graph.model.DagMapContext;
 import com.onbelay.dagnabit.graph.model.DagNode;
 import com.onbelay.dagnabit.graph.model.DagNodeNavigator;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
-import com.onbelay.dagnabit.graph.model.DagNodeType;
+import com.onbelay.dagnabit.graph.model.DagNodeCategory;
 import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
 import com.onbelay.dagnabit.graph.model.NodeSearchResult;
 import com.onbelay.dagnabit.graph.model.NodeVisitor;
@@ -49,7 +49,7 @@ import com.onbelay.dagnabit.graph.model.TraversalDirectionType;
 public class DagNodeNavigatorImpl implements DagNodeNavigator {
 
 	private List<DagNodeImpl> startingNodes = new ArrayList<DagNodeImpl>();
-	private DagLinkType linkType;
+	private DagRelationshipType relationshipType;
 	
 	private DagContext context = new DagMapContext();
 
@@ -57,7 +57,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 
 	private Predicate<DagNode> filterNodePredicate = c -> true;
 
-	private Predicate<DagLink> filterLinkPredicate = c -> true;
+	private Predicate<DagRelationship> filterLinkPredicate = c -> true;
 
 	private NodeVisitor nodeVisitor = (c, n, l, e) -> { ; } ;
 
@@ -101,13 +101,13 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 
 
 	@Override
-	public DagNodeNavigator by(DagLinkType linkType) {
-		this.linkType = linkType;
+	public DagNodeNavigator by(DagRelationshipType relationshipType) {
+		this.relationshipType = relationshipType;
 		return this;
 	}
 
 	@Override
-	public DagNodeNavigator filterBy(Predicate<DagLink> fn) {
+	public DagNodeNavigator filterBy(Predicate<DagRelationship> fn) {
 		this.filterLinkPredicate = fn;
 		return this;
 	}
@@ -125,8 +125,8 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 	}
 
 	@Override
-	public DagNodeNavigator forOnly(DagNodeType nodeType) {
-		this.filterNodePredicate = c -> c.getNodeType().equals(nodeType); 
+	public DagNodeNavigator forOnly(DagNodeCategory nodeCategory) {
+		this.filterNodePredicate = c -> c.getCategory().equals(nodeCategory);
 		return this;
 	}
 	
@@ -179,7 +179,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		 	endingNodes.addAll(startNode
 				.getFromThisNodeConnectors()
 				.stream()
-				.filter(c -> c.hasRelationship(model.getDefaultLinkType()) && filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
+				.filter(c -> c.hasRelationship(model.getDefaultRelationshipType()) && filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(relationshipType)))
 				.map(d -> d.getToNode())
 				.collect(Collectors.toList()));
 		});
@@ -189,7 +189,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 			 	endingNodes.addAll(startNode
 					.getToThisNodeConnectors()
 					.stream()
-					.filter(c -> c.hasRelationship(model.getDefaultLinkType()) && filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
+					.filter(c -> c.hasRelationship(model.getDefaultRelationshipType()) && filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(relationshipType)))
 					.map(d -> d.getToNode())
 					.collect(Collectors.toList()));
 			});
@@ -226,7 +226,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		 	endingNodes.addAll(startNode
 				.getFromThisNodeConnectors()
 				.stream()
-				.filter(c -> c.hasRelationship(linkType) && filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
+				.filter(c -> c.hasRelationship(relationshipType) && filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(relationshipType)))
 				.map(d -> d.getToNode())
 				.collect(Collectors.toList()));
 		});
@@ -250,7 +250,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		 	endingNodes.addAll(startNode
 				.getToThisNodeConnectors()
 				.stream()
-				.filter(c -> c.hasRelationship(linkType) && filterNodePredicate.test(c.getFromNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
+				.filter(c -> c.hasRelationship(relationshipType) && filterNodePredicate.test(c.getFromNode()) && filterLinkPredicate.test(c.getRelationship(relationshipType)))
 				.map(d -> d.getFromNode())
 				.collect(Collectors.toList()));
 		 });
@@ -272,7 +272,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		 	endingNodes.addAll(startNode
 				.getFromThisNodeConnectors()
 				.stream()
-				.filter(c -> c.hasRelationship(linkType) && filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
+				.filter(c -> c.hasRelationship(relationshipType) && filterNodePredicate.test(c.getToNode()) && filterLinkPredicate.test(c.getRelationship(relationshipType)))
 				.map(d -> d.getToNode())
 				.collect(Collectors.toList()));
 		});
@@ -298,7 +298,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 		 	endingNodes.addAll(startNode
 				.getToThisNodeConnectors()
 				.stream()
-				.filter(c -> filterNodePredicate.test(c.getFromNode()) && filterLinkPredicate.test(c.getRelationship(linkType)))
+				.filter(c -> filterNodePredicate.test(c.getFromNode()) && filterLinkPredicate.test(c.getRelationship(relationshipType)))
 				.map(d -> d.getFromNode())
 				.collect(Collectors.toList()));
 		});
@@ -313,7 +313,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 	
 
 	@Override
-	public DagNodeNavigator visitBy(DagLinkType linkType, NodeVisitor visitor) {
+	public DagNodeNavigator visitBy(DagRelationshipType linkType, NodeVisitor visitor) {
 		
 		startingNodes.forEach( startNode -> {
 			 
@@ -357,7 +357,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 	
 	private LinkRouteFinder newLinkRouteFinder() {
 			return model.createDagLinkRouteFinder(
-				linkType,
+					relationshipType,
 				context,
 				nodeVisitor,
 				endPredicate,
@@ -431,7 +431,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 			LinkedHashSet<DagNode> nodeSet = new LinkedHashSet<DagNode>();
 			
 			for (DagNodePath path :result.getPaths()) {
-				for (DagLink link : path.getLinks()) {
+				for (DagRelationship link : path.getRelationships()) {
 					nodeSet.add(link.getFromNode());
 				}
 			}
@@ -483,7 +483,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 	
 	public DagNodeNavigator findShortestPaths(DagNode toNode) {
 
-		ShortestPathFinder finder = model.createShortestPathFinder(linkType);
+		ShortestPathFinder finder = model.createShortestPathFinder(relationshipType);
 
 		Set<DagNode> uniqueNodes = new HashSet<DagNode>();
 		
@@ -502,7 +502,7 @@ public class DagNodeNavigatorImpl implements DagNodeNavigator {
 	
 	public List<DagNodePath> shortestPath(DagNode toNode) {
 		ArrayList<DagNodePath> paths = new ArrayList<DagNodePath>();
-		ShortestPathFinder finder = model.createShortestPathFinder(linkType);
+		ShortestPathFinder finder = model.createShortestPathFinder(relationshipType);
 		
 		for (DagNode startingNode : startingNodes) {
 			paths.add(finder.findShortestRoute(startingNode, toNode));

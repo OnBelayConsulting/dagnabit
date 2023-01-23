@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.onbelay.dagnabit.graph.model.DagLink;
-import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagRelationship;
+import com.onbelay.dagnabit.graph.model.DagRelationshipType;
 import com.onbelay.dagnabit.graph.model.DagNode;
 import com.onbelay.dagnabit.graph.model.MinimumSpanningTreeFinder;
 
@@ -28,8 +28,8 @@ public class DagMinimumSpanningTreeFinder implements MinimumSpanningTreeFinder {
 	private static final Logger logger = LoggerFactory.getLogger(DagMinimumSpanningTreeFinder.class);
 	
 	private DagModelImpl model;
-	private DagLinkType linkType;
-	private DagLinkType mstLinkType;
+	private DagRelationshipType relationshipType;
+	private DagRelationshipType mstRelationshipType;
 	
 	
 	private Predicate<DagNodeConnector> filterConnectorPredicate = c -> true;
@@ -37,19 +37,19 @@ public class DagMinimumSpanningTreeFinder implements MinimumSpanningTreeFinder {
 	
 	protected DagMinimumSpanningTreeFinder(
 			DagModelImpl model, 
-			DagLinkType linkType) {
+			DagRelationshipType relationshipType) {
 		
 		this.model = model;
-		this.linkType = linkType;
+		this.relationshipType = relationshipType;
 	}
 
 	protected DagMinimumSpanningTreeFinder(
 			DagModelImpl model, 
-			DagLinkType linkType,
+			DagRelationshipType relationshipType,
 			Predicate<DagNode> filterNodePredicate) {
 		
 		this.model = model;
-		this.linkType = linkType;
+		this.relationshipType = relationshipType;
 		this.filterConnectorPredicate = filterConnectorPredicate.and(c -> filterNodePredicate.test(c.getToNode()));
 	}
 	
@@ -57,29 +57,29 @@ public class DagMinimumSpanningTreeFinder implements MinimumSpanningTreeFinder {
 	
 	protected DagMinimumSpanningTreeFinder(
 			DagModelImpl model, 
-			DagLinkType linkType,
-			DagLinkType mstLinkType) {
+			DagRelationshipType relationshipType,
+			DagRelationshipType mstRelationshipType) {
 		
 		this.model = model;
-		this.linkType = linkType;
-		this.mstLinkType = mstLinkType;
+		this.relationshipType = relationshipType;
+		this.mstRelationshipType = mstRelationshipType;
 	}
 
 	protected DagMinimumSpanningTreeFinder(
 			DagModelImpl model, 
-			DagLinkType linkType,
-			DagLinkType mstLinkType,
+			DagRelationshipType relationshipType,
+			DagRelationshipType mstRelationshipType,
 			Predicate<DagNode> filterNodePredicate) {
 		
 		this.model = model;
-		this.linkType = linkType;
-		this.mstLinkType = mstLinkType;
+		this.relationshipType = relationshipType;
+		this.mstRelationshipType = mstRelationshipType;
 		this.filterConnectorPredicate = filterConnectorPredicate.and(c -> filterNodePredicate.test(c.getToNode()));
 	}
 
 
 
-	public List<DagLink> determineMinimumSpanningTree(DagNode startNodeIn) {
+	public List<DagRelationship> determineMinimumSpanningTree(DagNode startNodeIn) {
 		
 		DagNodeImpl startNode = model.getNodeImplementation(startNodeIn.getName());
 		
@@ -88,29 +88,29 @@ public class DagMinimumSpanningTreeFinder implements MinimumSpanningTreeFinder {
 		Map<DagNode, DagNode> processed = new HashMap<DagNode, DagNode>();
 		processed.put(startNode, startNode);
 		
-		List<DagLinkWrapper> links = startNode.getFromThisNodeConnectors()
+		List<DagRelationshipWrapper> links = startNode.getFromThisNodeConnectors()
 												.stream()
-												.filter(c -> c.hasRelationship(linkType))
+												.filter(c -> c.hasRelationship(relationshipType))
 												.filter(filterConnectorPredicate)
-												.map(c -> new DagLinkWrapper(c.getRelationship(linkType)))
+												.map(c -> new DagRelationshipWrapper(c.getRelationship(relationshipType)))
 												.collect(Collectors.toList());
 		
 		if (links.isEmpty()) {
-			logger.error("Starting node missing relationship: " + linkType);
-			return new ArrayList<DagLink>();
+			logger.error("Starting node missing relationship: " + relationshipType);
+			return new ArrayList<DagRelationship>();
 		}
 		
-		DagLinkWrapper minLink = Collections.min(links, Comparator.comparingInt( c -> c.getDagLink().getWeight()) );
+		DagRelationshipWrapper minLink = Collections.min(links, Comparator.comparingInt(c -> c.getRelationship().getWeight()) );
 		
-		ArrayList<DagLink> processedLinks = new ArrayList<DagLink>();
+		ArrayList<DagRelationship> processedLinks = new ArrayList<DagRelationship>();
 		
 		minLink.setWasProcessed(true);
-		processedLinks.add(minLink.getDagLink());
+		processedLinks.add(minLink.getRelationship());
 		
-		if (mstLinkType != null)
-			model.addRelationship(startNodeIn, mstLinkType.getName(), minLink.getDagLink().getToNode());
+		if (mstRelationshipType != null)
+			model.addRelationship(startNodeIn, mstRelationshipType.getName(), minLink.getRelationship().getToNode());
 		
-		DagNodeImpl currentNode = model.getNodeImplementation(minLink.getDagLink().getToNode().getName());
+		DagNodeImpl currentNode = model.getNodeImplementation(minLink.getRelationship().getToNode().getName());
 		processed.put(currentNode, currentNode);
 		
 		
@@ -129,8 +129,8 @@ public class DagMinimumSpanningTreeFinder implements MinimumSpanningTreeFinder {
 			int totalNodes,
 			DagNodeImpl startNode,
 			Map<DagNode, DagNode> processed,
-			List<DagLink> processedLinks,
-			List<DagLinkWrapper> existingLinks) {
+			List<DagRelationship> processedLinks,
+			List<DagRelationshipWrapper> existingLinks) {
 	
 		DagNodeImpl currentNode = startNode;
 		existingLinks = existingLinks
@@ -138,11 +138,11 @@ public class DagMinimumSpanningTreeFinder implements MinimumSpanningTreeFinder {
 									.filter(c -> c.isAvailable())
 									.collect(Collectors.toList());
 		
-		List<DagLinkWrapper> currentLinks = currentNode.getFromThisNodeConnectors()
+		List<DagRelationshipWrapper> currentLinks = currentNode.getFromThisNodeConnectors()
 				.stream()
-				.filter(c -> c.hasRelationship(linkType))
+				.filter(c -> c.hasRelationship(relationshipType))
 				.filter(filterConnectorPredicate)
-				.map(c -> new DagLinkWrapper(c.getRelationship(linkType)))
+				.map(c -> new DagRelationshipWrapper(c.getRelationship(relationshipType)))
 				.collect(Collectors.toList());
 
 		existingLinks.addAll(currentLinks);
@@ -153,13 +153,13 @@ public class DagMinimumSpanningTreeFinder implements MinimumSpanningTreeFinder {
 		}
 		
 		boolean found = false;
-		DagLinkWrapper minLink = null;
+		DagRelationshipWrapper minLink = null;
 		while (found == false) {
-			minLink = Collections.min(existingLinks, Comparator.comparingInt( c -> c.getDagLink().getWeight()) );
+			minLink = Collections.min(existingLinks, Comparator.comparingInt( c -> c.getRelationship().getWeight()) );
 			if (minLink == null) {
 				found = true;
 			} else {	
-				if (processed.containsKey(minLink.getDagLink().getToNode())) {
+				if (processed.containsKey(minLink.getRelationship().getToNode())) {
 					logger.debug("Ignoring: " + minLink.toString());
 					minLink.setWasIgnored(true);
 					existingLinks = existingLinks
@@ -179,15 +179,15 @@ public class DagMinimumSpanningTreeFinder implements MinimumSpanningTreeFinder {
 		} else {
 			logger.debug("processing: " + minLink.toString());
 			minLink.setWasProcessed(true);
-			processedLinks.add(minLink.getDagLink());
+			processedLinks.add(minLink.getRelationship());
 			
-			if (mstLinkType != null)
-				model.addRelationship(minLink.getDagLink().getFromNode(), mstLinkType.getName(), minLink.getDagLink().getToNode());
+			if (mstRelationshipType != null)
+				model.addRelationship(minLink.getRelationship().getFromNode(), mstRelationshipType.getName(), minLink.getRelationship().getToNode());
 			
-			processed.put(minLink.getDagLink().getToNode(), minLink.getDagLink().getToNode());
+			processed.put(minLink.getRelationship().getToNode(), minLink.getRelationship().getToNode());
 		}
 		
-		currentNode = model.getNodeImplementation(minLink.getDagLink().getToNode().getName());
+		currentNode = model.getNodeImplementation(minLink.getRelationship().getToNode().getName());
 		
 		if (processed.size() >= totalNodes)
 			return;

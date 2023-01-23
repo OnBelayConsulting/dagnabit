@@ -15,19 +15,15 @@
  */
 package com.onbelay.dagnabit.graph.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
+import com.onbelay.dagnabit.graph.components.DagModelImpl;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.onbelay.dagnabit.graph.factories.DagModelFactory;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Test the DagNavigator
@@ -37,13 +33,12 @@ import com.onbelay.dagnabit.graph.factories.DagModelFactory;
 public class DagNavigatorTest  {
 	private static Logger logger = LoggerFactory.getLogger(DagNavigatorTest.class);
 
-	private DagModelFactory factory = new DagModelFactory();
 	private DagModel model;
 	
 	@Before
 	public void beforeRun() throws Throwable {
 		// Solitary nodes
-		model = factory.newModel();
+		model = new DagModelImpl("test");
 		model.addNode("S", "special");
 		model.addNode("R", "ordinary");
 
@@ -107,7 +102,7 @@ public class DagNavigatorTest  {
 	public void testNoCycles() {
 
 		for (DagNode node : model.findRootNodes()) {
-			for (DagLinkType linkType : model.getLinkTypes()) {
+			for (DagRelationshipType linkType : model.getRelationshipTypes()) {
 				
 				LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
 						linkType);
@@ -127,7 +122,7 @@ public class DagNavigatorTest  {
 		List<DagNodePath> paths = model
 									.navigate()
 									.from(model.getNode("A"))
-									.by(model.getLinkType("benchesTo"))
+									.by(model.getRelationshipType("benchesTo"))
 									.paths();
 		
 		
@@ -152,7 +147,7 @@ public class DagNavigatorTest  {
 		assertNotNull(pathAToC);
 		assertNotNull(pathAToD);
 		
-		assertEquals(2, pathAToC.getLinks().size());
+		assertEquals(2, pathAToC.getRelationships().size());
 	}
 	
 	@Test
@@ -163,7 +158,7 @@ public class DagNavigatorTest  {
 		model
 			.navigate()
 			.from(model.getNode("A"))
-			.by(model.getLinkType("benchesTo"))
+			.by(model.getRelationshipType("benchesTo"))
 			.using(context)
 			.visitWith( (c, s, l, e) -> { ((DagTestContext) c).push(e.getName()); })
 			.paths();
@@ -182,7 +177,7 @@ public class DagNavigatorTest  {
 									.navigate()
 									.from(model.getNode("A"))
 									.forOnly(n -> n.getName().equals("B"))
-									.by(model.getLinkType("benchesTo"))
+									.by(model.getRelationshipType("benchesTo"))
 									.paths();
 		
 
@@ -198,7 +193,7 @@ public class DagNavigatorTest  {
 		List<DagNode> nodes = model
 				.navigate()
 				.from(model.getNode("C"))
-				.by(model.getLinkType("benchesTo"))
+				.by(model.getRelationshipType("benchesTo"))
 				.ancestors();
 	
 		assertEquals(2, nodes.size());
@@ -213,7 +208,7 @@ public class DagNavigatorTest  {
 		List<DagNode> nodes = model
 				.navigate()
 				.from(model.getNode("A"))
-				.by(model.getLinkType("benchesTo"))
+				.by(model.getRelationshipType("benchesTo"))
 				.descendants();
 	
 		assertEquals(3, nodes.size());
@@ -228,7 +223,7 @@ public class DagNavigatorTest  {
 		List<DagNode> nodes = model
 				.navigate()
 				.from(model.getNode("A"))
-				.by(model.getLinkType("benchesTo"))
+				.by(model.getRelationshipType("benchesTo"))
 				.sorted()
 				.descendants();
 	
@@ -245,7 +240,7 @@ public class DagNavigatorTest  {
 				.navigate()
 				.from(model.getNode("A"))
 				.breadthFirst()
-				.by(model.getLinkType("benchesTo"))
+				.by(model.getRelationshipType("benchesTo"))
 				.descendants();
 	
 		assertEquals(3, nodes.size());
@@ -261,7 +256,7 @@ public class DagNavigatorTest  {
 		List<DagNodePath> paths = model
 				.navigate()
 				.from(model.getNode("C"))
-				.by(model.getLinkType("benchesTo"))
+				.by(model.getRelationshipType("benchesTo"))
 				.pathsTo();
 	
 		assertEquals(1, paths.size());
@@ -292,7 +287,7 @@ public class DagNavigatorTest  {
 		DagNode rootNode = model.getNode("A");
 		
 		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("benchesTo"));
+				model.getRelationshipType("benchesTo"));
 		
 		NodeSearchResult result = routeFinder.discoverFromRelationships(rootNode);
 		assertTrue(result.isCyclic());
@@ -335,7 +330,7 @@ public class DagNavigatorTest  {
 
 		
 		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("benchesTo"));
+				model.getRelationshipType("benchesTo"));
 		NodeSearchResult result = routeFinder.discoverToRelationships(model.getNode("C"));
 		
 		assertEquals(1, result.getPaths().size());
@@ -351,7 +346,7 @@ public class DagNavigatorTest  {
 	public void testToLinks() {
 		
 		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("benchesTo"));
+				model.getRelationshipType("benchesTo"));
 		NodeSearchResult result = routeFinder.discoverToRelationships(model.getNode("C"));
 		
 		assertEquals(1, result.getPaths().size());
@@ -369,7 +364,7 @@ public class DagNavigatorTest  {
 	public void testBreadthFromLinks() {
 		
 		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("benchesTo"));
+				model.getRelationshipType("benchesTo"));
 		List<DagNode> nodes = routeFinder.findDescendantsBreadthFirst(model.getNode("A"));
 		
 		logger.error(nodes.toString());
@@ -403,7 +398,7 @@ public class DagNavigatorTest  {
 		
 		LinkAnalysis analysis = model
 								.analyse()
-								.by(model.getLinkType("benchesTo"))
+								.by(model.getRelationshipType("benchesTo"))
 								.result();
 		
 		assertEquals(true, analysis.isCyclic());
@@ -415,7 +410,7 @@ public class DagNavigatorTest  {
 		List<DagNode> neighbours = model
 			.navigate()
 			.from(model.getNode("A"))
-			.by(model.getLinkType("benchesTo"))
+			.by(model.getRelationshipType("benchesTo"))
 			.children();
 		
 		assertTrue(neighbours.size() > 0);
@@ -432,7 +427,7 @@ public class DagNavigatorTest  {
 		
 		DagNode rootNode = model.getNode("A");
 		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("benchesTo"));
+				model.getRelationshipType("benchesTo"));
 		
 		for (DagPathRoutes pathRoutes : routeFinder.findAllRoutesFrom(rootNode).values()) {
 			logger.error(pathRoutes.toString());
@@ -447,7 +442,7 @@ public class DagNavigatorTest  {
 		
 		DagNode rootNode = model.getNode("A");
 		LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
-				model.getLinkType("benchesTo"));
+				model.getRelationshipType("benchesTo"));
 		
 		NodeSearchResult result = routeFinder.discoverFromRelationships(rootNode);
 		for (DagNodePath p : result.getPaths()) {

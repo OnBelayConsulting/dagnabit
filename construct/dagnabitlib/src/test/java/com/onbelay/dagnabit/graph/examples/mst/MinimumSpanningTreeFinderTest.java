@@ -15,19 +15,18 @@
  */
 package com.onbelay.dagnabit.graph.examples.mst;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.List;
-
+import com.onbelay.dagnabit.graph.model.DagRelationship;
+import com.onbelay.dagnabit.graph.model.DagModel;
+import com.onbelay.dagnabit.graph.model.DagNode;
+import com.onbelay.dagnabit.graph.model.MinimumSpanningTreeFinder;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.onbelay.dagnabit.graph.model.DagLink;
-import com.onbelay.dagnabit.graph.model.DagModel;
-import com.onbelay.dagnabit.graph.model.DagNode;
-import com.onbelay.dagnabit.graph.model.MinimumSpanningTreeFinder;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class MinimumSpanningTreeFinderTest  {
 	private static Logger logger = LoggerFactory.getLogger(MinimumSpanningTreeFinderTest.class);
@@ -44,36 +43,36 @@ public class MinimumSpanningTreeFinderTest  {
 
 		model = ModelFixture.buildBasicModel();
 		
-		MinimumSpanningTreeFinder finder = model.createMinimumSpanningTreeFinder(model.getDefaultLinkType());
+		MinimumSpanningTreeFinder finder = model.createMinimumSpanningTreeFinder(model.getDefaultRelationshipType());
 		
-		List<DagLink> processedLinks = finder.determineMinimumSpanningTree(model.getNode("A"));
+		List<DagRelationship> processedLinks = finder.determineMinimumSpanningTree(model.getNode("A"));
 		
 		
-		for (DagLink l : processedLinks) {
+		for (DagRelationship l : processedLinks) {
 			logger.error(l.getFromNode().getName() + " --> " + l.getToNode().getName() + " with " + l.getWeight() ) ;
 		}
 		
-		DagLink firstLink = processedLinks.get(0);
+		DagRelationship firstLink = processedLinks.get(0);
 		assertEquals("A", firstLink.getFromNode().getName());
 		assertEquals("B", firstLink.getToNode().getName());
 		assertEquals(7, firstLink.getWeight());
 		
-		DagLink secondLink = processedLinks.get(1);
+		DagRelationship secondLink = processedLinks.get(1);
 		assertEquals("B", secondLink.getFromNode().getName());
 		assertEquals("C", secondLink.getToNode().getName());
 		assertEquals(3, secondLink.getWeight());
 		
-		DagLink thirdLink = processedLinks.get(2);
+		DagRelationship thirdLink = processedLinks.get(2);
 		assertEquals("C", thirdLink.getFromNode().getName());
 		assertEquals("E", thirdLink.getToNode().getName());
 		assertEquals(3, thirdLink.getWeight());
 		
-		DagLink fourthLink = processedLinks.get(3);
+		DagRelationship fourthLink = processedLinks.get(3);
 		assertEquals("E", fourthLink.getFromNode().getName());
 		assertEquals("D", fourthLink.getToNode().getName());
 		assertEquals(2, fourthLink.getWeight());
 		
-		DagLink fifthLink = processedLinks.get(4);
+		DagRelationship fifthLink = processedLinks.get(4);
 		assertEquals("E", fifthLink.getFromNode().getName());
 		assertEquals("F", fifthLink.getToNode().getName());
 		assertEquals(2, fifthLink.getWeight());
@@ -84,17 +83,17 @@ public class MinimumSpanningTreeFinderTest  {
 
 		model = ModelFixture.buildBasicModel();
 		
-		MinimumSpanningTreeFinder finder = model.createMinimumSpanningTreeFinder(model.getDefaultLinkType(), model.getLinkType("mst"));
+		MinimumSpanningTreeFinder finder = model.createMinimumSpanningTreeFinder(model.getDefaultRelationshipType(), model.getRelationshipType("mst"));
 		
 		
-		List<DagLink> processedLinks = finder.determineMinimumSpanningTree(model.getNode("A"));
+		List<DagRelationship> processedLinks = finder.determineMinimumSpanningTree(model.getNode("A"));
 		int total = 0;
-		for (DagLink l : processedLinks) {
+		for (DagRelationship l : processedLinks) {
 			logger.error(l.getFromNode().getName() + " --> " + l.getToNode().getName() + " with " + l.getWeight() ) ;
 			total = total + l.getWeight();
 		}
 		
-		List<DagNode> nodes = model.navigate().from(model.getNode("A")).by(model.getLinkType("mst")).descendants();
+		List<DagNode> nodes = model.navigate().from(model.getNode("A")).by(model.getRelationshipType("mst")).descendants();
 		logger.error(nodes.toString()) ;
 		assertEquals(17, total);
 		
@@ -110,12 +109,12 @@ public class MinimumSpanningTreeFinderTest  {
 
 		model = ModelFixture.BuildComplexModel();
 		
-		MinimumSpanningTreeFinder finder = model.createMinimumSpanningTreeFinder(model.getDefaultLinkType());
+		MinimumSpanningTreeFinder finder = model.createMinimumSpanningTreeFinder(model.getDefaultRelationshipType());
 		
-		List<DagLink> processedLinks = finder.determineMinimumSpanningTree(model.getNode("A"));
+		List<DagRelationship> processedLinks = finder.determineMinimumSpanningTree(model.getNode("A"));
 		
 		int total = 0;
-		for (DagLink l : processedLinks) {
+		for (DagRelationship l : processedLinks) {
 			logger.error(l.getFromNode().getName() + " --> " + l.getToNode().getName() + " with " + l.getWeight() ) ;
 			total = total + l.getWeight();
 		}

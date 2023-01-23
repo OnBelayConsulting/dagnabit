@@ -1,13 +1,13 @@
 package com.onbelay.dagnabit.graph.examples.genealogy;
 
+import com.onbelay.dagnabit.graph.model.DagContext;
+import com.onbelay.dagnabit.graph.model.DagRelationship;
+import com.onbelay.dagnabit.graph.model.DagNode;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import com.onbelay.dagnabit.graph.model.DagContext;
-import com.onbelay.dagnabit.graph.model.DagLink;
-import com.onbelay.dagnabit.graph.model.DagNode;
 
 public class DagGenealogyContext implements DagContext {
 
@@ -33,11 +33,11 @@ public class DagGenealogyContext implements DagContext {
 	}
 	
 	
-	public static void accept(DagContext context, DagNode startingNode, DagLink link, DagNode endingNode) {
+	public static void accept(DagContext context, DagNode startingNode, DagRelationship link, DagNode endingNode) {
 		Map<String, DagGenealogyNodeContext> nodes = ((DagGenealogyContext)context).getNodes();
 		
 		
-		if (startingNode.getNodeType().getTypeName().equals("PERSON")) {
+		if (startingNode.getCategory().getCategoryName().equals("PERSON")) {
  
 			DagGenealogyNodeContext nodeContext;
 			if (nodes.containsKey(startingNode.getName())) {
@@ -47,7 +47,7 @@ public class DagGenealogyContext implements DagContext {
 				nodes.put(startingNode.getName(), nodeContext);
 			}
 		
-			if (link.getDagLinkType().getName().equals(GenealogyFixture.ATTENDED_REL))
+			if (link.getRelationshipType().getName().equals(GenealogyFixture.ATTENDED_REL))
 				nodeContext.setNameOfSchool(endingNode.getName());
 			else
 				nodeContext.setLocationWasBornIn(endingNode.getName());

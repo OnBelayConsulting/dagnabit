@@ -1,19 +1,68 @@
 plugins {
-	id 'org.springframework.boot' version '2.6.6'
+	id 'org.springframework.boot' version '2.7.5'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id 'idea'
 }
+
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencyManagement {
+
+	imports {
+		mavenBom 'org.springframework.boot:spring-boot-dependencies:2.7.5'
+	}
+
+	dependencies {
+
+	}
+}
+
+sourceCompatibility = 11
+targetCompatibility = 11
+
+dependencies {
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+	implementation "com.fasterxml.jackson.core:jackson-core"
+	implementation "com.fasterxml.jackson.core:jackson-databind"
+	implementation "com.fasterxml.jackson.datatype:jackson-datatype-json-org"
+	implementation group: "org.apache.commons", name: "commons-lang3", version: "3.12.0"
+	implementation group: "org.apache.commons", name: "commons-collections4", version: "4.4"
+	implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	//testImplementation('org.springframework.security:spring-security-test')
+	testImplementation("org.junit.vintage:junit-vintage-engine")
+	implementation('org.springframework.boot:spring-boot-starter-log4j2')
+
+
+}
+
+configurations {
+	all*.exclude group:'org.springframework.boot',
+			module:'spring-boot-starter-logging'
+	tests
+}
+
+test {
+	useJUnitPlatform()
+}
+
+
+
+
 jar {
+	enabled = true
 	baseName = 'DAGNabitlib'
 	version = '1.0.0-SNAPSHOT'
 	manifest {
 		attributes("Implementation-Title": "Dagnabitlib", "Implementation-Version": "1.0", "Created-By": "OnBelay Consulting")
 	}
 }
-
-sourceCompatibility = 11
-targetCompatibility = 11
 
 task srcZip (type: Zip) {
 	
@@ -25,23 +74,18 @@ task srcZip (type: Zip) {
 
 task construct (dependsOn: ["build", "srcZip"])
 
-
-repositories {
-    mavenCentral()
-}
-
-sourceCompatibility = 11
-targetCompatibility = 11
-
-dependencies {
-	testImplementation("org.junit.vintage:junit-vintage-engine") 
-    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.28'
-	implementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.8'
-}
-
 bootJar {
   enabled = false
 }
 
+
+task testJar(type: Jar, dependsOn: testClasses) {
+	archiveClassifier.set('tests')
+	from sourceSets.test.output
+}
+
+artifacts {
+	tests testJar
+}
 
 

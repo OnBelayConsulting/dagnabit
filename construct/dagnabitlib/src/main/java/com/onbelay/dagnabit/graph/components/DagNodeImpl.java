@@ -18,15 +18,14 @@ package com.onbelay.dagnabit.graph.components;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagRelationshipType;
 import com.onbelay.dagnabit.graph.model.DagNode;
-import com.onbelay.dagnabit.graph.model.DagNodeType;
+import com.onbelay.dagnabit.graph.model.DagNodeCategory;
 
 /**
  * represents a node on a graph with connectors to other nodes.
@@ -44,11 +43,11 @@ public class DagNodeImpl extends DagItemImpl implements DagNode {
     private List<DagNodeConnector> fromThisConnectorToNodes = new  ArrayList<DagNodeConnector>();
     private List<DagNodeConnector> toThisConnectorFromNodes = new  ArrayList<DagNodeConnector>();
     
-    private DagNodeType nodeType;
+    private DagNodeCategory nodeCategory;
     
-    public DagNodeImpl(String name, DagNodeType nodeType) {
+    public DagNodeImpl(String name, DagNodeCategory nodeCategory) {
        super(name);
-        this.nodeType = nodeType;
+        this.nodeCategory = nodeCategory;
     }
 
     public void addFromThisNodeConnector(DagNodeConnector r) {
@@ -57,20 +56,20 @@ public class DagNodeImpl extends DagItemImpl implements DagNode {
     
     
     public DagNodeConnector addFromThisNodeRelationshipToNode(
-    		DagLinkType dagLinkType,
+    		DagRelationshipType dagRelationshipType,
     		DagNodeImpl toNode) {
     	
         DagNodeConnector connector = findFromThisNodeConnectorTo(toNode);
         if (connector != null) {
-        	connector.addRelationshipName(dagLinkType);
+        	connector.addRelationshipName(dagRelationshipType);
         } else {
-        	connector = new DagNodeConnector(this, dagLinkType, toNode);
+        	connector = new DagNodeConnector(this, dagRelationshipType, toNode);
             fromThisConnectorToNodes.add(connector);
         }
     	toNode.addToThisNodeRelationshipFromNode(connector);
     	
-    	if (toNode.checkForReciprical(this, dagLinkType)) {
-    		logger.debug("reciprical relationship exists " + this.getName() + "-" + dagLinkType.getName() + "-" + toNode.getName());
+    	if (toNode.checkForReciprical(this, dagRelationshipType)) {
+    		logger.debug("reciprical relationship exists " + this.getName() + "-" + dagRelationshipType.getName() + "-" + toNode.getName());
     	}
     			
     	
@@ -95,8 +94,8 @@ public class DagNodeImpl extends DagItemImpl implements DagNode {
     	return (hasFromThisNodeConnectors() && hasToThisNodeConnectors() == false);
     }
     
-    public DagNodeType getNodeType() {
-		return nodeType;
+    public DagNodeCategory getCategory() {
+		return nodeCategory;
 	}
 
 	public boolean hasNoConnectors() {
@@ -113,12 +112,12 @@ public class DagNodeImpl extends DagItemImpl implements DagNode {
     
     protected boolean checkForReciprical(
     		DagNodeImpl fromNode, 
-    		DagLinkType dagLinkType) {
+    		DagRelationshipType dagRelationshipType) {
     	DagNodeConnector connector = findFromThisNodeConnectorTo(fromNode);
     	if (connector == null)
     		return false;
     	
-    	return (connector.hasRelationship(dagLinkType));
+    	return (connector.hasRelationship(dagRelationshipType));
     	
     }
 
@@ -182,7 +181,7 @@ public class DagNodeImpl extends DagItemImpl implements DagNode {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((nodeType == null) ? 0 : nodeType.hashCode());
+		result = prime * result + ((nodeCategory == null) ? 0 : nodeCategory.hashCode());
 		return result;
 	}
 
@@ -195,10 +194,10 @@ public class DagNodeImpl extends DagItemImpl implements DagNode {
 		if (getClass() != obj.getClass())
 			return false;
 		DagNodeImpl other = (DagNodeImpl) obj;
-		if (nodeType == null) {
-			if (other.nodeType != null)
+		if (nodeCategory == null) {
+			if (other.nodeCategory != null)
 				return false;
-		} else if (!nodeType.equals(other.nodeType))
+		} else if (!nodeCategory.equals(other.nodeCategory))
 			return false;
 		return true;
 	}

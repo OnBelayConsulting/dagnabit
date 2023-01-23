@@ -20,13 +20,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagRelationshipType;
 import com.onbelay.dagnabit.graph.model.DagNode;
 
 public class DagNodeSearchState {
     
     private Map<String, DagNodeImpl> visited = new HashMap<String, DagNodeImpl>();
-    private DagLinkType dagLinkType;
+    private DagRelationshipType dagRelationshipType;
     private DagNodeVector vector;
     private List<DagNodeVector> vectors = new ArrayList<DagNodeVector>();
     private List<DagNodeVector> cycles = new ArrayList<DagNodeVector>();
@@ -39,21 +39,21 @@ public class DagNodeSearchState {
     private DagNodeImpl currentNode;
 
     public DagNodeSearchState(
-    		DagLinkType dagLinkType, 
+    		DagRelationshipType dagRelationshipType,
     		DagNodeImpl currentNode) {
     	
-    	this.dagLinkType = dagLinkType;
+    	this.dagRelationshipType = dagRelationshipType;
         this.currentNode = currentNode;
         visited.put(currentNode.getName(), currentNode);
     }
     
     public DagNodeSearchState(
-    		DagLinkType dagLinkType, 
+    		DagRelationshipType dagRelationshipType,
     		DagNodeImpl currentNode,
     		DagNode endingNode) {
     	
     	this.endingNode = endingNode;
-    	this.dagLinkType = dagLinkType;
+    	this.dagRelationshipType = dagRelationshipType;
         this.currentNode = currentNode;
         visited.put(currentNode.getName(), currentNode);
     }
@@ -65,12 +65,12 @@ public class DagNodeSearchState {
     	
     	this.endingNode = copy.endingNode;
     	this.isHalting = copy.isHalting;
-    	this.dagLinkType = copy.dagLinkType;
+    	this.dagRelationshipType = copy.dagRelationshipType;
     	this.previousNode = copy.currentNode;
         this.currentNode = currentNode;
         this.visited.putAll(copy.visited);
         this.vectors = copy.vectors;
-        this.vector = new DagNodeVector(dagLinkType, copy.vector);
+        this.vector = new DagNodeVector(dagRelationshipType, copy.vector);
         addNodeRelationshipLink(relationship);
         visited.put(currentNode.getName(), currentNode);
         this.cycles = copy.cycles;
@@ -86,7 +86,7 @@ public class DagNodeSearchState {
 
     public void addNodeRelationshipLink(DagNodeConnector connector) {
         if (vector == null)
-            vector = new DagNodeVector(dagLinkType);
+            vector = new DagNodeVector(dagRelationshipType);
         vector.add(connector);
     }
     
@@ -115,7 +115,7 @@ public class DagNodeSearchState {
     		vector.add(connector);
     		vectors.add(vector);
     	} else {
-	    	vector = new DagNodeVector(dagLinkType);
+	    	vector = new DagNodeVector(dagRelationshipType);
 	        vector.add(connector);
 	        vectors.add(vector);
     	}
@@ -131,7 +131,7 @@ public class DagNodeSearchState {
         return visited.get(code) != null;
     }
     
-    public void addCycle(DagNodeVector currentVector, DagNodeConnector connector, DagLinkType linkType) {
+    public void addCycle(DagNodeVector currentVector, DagNodeConnector connector, DagRelationshipType linkType) {
     	DagNodeVector cyclicVector = new DagNodeVector(linkType, currentVector);
     	cyclicVector.add(connector);
         cycles.add(cyclicVector);
@@ -145,8 +145,8 @@ public class DagNodeSearchState {
         this.cycles = cycles;
     }
 
-	public DagLinkType getDagLinkType() {
-		return dagLinkType;
+	public DagRelationshipType getDagLinkType() {
+		return dagRelationshipType;
 	}
 
 	public DagNode getEndingNode() {

@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.onbelay.dagnabit.graph.model.DagLink;
-import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagRelationship;
+import com.onbelay.dagnabit.graph.model.DagRelationshipType;
 import com.onbelay.dagnabit.graph.model.DagNode;
 import com.onbelay.dagnabit.graph.model.DagNodePath;
 import com.onbelay.dagnabit.graph.model.ShortestPathFinder;
@@ -29,15 +29,15 @@ public class DagShortestPathRouteFinder implements ShortestPathFinder {
 	private static final Logger logger = LoggerFactory.getLogger(DagShortestPathRouteFinder.class);
 	
 	private DagModelImpl model;
-	private DagLinkType linkType;
+	private DagRelationshipType relationshipType;
 	
 	private Comparator<DagNodeConnector> sorter;
 	
 	
-	protected DagShortestPathRouteFinder(DagModelImpl model, DagLinkType linkType) {
+	protected DagShortestPathRouteFinder(DagModelImpl model, DagRelationshipType relationshipType) {
 		sorter = buildSorter();
 		this.model = model;
-		this.linkType = linkType;
+		this.relationshipType = relationshipType;
 	}
 
 
@@ -49,15 +49,15 @@ public class DagShortestPathRouteFinder implements ShortestPathFinder {
 		
 		if (parents.containsKey(endNode) == false) {
 			logger.error("There is no path from " + startNode.getName() + " to " + endNode.getName());
-			return new DagNodePath(startNode, new ArrayList<DagLink>(), endNode);
+			return new DagNodePath(startNode, new ArrayList<DagRelationship>(), endNode);
 		}
 
-		ArrayDeque<DagLink> stack = new ArrayDeque<DagLink>();
+		ArrayDeque<DagRelationship> stack = new ArrayDeque<DagRelationship>();
 		
 		DagNode currentNode = endNode;
 		DagNode parent = parents.get(currentNode);
 		while (parent != null) {
-			DagLink link = model.getDefaultLink(parent, currentNode);
+			DagRelationship link = model.getDefaultRelationship(parent, currentNode);
 			stack.push(link);
 			currentNode = parent;
 			parent = parents.get(currentNode);
@@ -131,7 +131,7 @@ public class DagShortestPathRouteFinder implements ShortestPathFinder {
 		
 		for (DagNodeConnector connector : currentNode.getSortedFromThisNodeConnectors(sorter)) {
 			
-			int cost = costs.get(currentNode) + connector.getRelationship(linkType).getWeight();
+			int cost = costs.get(currentNode) + connector.getRelationship(relationshipType).getWeight();
 			
 			if (costs.containsKey(connector.getToNode())) {
 				if (cost < costs.get(connector.getToNode())) {
@@ -164,8 +164,8 @@ public class DagShortestPathRouteFinder implements ShortestPathFinder {
 	
 	private Comparator<DagNodeConnector> buildSorter() {
 		Comparator<DagNodeConnector> sorter = (c, d) -> {
-			int cWeight = c.getRelationship(model.getDefaultLinkType()).getWeight();
-			int dWeight = d.getRelationship(model.getDefaultLinkType()).getWeight();
+			int cWeight = c.getRelationship(model.getDefaultRelationshipType()).getWeight();
+			int dWeight = d.getRelationship(model.getDefaultRelationshipType()).getWeight();
 			return cWeight - dWeight;
 		};
 		return sorter;

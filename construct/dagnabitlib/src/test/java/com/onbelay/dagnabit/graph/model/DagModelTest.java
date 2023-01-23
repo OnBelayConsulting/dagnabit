@@ -15,17 +15,16 @@
  */
 package com.onbelay.dagnabit.graph.model;
 
-import static org.junit.Assert.assertEquals;
+import com.onbelay.dagnabit.graph.components.DagModelImpl;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.onbelay.dagnabit.graph.factories.DagModelFactory;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test the basic methods to build a graph model and the methods to interrogate it.
@@ -35,12 +34,11 @@ import com.onbelay.dagnabit.graph.factories.DagModelFactory;
 public class DagModelTest  {
 	private static Logger logger = LoggerFactory.getLogger(DagModelTest.class);
 
-	private DagModelFactory factory = new DagModelFactory();
 	private DagModel model;
 	
 	@Before
 	public void beforeRun() throws Throwable {
-		model = factory.newModel();
+		model = new DagModelImpl("test");
 
 		// Solitary nodes
 		model.addNode("S", "special");
@@ -110,7 +108,7 @@ public class DagModelTest  {
 	 */
 	public void testFindLinkTypes() {
 		
-		List<DagLinkType> linkTypes = model.getLinkTypes();
+		List<DagRelationshipType> linkTypes = model.getRelationshipTypes();
 		assertEquals(3, linkTypes.size());
 		
 		assertEquals(1, linkTypes.stream().filter( n -> n.getName().equals("benchesTo")).collect(Collectors.toList()).size());
@@ -122,14 +120,14 @@ public class DagModelTest  {
 	
 	@Test
 	public void testFindNodeTypes() {
-		List<DagNodeType> nodeTypes = model.getNodeTypes();
+		List<DagNodeCategory> nodeTypes = model.getNodeCategories();
 		assertEquals(3, nodeTypes.size());
 		
-		assertEquals(1, nodeTypes.stream().filter( n -> n.getTypeName().equals("special")).collect(Collectors.toList()).size());
+		assertEquals(1, nodeTypes.stream().filter( n -> n.getCategoryName().equals("special")).collect(Collectors.toList()).size());
 		
-		assertEquals(1, nodeTypes.stream().filter( n -> n.getTypeName().equals("ordinary")).collect(Collectors.toList()).size());
+		assertEquals(1, nodeTypes.stream().filter( n -> n.getCategoryName().equals("ordinary")).collect(Collectors.toList()).size());
 		
-		assertEquals(1, nodeTypes.stream().filter( n -> n.getTypeName().equals("node")).collect(Collectors.toList()).size());
+		assertEquals(1, nodeTypes.stream().filter( n -> n.getCategoryName().equals("node")).collect(Collectors.toList()).size());
 	}
 
 

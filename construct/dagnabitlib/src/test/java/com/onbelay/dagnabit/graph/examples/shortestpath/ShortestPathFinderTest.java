@@ -15,21 +15,16 @@
  */
 package com.onbelay.dagnabit.graph.examples.shortestpath;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
+import com.onbelay.dagnabit.graph.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.onbelay.dagnabit.graph.model.DagLink;
-import com.onbelay.dagnabit.graph.model.DagModel;
-import com.onbelay.dagnabit.graph.model.DagNode;
-import com.onbelay.dagnabit.graph.model.DagNodePath;
-import com.onbelay.dagnabit.graph.model.ShortestPathFinder;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Shortest path is the shortest path from the start to finish based on weights. The path generally will not include all nodes.
@@ -52,7 +47,7 @@ public class ShortestPathFinderTest  {
 		
 		// No link to this
 		model.addNode("Z");
-		ShortestPathFinder finder = model.createShortestPathFinder(model.getDefaultLinkType());
+		ShortestPathFinder finder = model.createShortestPathFinder(model.getDefaultRelationshipType());
 		
 		List<DagNode> path = finder.findShortestPath(model.getNode("start"), model.getNode("Z"));
 		logger.error(path.toString());
@@ -65,11 +60,11 @@ public class ShortestPathFinderTest  {
 		
 		// No link to this
 		model.addNode("Z");
-		ShortestPathFinder finder = model.createShortestPathFinder(model.getDefaultLinkType());
+		ShortestPathFinder finder = model.createShortestPathFinder(model.getDefaultRelationshipType());
 		
 		DagNodePath path = finder.findShortestRoute(model.getNode("start"), model.getNode("Z"));
 		logger.error(path.toString());
-		assertEquals(0, path.getLinks().size());
+		assertEquals(0, path.getRelationships().size());
 	}
 	
 	
@@ -77,7 +72,7 @@ public class ShortestPathFinderTest  {
 	public void testFindShortestPathSimple() {
 		model = ModelFixture.buildModel();
 		
-		ShortestPathFinder finder = model.createShortestPathFinder(model.getDefaultLinkType());
+		ShortestPathFinder finder = model.createShortestPathFinder(model.getDefaultRelationshipType());
 		
 		List<DagNode> nodes = finder.findShortestPath(model.getNode("start"), model.getNode("finish"));
 		logger.error(nodes.toString());
@@ -115,23 +110,23 @@ public class ShortestPathFinderTest  {
 	public void testFindShortestRouteSimple() {
 		model = ModelFixture.buildModel();
 		
-		ShortestPathFinder finder = model.createShortestPathFinder(model.getDefaultLinkType());
+		ShortestPathFinder finder = model.createShortestPathFinder(model.getDefaultRelationshipType());
 		
 		DagNodePath path = finder.findShortestRoute(model.getNode("start"), model.getNode("finish"));
 		logger.error(path.toString());
-		assertEquals(3, path.getLinks().size());
+		assertEquals(3, path.getRelationships().size());
 		
-		DagLink firstLink = path.getLinks().get(0);
+		DagRelationship firstLink = path.getRelationships().get(0);
 		assertEquals("start", firstLink.getFromNode().getName());
 		assertEquals("B", firstLink.getToNode().getName());
 		assertEquals(2, firstLink.getWeight());
 		
-		DagLink secondLink = path.getLinks().get(1);
+		DagRelationship secondLink = path.getRelationships().get(1);
 		assertEquals("B", secondLink.getFromNode().getName());
 		assertEquals("A", secondLink.getToNode().getName());
 		assertEquals(3, secondLink.getWeight());
 		
-		DagLink thirdLink = path.getLinks().get(2);
+		DagRelationship thirdLink = path.getRelationships().get(2);
 		assertEquals("A", thirdLink.getFromNode().getName());
 		assertEquals("finish", thirdLink.getToNode().getName());
 		assertEquals(1, thirdLink.getWeight());
@@ -143,7 +138,7 @@ public class ShortestPathFinderTest  {
 	public void testFindShortestPathComplex() {
 		model = ModelFixture.buildComplexModel();
 		
-		ShortestPathFinder finder = model.createShortestPathFinder(model.getDefaultLinkType());
+		ShortestPathFinder finder = model.createShortestPathFinder(model.getDefaultRelationshipType());
 		
 		List<DagNode> path = finder.findShortestPath(model.getNode("start"), model.getNode("finish"));
 		logger.error(path.toString());
@@ -156,28 +151,28 @@ public class ShortestPathFinderTest  {
 	public void testFindShortestRouteComplex() {
 		model = ModelFixture.buildComplexModel();
 		
-		ShortestPathFinder finder = model.createShortestPathFinder(model.getDefaultLinkType());
+		ShortestPathFinder finder = model.createShortestPathFinder(model.getDefaultRelationshipType());
 		
 		DagNodePath path = finder.findShortestRoute(model.getNode("start"), model.getNode("finish"));
 		logger.error(path.toStringWithWeights());
-		assertEquals(4, path.getLinks().size());
+		assertEquals(4, path.getRelationships().size());
 		
-		DagLink firstLink = path.getLinks().get(0);
+		DagRelationship firstLink = path.getRelationships().get(0);
 		assertEquals("start", firstLink.getFromNode().getName());
 		assertEquals("B", firstLink.getToNode().getName());
 		assertEquals(2, firstLink.getWeight());
 		
-		DagLink secondLink = path.getLinks().get(1);
+		DagRelationship secondLink = path.getRelationships().get(1);
 		assertEquals("B", secondLink.getFromNode().getName());
 		assertEquals("A", secondLink.getToNode().getName());
 		assertEquals(3, secondLink.getWeight());
 		
-		DagLink thirdLink = path.getLinks().get(2);
+		DagRelationship thirdLink = path.getRelationships().get(2);
 		assertEquals("A", thirdLink.getFromNode().getName());
 		assertEquals("D", thirdLink.getToNode().getName());
 		assertEquals(4, thirdLink.getWeight());
 		
-		DagLink fourthLink = path.getLinks().get(3);
+		DagRelationship fourthLink = path.getRelationships().get(3);
 		assertEquals("D", fourthLink.getFromNode().getName());
 		assertEquals("finish", fourthLink.getToNode().getName());
 		assertEquals(3, fourthLink.getWeight());

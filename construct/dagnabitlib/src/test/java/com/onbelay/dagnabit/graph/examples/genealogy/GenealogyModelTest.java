@@ -15,27 +15,20 @@
  */
 package com.onbelay.dagnabit.graph.examples.genealogy;
 
-import static org.junit.Assert.assertEquals;
+import com.onbelay.dagnabit.graph.components.DagModelImpl;
+import com.onbelay.dagnabit.graphnode.factory.DagModelFactory;
+import com.onbelay.dagnabit.graph.model.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.onbelay.dagnabit.graph.factories.DagModelFactory;
-import com.onbelay.dagnabit.graph.model.DagContext;
-import com.onbelay.dagnabit.graph.model.DagData;
-import com.onbelay.dagnabit.graph.model.DagLinkType;
-import com.onbelay.dagnabit.graph.model.DagModel;
-import com.onbelay.dagnabit.graph.model.DagNode;
-import com.onbelay.dagnabit.graph.model.DagNodePath;
-import com.onbelay.dagnabit.graph.model.LinkRouteFinder;
-import com.onbelay.dagnabit.graph.model.NodeSearchResult;
+import static org.junit.Assert.assertEquals;
 
 public class GenealogyModelTest  {
 	private static Logger logger = LoggerFactory.getLogger(GenealogyModelTest.class);
@@ -44,8 +37,7 @@ public class GenealogyModelTest  {
 	
 	@Before
 	public void beforeRun() throws Throwable {
-		DagModelFactory factory = new DagModelFactory();
-		model = factory.newModel();
+		model = new DagModelImpl("test");
 		
 		GenealogyFixture fixture = new GenealogyFixture(model);
 		
@@ -132,7 +124,7 @@ public class GenealogyModelTest  {
 	public void testNoCycles() {
 
 		for (DagNode node : model.findRootNodes()) {
-			for (DagLinkType linkType : model.getLinkTypes()) {
+			for (DagRelationshipType linkType : model.getRelationshipTypes()) {
 				
 				LinkRouteFinder routeFinder = model.createDagLinkRouteFinder(
 						linkType);
@@ -149,7 +141,7 @@ public class GenealogyModelTest  {
 		List<DagNode> nodes = model
 				.navigate()
 				.from(model.getNode("William Colvy-Smith"))
-				.by(model.getLinkType(GenealogyFixture.PARENT_REL))
+				.by(model.getRelationshipType(GenealogyFixture.PARENT_REL))
 				.ancestors();
 		
 		for (DagNode p : nodes) {
@@ -174,7 +166,7 @@ public class GenealogyModelTest  {
 		List<DagNode> nodes = model
 				.navigate()
 				.from(model.getNode("John Smith"))
-				.by(model.getLinkType(GenealogyFixture.PARENT_REL))
+				.by(model.getRelationshipType(GenealogyFixture.PARENT_REL))
 				.forOnly(nodePredicate)
 				.descendants();
 		
@@ -199,7 +191,7 @@ public class GenealogyModelTest  {
 		List<DagNode> nodes = model
 				.navigate()
 				.from(model.getNode("Robert Smith"))
-				.by(model.getLinkType(GenealogyFixture.PARENT_REL))
+				.by(model.getRelationshipType(GenealogyFixture.PARENT_REL))
 				.until(haltingPredicate)  
 				.descendants();
 		
@@ -230,7 +222,7 @@ public class GenealogyModelTest  {
 				.navigate()
 				.from(model.getNode("Robert Smith"))
 				.breadthFirst()
-				.by(model.getLinkType(GenealogyFixture.PARENT_REL))
+				.by(model.getRelationshipType(GenealogyFixture.PARENT_REL))
 				.until(haltingPredicate)  
 				.descendants();
 		
@@ -251,7 +243,7 @@ public class GenealogyModelTest  {
 		List<DagNode> nodes = model
 									.navigate()
 									.from(model.getNode("John Smith"))
-									.by(model.getLinkType(GenealogyFixture.ATTENDED_REL))
+									.by(model.getRelationshipType(GenealogyFixture.ATTENDED_REL))
 									.findChildren()
 									.nodes();
 		for (DagNode p : nodes) {
@@ -265,9 +257,9 @@ public class GenealogyModelTest  {
 		List<DagNode> nodes = model
 									.navigate()
 									.from(model.getNode("John Smith"))
-									.by(model.getLinkType(GenealogyFixture.ATTENDED_REL))
+									.by(model.getRelationshipType(GenealogyFixture.ATTENDED_REL))
 									.findChildren()
-									.by(model.getLinkType(GenealogyFixture.ATTENDED_REL))
+									.by(model.getRelationshipType(GenealogyFixture.ATTENDED_REL))
 									.parents();
 		for (DagNode p : nodes) {
 			logger.error(p.getName());
@@ -280,7 +272,7 @@ public class GenealogyModelTest  {
 		List<DagNode> nodes = model
 				.navigate()
 				.from(model.getNode("Andrew Smith"))
-				.by(model.getLinkType(GenealogyFixture.PARENT_REL))
+				.by(model.getRelationshipType(GenealogyFixture.PARENT_REL))
 				.parents();
 		
 		for (DagNode p : nodes) {
@@ -297,19 +289,19 @@ public class GenealogyModelTest  {
 			model
 									.navigate()
 									.from(model.getNode("John Smith"))
-									.by(model.getLinkType(GenealogyFixture.PARENT_REL))
+									.by(model.getRelationshipType(GenealogyFixture.PARENT_REL))
 									.using(context)
 									.findChildren()
 									.visitBy(
-											model.getLinkType(GenealogyFixture.WAS_BORN_IN_REL), 
+											model.getRelationshipType(GenealogyFixture.WAS_BORN_IN_REL),
 											DagGenealogyContext::accept)
 									.visitBy(
-											model.getLinkType(GenealogyFixture.ATTENDED_REL), 
+											model.getRelationshipType(GenealogyFixture.ATTENDED_REL),
 											DagGenealogyContext::accept)
-									.by(model.getLinkType(GenealogyFixture.ATTENDED_REL))
+									.by(model.getRelationshipType(GenealogyFixture.ATTENDED_REL))
 									.findChildren()
 									.visitBy(
-											model.getLinkType(GenealogyFixture.LOCATED_IN_REL), 
+											model.getRelationshipType(GenealogyFixture.LOCATED_IN_REL),
 											DagGenealogyContext::accept)
 									.nodes();
 		
@@ -319,7 +311,7 @@ public class GenealogyModelTest  {
 	@Test
 	public void testRouteFinderDiscoverFromRel() {
 		
-		LinkRouteFinder finder = model.createDagLinkRouteFinder(model.getLinkType(GenealogyFixture.PARENT_REL));
+		LinkRouteFinder finder = model.createDagLinkRouteFinder(model.getRelationshipType(GenealogyFixture.PARENT_REL));
 		
 		NodeSearchResult searchResult = finder.discoverFromRelationships(model.getNode("John Smith"));
 		

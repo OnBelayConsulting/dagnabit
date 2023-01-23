@@ -20,25 +20,25 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.onbelay.dagnabit.graph.model.DagLinkType;
+import com.onbelay.dagnabit.graph.model.DagRelationshipType;
 
 public class DagNodeConnector {
     
     private DagNodeImpl fromNode;
     private DagNodeImpl toNode;
-    private Map<DagLinkType, DagLinkImpl> relationshipMap = new HashMap<>();
+    private Map<DagRelationshipType, DagRelationshipImpl> relationshipMap = new HashMap<>();
     
     
     public DagNodeConnector(
     		DagNodeImpl fromNode, 
-    		DagLinkType dagLinkType, 
+    		DagRelationshipType dagRelationshipType,
     		DagNodeImpl toNode) {
         
         relationshipMap.put(
-        		dagLinkType,
-        		new DagLinkImpl(
+				dagRelationshipType,
+        		new DagRelationshipImpl(
         				fromNode,
-        				dagLinkType,
+						dagRelationshipType,
         				toNode));
         
         this.fromNode = fromNode;
@@ -59,7 +59,7 @@ public class DagNodeConnector {
         this.toNode = endNode;
     }
     
-    public Map<DagLinkType, DagLinkImpl> getRelationships() {
+    public Map<DagRelationshipType, DagRelationshipImpl> getRelationships() {
     	return relationshipMap;
     }
     
@@ -67,20 +67,20 @@ public class DagNodeConnector {
     	relationshipMap.putAll(fromSide.getRelationships());
     }
 
-    public void addRelationshipName(DagLinkType dagLinkType) {
+    public void addRelationshipName(DagRelationshipType dagRelationshipType) {
     	
-    	if (relationshipMap.containsKey(dagLinkType) == false) {
-    		DagLinkImpl node = 	new DagLinkImpl(
+    	if (relationshipMap.containsKey(dagRelationshipType) == false) {
+    		DagRelationshipImpl node = 	new DagRelationshipImpl(
     				fromNode,
-    				dagLinkType,
+					dagRelationshipType,
     				toNode);
 	        relationshipMap.put(
-	        		dagLinkType,
+					dagRelationshipType,
 	        		node);
     	}
     }
     
-    public DagLinkImpl getRelationship(DagLinkType linkType) {
+    public DagRelationshipImpl getRelationship(DagRelationshipType linkType) {
     	return relationshipMap.get(linkType);
     }
     
@@ -92,8 +92,8 @@ public class DagNodeConnector {
     public String toFullString() {
 		StringBuffer buffer = new StringBuffer(fromNode.getName());
 		buffer.append(" - [");
-		Set<DagLinkType> names = relationshipMap.keySet();
-		Iterator<DagLinkType> itor = names.iterator();
+		Set<DagRelationshipType> names = relationshipMap.keySet();
+		Iterator<DagRelationshipType> itor = names.iterator();
 		buffer.append(itor.next().getName());
 		while (itor.hasNext()) {
 			buffer.append(", ");
@@ -105,7 +105,7 @@ public class DagNodeConnector {
     }
     
 
-	public boolean hasRelationship(DagLinkType traversalRelationship) {
+	public boolean hasRelationship(DagRelationshipType traversalRelationship) {
 
 		return relationshipMap.containsKey(traversalRelationship);
 	}

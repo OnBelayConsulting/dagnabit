@@ -5,7 +5,7 @@ public interface DagNode {
 
 	public String getName();
 	
-	public DagNodeType getNodeType();
+	public DagNodeCategory getCategory();
 	
 	public boolean isLeaf();
 	
@@ -15,6 +15,6 @@ public interface DagNode {
 	
 	public DagData getData();
 	
-	public int compareTo(DagNode c2);
+	public int compareTo(DagNode otherNode);
 	
 }

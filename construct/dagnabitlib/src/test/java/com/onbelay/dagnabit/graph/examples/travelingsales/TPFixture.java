@@ -1,19 +1,17 @@
 package com.onbelay.dagnabit.graph.examples.travelingsales;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.onbelay.dagnabit.graph.factories.DagModelFactory;
-import com.onbelay.dagnabit.graph.model.DagLink;
+import com.onbelay.dagnabit.graph.components.DagModelImpl;
 import com.onbelay.dagnabit.graph.model.DagModel;
 import com.onbelay.dagnabit.graph.model.DagNode;
+import com.onbelay.dagnabit.graph.model.DagRelationship;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TPFixture {
 	private static Logger logger = LoggerFactory.getLogger(TPFixture.class);
 
 	public static DagModel buildCircularModel() {
-		DagModelFactory factory = new DagModelFactory();
-		DagModel model = factory.newModel();
+		DagModel model = new DagModelImpl("test");
 		
 		model.addNode("A");
 		
@@ -51,8 +49,7 @@ public class TPFixture {
 	
 
 	public static DagModel buildTPModel() {
-		DagModelFactory factory = new DagModelFactory();
-		DagModel model = factory.newModel();
+		DagModel model = new DagModelImpl("test");
 		
 		model.addNode("1");
 		
@@ -62,74 +59,74 @@ public class TPFixture {
 		
 		model.addNode("4");
 		
-		DagLink a13Link = model.addRelationship(
+		DagRelationship a13Link = model.addRelationship(
 				model.getNode("1"), 
 				"connects", 
 				model.getNode("3"));
 		a13Link.setWeight(15);
 		
-		DagLink b31Link = model.addRelationship(
+		DagRelationship b31Link = model.addRelationship(
 				model.getNode("3"), 
 				"connects", 
 				model.getNode("1"));
 		b31Link.setWeight(15);
 
-		DagLink a34Link = model.addRelationship(
+		DagRelationship a34Link = model.addRelationship(
 				model.getNode("3"), 
 				"connects", 
 				model.getNode("4"));
 		a34Link.setWeight(30);
 
-		DagLink b43Link = model.addRelationship(
+		DagRelationship b43Link = model.addRelationship(
 				model.getNode("4"), 
 				"connects", 
 				model.getNode("3"));
 		b43Link.setWeight(30);
 
-		DagLink a41Link = model.addRelationship(
+		DagRelationship a41Link = model.addRelationship(
 				model.getNode("4"), 
 				"connects", 
 				model.getNode("1"));
 		a41Link.setWeight(20);
 
-		DagLink b14Link = model.addRelationship(
+		DagRelationship b14Link = model.addRelationship(
 				model.getNode("1"), 
 				"connects", 
 				model.getNode("4"));
 		b14Link.setWeight(20);
 
 		
-		DagLink a32Link = model.addRelationship(
+		DagRelationship a32Link = model.addRelationship(
 				model.getNode("3"), 
 				"connects", 
 				model.getNode("2"));
 		a32Link.setWeight(35);
 		
-		DagLink b23Link = model.addRelationship(
+		DagRelationship b23Link = model.addRelationship(
 				model.getNode("2"), 
 				"connects", 
 				model.getNode("3"));
 		b23Link.setWeight(35);
 		
-		DagLink a24Link =  model.addRelationship(
+		DagRelationship a24Link =  model.addRelationship(
 				model.getNode("2"), 
 				"connects", 
 				model.getNode("4"));
 		a24Link.setWeight(25);
 		
-		DagLink b42Link =  model.addRelationship(
+		DagRelationship b42Link =  model.addRelationship(
 				model.getNode("4"), 
 				"connects", 
 				model.getNode("2"));
 		b42Link.setWeight(25);
 		
-		DagLink a21Link =  model.addRelationship(
+		DagRelationship a21Link =  model.addRelationship(
 				model.getNode("2"), 
 				"connects", 
 				model.getNode("1"));
 		a21Link.setWeight(10);
 		
-		DagLink b12Link =  model.addRelationship(
+		DagRelationship b12Link =  model.addRelationship(
 				model.getNode("1"), 
 				"connects", 
 				model.getNode("2"));
@@ -166,12 +163,12 @@ public class TPFixture {
 				DagNode secondNode = model.getNode(""+j);
 				if (node.equals(secondNode) == false) {
 					int weight = i*3 + j*5;
-					DagLink firstLink =  model.addRelationship(
+					DagRelationship firstLink =  model.addRelationship(
 							node, 
 							"connects", 
 							secondNode);
 					firstLink.setWeight(weight);
-					DagLink secondLink =  model.addRelationship(
+					DagRelationship secondLink =  model.addRelationship(
 							secondNode, 
 							"connects", 
 							node);
@@ -184,7 +181,7 @@ public class TPFixture {
 		
 		logger.error("total nodes: " + model.getNodes());
 		
-		logger.error("Total links: " + model.getLinks().size());
+		logger.error("Total links: " + model.getRelationships().size());
 		
 //		for (DagLink link : model.getLinks()) {
 //			logger.error("Link " + link.getName() );

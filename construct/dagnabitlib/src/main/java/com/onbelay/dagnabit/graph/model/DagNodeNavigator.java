@@ -65,10 +65,10 @@ public interface DagNodeNavigator {
 	
 	/**
 	 * Optionally specify a LinkType to filter the relationships that will be navigated.
-	 * @param linkType
+	 * @param type
 	 * @return a DagNodeNavigator set with the linkType
 	 */
-	public DagNodeNavigator by (DagLinkType linkType);
+	public DagNodeNavigator by (DagRelationshipType type);
 	
 	
 	/**
@@ -76,7 +76,7 @@ public interface DagNodeNavigator {
 	 * @param filterLinkpredicate
 	 * @return
 	 */
-	public DagNodeNavigator filterBy (Predicate<DagLink> filterLinkpredicate);
+	public DagNodeNavigator filterBy (Predicate<DagRelationship> filterLinkpredicate);
 
 	
 	/**
@@ -112,7 +112,7 @@ public interface DagNodeNavigator {
 	 * @param nodeType
 	 * @return a DagNodeNavigator set with the nodeType
 	 */
-	public DagNodeNavigator forOnly(DagNodeType nodeType);
+	public DagNodeNavigator forOnly(DagNodeCategory nodeType);
 	
 	
 	/**
@@ -126,11 +126,13 @@ public interface DagNodeNavigator {
 	/**
 	 * Visit children nodes with the following visitor.
 	 * This method will not alter the starting nodes but will simply visit. 
-	 * @param linkType
+	 * @param relationshipType
 	 * @param visitor - a lambda that implements the NodeVisitor accept
 	 * @return
 	 */
-	public DagNodeNavigator visitBy(DagLinkType linkType, NodeVisitor visitor);
+	public DagNodeNavigator visitBy(
+			DagRelationshipType relationshipType,
+			NodeVisitor visitor);
 	
 	/**
 	 * Specify a class that implements a DagContext that will be provided to each visitor
@@ -223,7 +225,7 @@ public interface DagNodeNavigator {
 	
 	/**
 	 * Optionally set an end condition to the traversal
-	 * @param a predicate that will return false if the navigation is to halt
+	 * @param endPredicate - predicate that will return false if the navigation is to halt
 	 * @return
 	 */
 	public DagNodeNavigator until (BiPredicate<DagContext, DagNode> endPredicate);

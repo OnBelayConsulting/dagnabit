@@ -22,9 +22,9 @@ public interface LinkAnalysis {
 
 	public boolean isCyclic();
 	
-	public boolean isCyclic(DagLinkType linkType);
+	public boolean isCyclic(DagRelationshipType type);
 	
-	public Map<DagLinkType, List<DagNodePath>> getCyclesByLinkType();
+	public Map<DagRelationshipType, List<DagNodePath>> getCyclesByRelationshipType();
 	
 	public List<DagNodePath> getCycles();
 	

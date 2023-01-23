@@ -29,45 +29,49 @@ public class DagNodePath {
     private DagNode startNode;
     private DagNode endNode;
     
-    private List<DagLink> links = new ArrayList<>();
+    private List<DagRelationship> relationships = new ArrayList<>();
     
     public DagNodePath(
     		DagNode startNode, 
-    		List<DagLink> links, 
+    		List<DagRelationship> relationships,
     		DagNode endNode) {
     	
     	this.startNode = startNode;
-    	this.links = links;
+    	this.relationships = relationships;
     	this.endNode = endNode;
     	
     }
 
-    public DagNodePath(DagNode startNode, DagLink link, DagNode endNode) {
+    public DagNodePath(
+			DagNode startNode,
+			DagRelationship link,
+			DagNode endNode) {
+
         super();
         this.startNode = startNode;
         this.endNode = endNode;
-        links.add(link);
+        relationships.add(link);
     }
     
     public DagNodePath(
     		DagNode startNode, 
     		DagNodePath lastPath, 
-    		DagLink link,
+    		DagRelationship link,
     		DagNode endNode) {
     	
-    	links.addAll(lastPath.getLinks());
+    	relationships.addAll(lastPath.getRelationships());
         this.startNode = startNode;
         this.endNode = endNode;
-        links.add(link);
+        relationships.add(link);
     }
 
-    public void addPathLink(DagLink v) {
-    	links.add(v);
+    public void addPathLink(DagRelationship v) {
+    	relationships.add(v);
     }
     
-    public void addToPathLink(DagLink v) {
+    public void addToPathLink(DagRelationship v) {
     	this.startNode = v.getFromNode();
-    	links.add(v);
+    	relationships.add(v);
     }
     
     /**
@@ -75,15 +79,15 @@ public class DagNodePath {
      * @return true if path exists
      */
     public boolean pathExists() {
-    	return links.isEmpty() == false;
+    	return relationships.isEmpty() == false;
     }
     
     /**
      * Returns a list of DagLinks that describes the path in order from the fromNode to the toNode.
      * @return a list of DagLinks. The list will be empty if there is no path.
      */
-    public List<DagLink> getLinks() {
-        return links;
+    public List<DagRelationship> getRelationships() {
+        return relationships;
     }
 
     public DagNode getStartNode() {
@@ -100,7 +104,7 @@ public class DagNodePath {
      */
     public int calculateTotalWeight() {
     	int totalWeight = 0;
-    	for (DagLink c : links) {
+    	for (DagRelationship c : relationships) {
     		totalWeight = totalWeight + c.getWeight();
     	}
     	return totalWeight;
@@ -126,13 +130,13 @@ public class DagNodePath {
 	    	buffer.append(getEndNode().getName());
 	    	buffer.append("]     Via: ");
 	    	
-	    	DagLink c = links.get(0);
+	    	DagRelationship c = relationships.get(0);
     		buffer.append(c.getFromNode().getName());
     		buffer.append(" -> ");
     		buffer.append(c.getToNode().getName());
 	    	
-	    	for (int i=1; i < links.size(); i++) {
-	    		c = links.get(i);
+	    	for (int i = 1; i < relationships.size(); i++) {
+	    		c = relationships.get(i);
 	    		buffer.append(", ");
 	    		buffer.append(c.getFromNode().getName());
 	    		buffer.append(" -> ");
@@ -147,7 +151,7 @@ public class DagNodePath {
     public String toStringWithWeights() {
     	if (pathExists()) {
 	    	StringBuffer buffer = new StringBuffer(getStartNode().getName());
-	    	for (DagLink c : links) {
+	    	for (DagRelationship c : relationships) {
 	    		buffer.append(" - ");
 	    		buffer.append(c.getWeight());
 	    		buffer.append(" > ");

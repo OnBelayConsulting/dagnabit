@@ -1,18 +1,16 @@
 package com.onbelay.dagnabit.graph.examples.shortestpath;
 
+import com.onbelay.dagnabit.graph.components.DagModelImpl;
+import com.onbelay.dagnabit.graph.model.DagModel;
+import com.onbelay.dagnabit.graph.model.DagRelationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.onbelay.dagnabit.graph.factories.DagModelFactory;
-import com.onbelay.dagnabit.graph.model.DagLink;
-import com.onbelay.dagnabit.graph.model.DagModel;
 
 public class ModelFixture {
 	private static Logger logger = LoggerFactory.getLogger(ModelFixture.class);
 
 	public static DagModel buildModel() {
-		DagModelFactory factory = new DagModelFactory();
-		DagModel model = factory.newModel();
+		DagModel model = new DagModelImpl("test");
 		
 		model.addNode("start");
 		
@@ -22,7 +20,7 @@ public class ModelFixture {
 		
 		model.addNode("finish");
 		
-		DagLink link = model.addDefaultRelationship(
+		DagRelationship link = model.addDefaultRelationship(
 				model.getNode("start"), 
 				model.getNode("A"));
 		link.setWeight(6);
@@ -55,9 +53,8 @@ public class ModelFixture {
 	}
 	
 	public static DagModel buildComplexModel() {
-		
-		DagModelFactory factory = new DagModelFactory();
-		DagModel model = factory.newModel();
+
+		DagModel model = new DagModelImpl("test");
 		
 		model.addNode("start");
 		
@@ -71,7 +68,7 @@ public class ModelFixture {
 		
 		model.addNode("finish");
 		
-		DagLink link = model.addDefaultRelationship(
+		DagRelationship link = model.addDefaultRelationship(
 				model.getNode("start"), 
 				model.getNode("A"));
 		link.setWeight(6);
