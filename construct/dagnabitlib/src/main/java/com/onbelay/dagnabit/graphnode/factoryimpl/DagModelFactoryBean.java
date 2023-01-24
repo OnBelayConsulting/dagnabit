@@ -1,6 +1,8 @@
 package com.onbelay.dagnabit.graphnode.factoryimpl;
 
 import com.onbelay.dagnabit.graph.components.DagModelImpl;
+import com.onbelay.dagnabit.graph.model.DagNode;
+import com.onbelay.dagnabit.graph.model.DagRelationship;
 import com.onbelay.dagnabit.graphnode.factory.DagModelFactory;
 import com.onbelay.dagnabit.graph.model.DagModel;
 import com.onbelay.dagnabit.graphnode.service.GraphRelationshipService;
@@ -68,12 +70,19 @@ public class DagModelFactoryBean implements DagModelFactory {
 
         relationships.forEach( c->
                 {
-                   dagModel.addNode(c.getFromNodeName(), c.getFromCategory());
-                   dagModel.addNode(c.getToNodeName(), c.getToCategory());
-                   dagModel.addRelationship(
+                   DagNode node = dagModel.addNode(c.getFromNodeName(), c.getFromCategory());
+                   node.setReferenceNo(c.getFromNodeId());
+
+                   node = dagModel.addNode(c.getToNodeName(), c.getToCategory());
+                   node.setReferenceNo(c.getToNodeId());
+
+                   DagRelationship relationship = dagModel.addRelationship(
                            dagModel.getNode(c.getFromNodeName()),
                            c.getDetail().getType(),
                            dagModel.getNode(c.getToNodeName()));
+
+                   relationship.setWeight(c.getDetail().getWeight());
+                   relationship.setReferenceNo(c.getId());
                 }
         );
 

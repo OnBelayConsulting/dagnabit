@@ -127,6 +127,7 @@ public class GraphRelationship extends AbstractEntity<GraphRelationship> {
 
         this.fromGraphNode = fromGraphNode;
         this.toGraphNode = toGraphNode;
+        detail.applyDefaults();
         detail.setType(relationshipType);
 
         detail.setName(generateRelationshipName(

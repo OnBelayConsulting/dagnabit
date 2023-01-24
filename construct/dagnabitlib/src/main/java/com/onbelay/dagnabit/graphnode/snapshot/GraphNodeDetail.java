@@ -10,9 +10,11 @@ public class GraphNodeDetail {
     private String name;
     private String category;
     private String data;
+    private Integer weight;
 
     public void applyDefaults() {
         category = "default";
+        weight = 1;
     }
 
     public void shallowCopyFrom(GraphNodeDetail copy) {
@@ -24,6 +26,9 @@ public class GraphNodeDetail {
 
         if (copy.data != null)
             this.data = copy.data;
+
+        if (copy.weight != null)
+            this.weight = copy.weight;
 
     }
 
@@ -59,5 +64,14 @@ public class GraphNodeDetail {
 
     public void setData(String data) {
         this.data = data;
+    }
+
+    @Column(name = "ITEM_WEIGHT")
+    public Integer getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Integer weight) {
+        this.weight = weight;
     }
 }

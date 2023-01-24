@@ -22,6 +22,7 @@ public abstract class DagItemImpl {
     protected String name;
     private DagData data;
     private int weight = 0;
+    private Integer referenceNo;
 
 	protected DagItemImpl(String name) {
 		super();
@@ -46,6 +47,13 @@ public abstract class DagItemImpl {
 	}
 
 
+    public Integer getReferenceNo() {
+        return referenceNo;
+    }
+
+    public void setReferenceNo(Integer referenceNo) {
+        this.referenceNo = referenceNo;
+    }
 
     public int getWeight() {
 		return weight;

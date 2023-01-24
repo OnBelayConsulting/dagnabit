@@ -1,11 +1,9 @@
 package com.onbelay.dagnabitapp.graph.adapterimpl;
 
-import com.onbelay.dagnabit.graph.model.DagModel;
-import com.onbelay.dagnabit.graph.model.DagNode;
-import com.onbelay.dagnabit.graph.model.DagNodePath;
-import com.onbelay.dagnabit.graph.model.LinkAnalysis;
+import com.onbelay.dagnabit.graph.model.*;
 import com.onbelay.dagnabit.graphnode.factory.DagModelFactory;
 import com.onbelay.dagnabitapp.graph.adapter.GraphingRestAdapter;
+import com.onbelay.dagnabitapp.graph.assembler.DagNodeSnapshotAssembler;
 import com.onbelay.dagnabitapp.graph.assembler.GraphModelSnapshotAssembler;
 import com.onbelay.dagnabitapp.graph.snapshot.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +23,44 @@ public class GraphingRestAdapterBean implements GraphingRestAdapter {
         DagModel dagModel = dagModelFactory.newModel(snapshot.getName(), snapshot.getSelectingQuery());
         int total = dagModel.getRelationships().size();
         return new ModelResult(snapshot.getName(), total);
+    }
+
+    @Override
+    public ModelResult addNodes(
+            String modelName,
+            List<DagNodeSnapshot> snapshots) {
+
+        DagModel dagModel = dagModelFactory.findModel(modelName);
+
+        for (DagNodeSnapshot snapshot : snapshots) {
+            DagNode dagNode = dagModel.addNode(snapshot.getName(), snapshot.getCategory());
+            if (snapshot.getWeight() != null)
+                dagNode.setWeight(snapshot.getWeight());
+
+            dagNode.setReferenceNo(snapshot.getReferenceNo());
+        }
+
+        return new ModelResult();
+    }
+
+    @Override
+    public ModelResult addRelationships(
+            String modelName,
+            List<DagRelationshipSnapshot> relationships) {
+
+        DagModel dagModel = dagModelFactory.findModel(modelName);
+
+        for (DagRelationshipSnapshot snapshot : relationships) {
+            DagRelationship dagRelationship = dagModel.addRelationship(
+                    dagModel.getNode(snapshot.getFromNodeName()),
+                    snapshot.getRelationshipName(),
+                    dagModel.getNode(snapshot.getToNodeName()));
+            dagRelationship.setReferenceNo(snapshot.getReferenceNo());
+            dagRelationship.setWeight(snapshot.getWeight());
+
+        }
+
+        return new ModelResult();
     }
 
     @Override
@@ -95,12 +131,13 @@ public class GraphingRestAdapterBean implements GraphingRestAdapter {
             endIndex = totalModels;
 
         List<DagNode> selected = nodes.subList(start, endIndex);
+        DagNodeSnapshotAssembler assembler = new DagNodeSnapshotAssembler();
 
         return new DagNodeCollection(
                 start,
                 limit,
                 nodes.size(),
-                selected);
+                assembler.assemble(selected));
     }
 
     @Override
@@ -124,12 +161,13 @@ public class GraphingRestAdapterBean implements GraphingRestAdapter {
             endIndex = totalModels;
 
         List<DagNode> selected = nodes.subList(start, endIndex);
+        DagNodeSnapshotAssembler assembler = new DagNodeSnapshotAssembler();
 
         return new DagNodeCollection(
                 start,
                 limit,
                 nodes.size(),
-                selected);
+                assembler.assemble(selected));
     }
 
     @Override

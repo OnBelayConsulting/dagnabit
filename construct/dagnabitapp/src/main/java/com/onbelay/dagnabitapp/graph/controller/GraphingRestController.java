@@ -33,7 +33,7 @@ import java.util.Map;
             BindingResult bindingResult)  {
 
         if (bindingResult.getErrorCount() > 0) {
-            logger.error("Errors on create/update GraphNode POST");
+            logger.error("Errors on create model POST");
             for (ObjectError error : bindingResult.getAllErrors()) {
                 logger.error(error.toString());
             }
@@ -44,6 +44,83 @@ import java.util.Map;
         ModelResult result;
         try {
             result = graphingRestAdapter.createModel(snapshot);
+        } catch (RuntimeDagException p) {
+            result = new ModelResult(p.getErrorCode(), p.getParms());
+        } catch (RuntimeException bre) {
+            result = new ModelResult(bre.getMessage());
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+
+        if (result.wasSuccessful()) {
+            return new ResponseEntity(result, headers, HttpStatus.OK);
+        } else {
+            return new ResponseEntity(result, HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+
+    @RequestMapping(value="/{modelName}/nodes", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    public ResponseEntity<ModelResult> addNodes(
+            @PathVariable String modelName,
+            @RequestBody List<DagNodeSnapshot> snapshots,
+            BindingResult bindingResult)  {
+
+        if (bindingResult.getErrorCount() > 0) {
+            logger.error("Errors on adding DagNodes POST");
+            for (ObjectError error : bindingResult.getAllErrors()) {
+                logger.error(error.toString());
+            }
+
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        ModelResult result;
+        try {
+            result = graphingRestAdapter.addNodes(
+                    modelName,
+                    snapshots);
+        } catch (RuntimeDagException p) {
+            result = new ModelResult(p.getErrorCode(), p.getParms());
+        } catch (RuntimeException bre) {
+            result = new ModelResult(bre.getMessage());
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+
+        if (result.wasSuccessful()) {
+            return new ResponseEntity(result, headers, HttpStatus.OK);
+        } else {
+            return new ResponseEntity(result, HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+
+
+    @RequestMapping(value="/{modelName}/relationships", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    public ResponseEntity<ModelResult> addRelationships(
+            @PathVariable String modelName,
+            @RequestBody List<DagRelationshipSnapshot> snapshots,
+            BindingResult bindingResult)  {
+
+        if (bindingResult.getErrorCount() > 0) {
+            logger.error("Errors on adding DagRelationships POST");
+            for (ObjectError error : bindingResult.getAllErrors()) {
+                logger.error(error.toString());
+            }
+
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        ModelResult result;
+        try {
+            result = graphingRestAdapter.addRelationships(
+                    modelName,
+                    snapshots);
         } catch (RuntimeDagException p) {
             result = new ModelResult(p.getErrorCode(), p.getParms());
         } catch (RuntimeException bre) {

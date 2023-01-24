@@ -10,10 +10,11 @@ public class GraphRelationshipDetail {
     private String name;
     private String type;
     private String data;
-
+    private Integer weight;
 
     public void applyDefaults() {
         type = "default";
+        weight = 1;
     }
 
 
@@ -26,6 +27,9 @@ public class GraphRelationshipDetail {
 
         if (copy.data != null)
             this.data = copy.data;
+
+        if (copy.weight != null)
+            this.weight = copy.weight;
 
     }
 
@@ -61,5 +65,14 @@ public class GraphRelationshipDetail {
 
     public void setData(String data) {
         this.data = data;
+    }
+
+    @Column(name = "ITEM_WEIGHT")
+    public Integer getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Integer weight) {
+        this.weight = weight;
     }
 }

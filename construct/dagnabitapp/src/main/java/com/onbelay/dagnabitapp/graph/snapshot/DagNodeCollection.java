@@ -6,8 +6,12 @@ import com.onbelay.dagnabitapp.common.snapshot.AbstractEntityCollection;
 
 import java.util.List;
 
-public class DagNodeCollection extends AbstractEntityCollection<DagNode> {
+public class DagNodeCollection extends AbstractEntityCollection<DagNodeSnapshot> {
     private static final String name = "DagNode";
+
+    public DagNodeCollection() {
+    }
+
     public DagNodeCollection(
             int start,
             int limit,
@@ -24,7 +28,7 @@ public class DagNodeCollection extends AbstractEntityCollection<DagNode> {
             int start,
             int limit,
             int total,
-            List<DagNode> items) {
+            List<DagNodeSnapshot> items) {
 
         super(
                 name,

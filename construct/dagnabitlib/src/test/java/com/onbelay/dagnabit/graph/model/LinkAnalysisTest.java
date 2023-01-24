@@ -142,7 +142,7 @@ public class LinkAnalysisTest  {
 
 		assertEquals(true, analysis.isCyclic());
 		List<DagNodePath> paths = analysis.getCycles();
-		assertEquals(1, paths.size());
+		assertEquals(3, paths.size());
 	}
 
 

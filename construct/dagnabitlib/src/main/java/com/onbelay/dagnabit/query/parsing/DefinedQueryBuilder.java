@@ -84,7 +84,10 @@ public class DefinedQueryBuilder {
 		
 		if (expressionText.contentEquals(""))
 			return new DefinedQuery(entityName);
-		
+
+		if (expressionText.equalsIgnoreCase("WHERE"))
+			return new DefinedQuery(entityName);
+
 		boolean hasWhereClause = true;
 		boolean hasOrderClause = true;
 		

@@ -8,6 +8,9 @@ public class GraphModelCollection extends AbstractEntityCollection<GraphModelSna
     private static final String name = "GraphModel";
     private String filter;
 
+    public GraphModelCollection() {
+    }
+
     public GraphModelCollection(
             int start,
             int limit,

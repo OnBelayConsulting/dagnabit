@@ -38,7 +38,7 @@ public class DagRelationshipRouteFinderTest {
 	@Before
 	public void beforeRun() throws Throwable {
 		// Solitary nodes
-		DagModel model = new DagModelImpl("test");
+		model = new DagModelImpl("test");
 		model.addNode("S", "special");
 		model.addNode("R", "ordinary");
 
