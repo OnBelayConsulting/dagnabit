@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/graphs")public class GraphingRestController {
+@RequestMapping("/api/graphModels")public class GraphingRestController {
     private static final Logger logger = LogManager.getLogger();
 
     @Autowired

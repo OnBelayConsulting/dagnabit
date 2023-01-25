@@ -2,6 +2,7 @@ package com.onbelay.dagnabitapp.graph.adapterimpl;
 
 import com.onbelay.dagnabit.graph.model.*;
 import com.onbelay.dagnabit.graphnode.factory.DagModelFactory;
+import com.onbelay.dagnabitapp.common.adapterimpl.BaseRestAdapterBean;
 import com.onbelay.dagnabitapp.graph.adapter.GraphingRestAdapter;
 import com.onbelay.dagnabitapp.graph.assembler.DagNodeSnapshotAssembler;
 import com.onbelay.dagnabitapp.graph.assembler.GraphModelSnapshotAssembler;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class GraphingRestAdapterBean implements GraphingRestAdapter {
+public class GraphingRestAdapterBean extends BaseRestAdapterBean implements GraphingRestAdapter {
 
     @Autowired
     private DagModelFactory dagModelFactory;
@@ -29,6 +30,8 @@ public class GraphingRestAdapterBean implements GraphingRestAdapter {
     public ModelResult addNodes(
             String modelName,
             List<DagNodeSnapshot> snapshots) {
+
+        logUser();
 
         DagModel dagModel = dagModelFactory.findModel(modelName);
 
@@ -47,6 +50,7 @@ public class GraphingRestAdapterBean implements GraphingRestAdapter {
     public ModelResult addRelationships(
             String modelName,
             List<DagRelationshipSnapshot> relationships) {
+        logUser();
 
         DagModel dagModel = dagModelFactory.findModel(modelName);
 
@@ -68,6 +72,7 @@ public class GraphingRestAdapterBean implements GraphingRestAdapter {
             int start,
             int limit,
             String filter) {
+        logUser();
 
         List<DagModel> models;
 
@@ -112,6 +117,8 @@ public class GraphingRestAdapterBean implements GraphingRestAdapter {
             int start,
             int limit) {
 
+        logUser();
+
         DagModel dagModel = dagModelFactory.findModel(modelName);
         List<DagNode> nodes = dagModel
                 .navigate()
@@ -146,6 +153,8 @@ public class GraphingRestAdapterBean implements GraphingRestAdapter {
             int start,
             int limit) {
 
+        logUser();
+
         DagModel dagModel = dagModelFactory.findModel(modelName);
 
         List<DagNode> nodes = dagModel.findRootNodes();
@@ -175,6 +184,8 @@ public class GraphingRestAdapterBean implements GraphingRestAdapter {
             String modelName,
             String relationshipName) {
         DagModel dagModel = dagModelFactory.findModel(modelName);
+
+        logUser();
 
         LinkAnalysis linkAnalysis = dagModel
                 .analyse()

@@ -76,9 +76,9 @@ public class GraphingRestControllerTest extends DagControllerTestCase {
 	@Test
 	public void testFetchModels() throws Exception {
 		
-		MockMvc mockMvc = generateMockMvcGet(graphingRestController, "/api/graphs");
+		MockMvc mockMvc = generateMockMvcGet(graphingRestController, "/api/graphModels");
 		
-		ResultActions result = mockMvc.perform(get("/api/graphs"));
+		ResultActions result = mockMvc.perform(get("/api/graphModels"));
 		MvcResult mvcResult = result.andReturn();
 		String jsonString = mvcResult.getResponse().getContentAsString();
 		String contentType = mvcResult.getResponse().getHeader("Content-type");
@@ -100,9 +100,9 @@ public class GraphingRestControllerTest extends DagControllerTestCase {
 	@Test
 	public void fetchDescendents() throws Exception {
 
-		MockMvc mockMvc = generateMockMvcGet(graphingRestController, "/api/graphs");
+		MockMvc mockMvc = generateMockMvcGet(graphingRestController, "/api/graphModels");
 
-		ResultActions result = mockMvc.perform(get("/api/graphs/myModel/firstNode/parentOf/descendents"));
+		ResultActions result = mockMvc.perform(get("/api/graphModels/myModel/firstNode/parentOf/descendents"));
 		MvcResult mvcResult = result.andReturn();
 		String jsonString = mvcResult.getResponse().getContentAsString();
 		String contentType = mvcResult.getResponse().getHeader("Content-type");
@@ -122,7 +122,7 @@ public class GraphingRestControllerTest extends DagControllerTestCase {
 	@Test
 	public void createModel() throws Exception {
 		
-		MockMvc mockMvc = generateMockMvcPost(graphingRestController, "/api/graphs/");
+		MockMvc mockMvc = generateMockMvcPost(graphingRestController, "/api/graphModels/");
 
 		GraphModelSnapshot snapshot = new GraphModelSnapshot();
 
@@ -130,7 +130,7 @@ public class GraphingRestControllerTest extends DagControllerTestCase {
 
 		String jsonString = objectMapper.writeValueAsString(snapshot);
 
-		ResultActions result = mockMvc.perform(post("/api/graphs/").content(jsonString));
+		ResultActions result = mockMvc.perform(post("/api/graphModels/").content(jsonString));
 		MvcResult mvcResult = result.andReturn();
 		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
 		String contentType = mvcResult.getResponse().getHeader("Content-type");
@@ -142,7 +142,7 @@ public class GraphingRestControllerTest extends DagControllerTestCase {
 	@Test
 	public void addNodes() throws Exception {
 		
-		MockMvc mockMvc = generateMockMvcPut(graphingRestController, "/api/graphs/myModel/nodes");
+		MockMvc mockMvc = generateMockMvcPut(graphingRestController, "/api/graphModels/myModel/nodes");
 
 		ArrayList<DagNodeSnapshot> snapshots = new ArrayList<>();
 
@@ -154,7 +154,7 @@ public class GraphingRestControllerTest extends DagControllerTestCase {
 		
 		String jsonString = objectMapper.writeValueAsString(snapshots);
 
-		ResultActions result = mockMvc.perform(post("/api/graphs/myModel/nodes").content(jsonString));
+		ResultActions result = mockMvc.perform(post("/api/graphModels/myModel/nodes").content(jsonString));
 		MvcResult mvcResult = result.andReturn();
 		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
 		String contentType = mvcResult.getResponse().getHeader("Content-type");

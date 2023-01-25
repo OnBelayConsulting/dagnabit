@@ -40,18 +40,26 @@ dependencies {
 	implementation project(':construct:dagnabitlib')
 	testImplementation project(path: ':construct:dagnabitlib', configuration: 'tests')
 
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	//implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
-	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+	implementation 'org.springframework.boot:spring-boot-starter-webflux' // For WebClient
+	implementation 'org.projectreactor:reactor-spring:1.0.1.RELEASE'      // For WebClient
+
 	implementation "com.fasterxml.jackson.core:jackson-core"
 	implementation "com.fasterxml.jackson.core:jackson-databind"
 	implementation "com.fasterxml.jackson.datatype:jackson-datatype-json-org"
 	implementation group: "org.apache.commons", name: "commons-lang3", version: "3.12.0"
 	implementation group: "org.apache.commons", name: "commons-collections4", version: "4.4"
 	implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.1'
-	//testImplementation('org.springframework.security:spring-security-test')
+
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation("org.junit.vintage:junit-vintage-engine")
 	implementation('org.springframework.boot:spring-boot-starter-log4j2')
 
