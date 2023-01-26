@@ -15,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -124,6 +126,44 @@ import java.util.Map;
             return new ResponseEntity<>(collection, headers, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @RequestMapping(
+            value = "/file",
+            produces = "application/json",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<TransactionResult> uploadFile(
+            @RequestHeader Map<String, String> headersIn,
+            @RequestParam("name") String name,
+            @RequestParam("file") MultipartFile file) {
+
+        TransactionResult result;
+
+        try {
+            result = graphRelationshipRestAdapter.uploadFile(
+                    name,
+                    file.getBytes());
+        } catch (RuntimeDagException e) {
+            result = new TransactionResult(e.getErrorCode());
+        } catch (RuntimeException e) {
+            result = new TransactionResult(e.getMessage());
+        } catch (IOException e) {
+            logger.error("File upload failed", e);
+            result = new TransactionResult("Invalid File");
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+
+        if (result.wasSuccessful()) {
+            return new ResponseEntity<>(result, headers, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, headers, HttpStatus.BAD_REQUEST);
+        }
+
+
+    }
+
 
 
 }

@@ -6,10 +6,13 @@ import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
 import com.onbelay.dagnabit.query.parsing.DefinedQueryBuilder;
 import com.onbelay.dagnabit.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabitapp.graphnode.adapter.GraphNodeRestAdapter;
+import com.onbelay.dagnabitapp.graphnode.filereader.GraphNodeFileReader;
+import com.onbelay.dagnabitapp.graphnode.snapshot.FileResult;
 import com.onbelay.dagnabitapp.graphnode.snapshot.GraphNodeCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
@@ -63,5 +66,17 @@ public class GraphNodeRestAdapterBean implements GraphNodeRestAdapter {
                 limit,
                 page.getIds().size(),
                 snapshots);
+    }
+
+    @Override
+    public TransactionResult uploadFile(
+            String name,
+            byte[] fileContents) {
+
+        ByteArrayInputStream fileStream = new ByteArrayInputStream(fileContents);
+
+        GraphNodeFileReader reader = new GraphNodeFileReader(fileStream);
+        List<GraphNodeSnapshot> snapshots = reader.readFile();
+        return graphNodeService.save(snapshots);
     }
 }

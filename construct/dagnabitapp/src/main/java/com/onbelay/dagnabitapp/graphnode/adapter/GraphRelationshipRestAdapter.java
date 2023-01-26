@@ -15,6 +15,11 @@ public interface GraphRelationshipRestAdapter {
     TransactionResult saveGraphRelationships(List<GraphRelationshipSnapshot> snapshots);
 
 
+    TransactionResult uploadFile(
+            String name,
+            byte[] bytes);
+
+
     GraphRelationshipCollection findGraphRelationships(
             int start,
             int limit,

@@ -4,6 +4,7 @@ import com.onbelay.dagnabit.common.exception.RuntimeDagException;
 import com.onbelay.dagnabit.common.snapshot.TransactionResult;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
 import com.onbelay.dagnabitapp.graphnode.adapter.GraphNodeRestAdapter;
+import com.onbelay.dagnabitapp.graphnode.snapshot.FileResult;
 import com.onbelay.dagnabitapp.graphnode.snapshot.GraphNodeCollection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +28,10 @@ import java.util.Map;
     @Autowired
     private GraphNodeRestAdapter graphNodeRestAdapter;
 
-    @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+    @RequestMapping(
+            method = RequestMethod.POST,
+            produces = "application/json",
+            consumes = "application/json")
     public ResponseEntity<TransactionResult> saveGraphNode(
             @RequestBody GraphNodeSnapshot snapshot,
             BindingResult bindingResult)  {
@@ -60,7 +66,10 @@ import java.util.Map;
     }
 
 
-    @RequestMapping(method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+    @RequestMapping(
+            method = RequestMethod.PUT,
+            produces = "application/json",
+            consumes = "application/json")
     public ResponseEntity<TransactionResult> saveGraphNodes(
             @RequestBody List<GraphNodeSnapshot> snapshots,
             BindingResult bindingResult)  {
@@ -94,7 +103,9 @@ import java.util.Map;
 
     }
 
-    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(
+            method = RequestMethod.GET,
+            produces = "application/json")
     public ResponseEntity<GraphNodeCollection> findGraphNodes(
             @RequestHeader Map<String, String> headersIn,
             @RequestParam(value = "start", defaultValue = "0") int start,
@@ -122,4 +133,43 @@ import java.util.Map;
             return new ResponseEntity<>(collection, headers, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @RequestMapping(
+            value = "/file",
+            produces = "application/json",
+            method = RequestMethod.POST
+    )
+    public ResponseEntity<TransactionResult> uploadFile(
+            @RequestHeader Map<String, String> headersIn,
+            @RequestParam("name") String name,
+            @RequestParam("file") MultipartFile file) {
+
+        TransactionResult result;
+
+        try {
+            result = graphNodeRestAdapter.uploadFile(
+                    name,
+                    file.getBytes());
+        } catch (RuntimeDagException e) {
+            result = new TransactionResult(e.getErrorCode());
+        } catch (RuntimeException e) {
+            result = new TransactionResult(e.getMessage());
+        } catch (IOException e) {
+            logger.error("File upload failed", e);
+            result = new TransactionResult("Invalid File");
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+
+        if (result.wasSuccessful()) {
+            return new ResponseEntity<>(result, headers, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(result, headers, HttpStatus.BAD_REQUEST);
+        }
+
+
+    }
+
+
 }
