@@ -1,0 +1,5 @@
+Name,Category,Weight,Data
+FatherSmith,family,1,{firstName=John; lastName=Smith}
+MotherSmith,family,1,{firstName=Juli; lastName=Smith}
+JaneSmith,family,1,{firstName=Jane; lastName=Smith}
+JoeSmith,family,1,{firstName=Joe; lastName=Smith}

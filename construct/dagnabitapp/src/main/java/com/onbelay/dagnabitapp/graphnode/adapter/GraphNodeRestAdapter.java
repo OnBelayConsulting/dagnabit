@@ -21,4 +21,6 @@ public interface GraphNodeRestAdapter {
     TransactionResult uploadFile(
             String name,
             byte[] bytes);
+
+    FileResult generateCSVFile(String query);
 }

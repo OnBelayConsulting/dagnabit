@@ -1,0 +1,6 @@
+FromNode,ToNode,Relationship,Weight,Data
+FatherSmith,JaneSmith,ParentOf,1
+FatherSmith,JoeSmith,ParentOf,1
+MotherSmith,JaneSmith,ParentOf,1
+MotherSmith,JoeSmith,ParentOf,1
+MotherSmith,FatherSmith,spouse,1

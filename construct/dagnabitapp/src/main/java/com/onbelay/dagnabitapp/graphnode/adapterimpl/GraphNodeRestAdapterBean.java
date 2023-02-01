@@ -7,6 +7,8 @@ import com.onbelay.dagnabit.query.parsing.DefinedQueryBuilder;
 import com.onbelay.dagnabit.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabitapp.graphnode.adapter.GraphNodeRestAdapter;
 import com.onbelay.dagnabitapp.graphnode.filereader.GraphNodeFileReader;
+import com.onbelay.dagnabitapp.graphnode.filewriter.GraphNodeFileWriter;
+import com.onbelay.dagnabitapp.graphnode.filewriter.GraphRelationshipFileWriter;
 import com.onbelay.dagnabitapp.graphnode.snapshot.FileResult;
 import com.onbelay.dagnabitapp.graphnode.snapshot.GraphNodeCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,5 +80,17 @@ public class GraphNodeRestAdapterBean implements GraphNodeRestAdapter {
         GraphNodeFileReader reader = new GraphNodeFileReader(fileStream);
         List<GraphNodeSnapshot> snapshots = reader.readFile();
         return graphNodeService.save(snapshots);
+    }
+
+    @Override
+    public FileResult generateCSVFile(String query) {
+        DefinedQueryBuilder queryBuilder = new DefinedQueryBuilder("GraphNode", query);
+
+        QuerySelectedPage page = graphNodeService.findIdsByDefinedQuery(queryBuilder.build());
+        List<GraphNodeSnapshot> nodes = graphNodeService.findByIds(page);
+
+        GraphNodeFileWriter writer = new GraphNodeFileWriter(nodes);
+
+        return new FileResult("graphnodes.csv", writer.getContents());
     }
 }

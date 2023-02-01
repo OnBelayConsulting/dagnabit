@@ -2,16 +2,16 @@ package com.onbelay.dagnabitapp.graphnode.controller;
 
 import com.onbelay.dagnabit.common.exception.RuntimeDagException;
 import com.onbelay.dagnabit.common.snapshot.TransactionResult;
+import com.onbelay.dagnabit.graph.exception.DagGraphException;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphRelationshipSnapshot;
 import com.onbelay.dagnabitapp.graphnode.adapter.GraphRelationshipRestAdapter;
+import com.onbelay.dagnabitapp.graphnode.snapshot.FileResult;
 import com.onbelay.dagnabitapp.graphnode.snapshot.GraphNodeCollection;
 import com.onbelay.dagnabitapp.graphnode.snapshot.GraphRelationshipCollection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
@@ -161,6 +161,35 @@ import java.util.Map;
             return new ResponseEntity<>(result, headers, HttpStatus.BAD_REQUEST);
         }
 
+
+    }
+
+
+    @RequestMapping(method = RequestMethod.GET, produces ="application/text")
+    public HttpEntity<byte[]> generateCSVFile(
+            @RequestHeader Map<String, String> headersIn,
+            @RequestParam(value = "query", defaultValue = "WHERE") String query) {
+
+        FileResult fileResult;
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.TEXT_PLAIN);
+
+
+        try {
+            fileResult = graphRelationshipRestAdapter.generateCSVFile(query);
+            if (fileResult.wasSuccessful()) {
+                headers.set("Content-Disposition", "attachment; fileName=" + fileResult.getFileName());
+                return new HttpEntity<byte[]>(fileResult.getContents(),  headers);
+            } else {
+                return new HttpEntity<byte[]>(null, headers);
+            }
+        } catch (DagGraphException p) {
+            return new HttpEntity<byte[]>(null, headers);
+        } catch (RuntimeException e) {
+            return new HttpEntity<byte[]>(null, headers);
+        }
 
     }
 

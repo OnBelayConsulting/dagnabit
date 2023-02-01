@@ -11,16 +11,16 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GraphRelationshipFileReader {
+public class GraphRelationshipFileReader extends GraphRelationshipFileHeader{
     private static final Logger logger = LogManager.getLogger();
-    private static String[] header = {"FromNode", "ToNode", "Relationship", "Weight", "Data"};
-    private ByteArrayInputStream streamIn;
+    private InputStream streamIn;
 
-    public GraphRelationshipFileReader(ByteArrayInputStream streamIn) {
+    public GraphRelationshipFileReader(InputStream streamIn) {
         this.streamIn = streamIn;
     }
 
@@ -50,7 +50,8 @@ public class GraphRelationshipFileReader {
                     int weight = Integer.parseInt(weightStr);
                     snapshot.getDetail().setWeight(weight);
                 }
-                snapshot.getDetail().setData(record.get("Data"));
+                if (record.isSet("Data"))
+                    snapshot.getDetail().setData(record.get("Data"));
                 snapshots.add(snapshot);
             }
 
@@ -60,8 +61,6 @@ public class GraphRelationshipFileReader {
             logger.error("CSV file parsing read failed. ", e);
             throw new RuntimeDagException("file could not be parsed.");
         }
-
-        streamIn.reset();
         return snapshots;
     }
 }

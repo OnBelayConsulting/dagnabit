@@ -8,18 +8,17 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GraphNodeFileReader {
+public class GraphNodeFileReader extends GraphNodeFileHeader{
     private static final Logger logger = LogManager.getLogger();
-    private static String[] header = {"Name", "Category", "Weight", "Data"};
-    private ByteArrayInputStream streamIn;
+    private InputStream streamIn;
 
-    public GraphNodeFileReader(ByteArrayInputStream streamIn) {
+    public GraphNodeFileReader(InputStream streamIn) {
         this.streamIn = streamIn;
     }
 
@@ -44,6 +43,7 @@ public class GraphNodeFileReader {
                 snapshot.getDetail().setCategory(record.get("Category"));
 
                 String weightStr = record.get("Weight");
+                weightStr = weightStr.trim();
                 if (weightStr != null && weightStr.isBlank() == false) {
                     int weight = Integer.parseInt(weightStr);
                     snapshot.getDetail().setWeight(weight);
@@ -59,7 +59,6 @@ public class GraphNodeFileReader {
             throw new RuntimeDagException("file could not be parsed.");
         }
 
-        streamIn.reset();
         return snapshots;
     }
 }

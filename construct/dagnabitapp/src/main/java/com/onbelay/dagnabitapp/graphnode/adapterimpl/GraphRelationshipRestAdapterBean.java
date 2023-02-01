@@ -10,6 +10,8 @@ import com.onbelay.dagnabitapp.graphnode.adapter.GraphRelationshipRestAdapter;
 import com.onbelay.dagnabitapp.graphnode.adapter.GraphRelationshipRestAdapter;
 import com.onbelay.dagnabitapp.graphnode.filereader.GraphNodeFileReader;
 import com.onbelay.dagnabitapp.graphnode.filereader.GraphRelationshipFileReader;
+import com.onbelay.dagnabitapp.graphnode.filewriter.GraphRelationshipFileWriter;
+import com.onbelay.dagnabitapp.graphnode.snapshot.FileResult;
 import com.onbelay.dagnabitapp.graphnode.snapshot.GraphRelationshipCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,6 +70,17 @@ public class GraphRelationshipRestAdapterBean implements GraphRelationshipRestAd
                 limit, 
                 page.getIds().size(), 
                 snapshots);
+    }
+
+    @Override
+    public FileResult generateCSVFile(String query) {
+        DefinedQueryBuilder queryBuilder = new DefinedQueryBuilder("GraphRelationship", query);
+        List<GraphRelationshipSnapshot> relationships = graphRelationshipService.findByDefinedQuery(queryBuilder.build());
+        GraphRelationshipFileWriter writer = new GraphRelationshipFileWriter(relationships);
+
+        return new FileResult(
+                "graphrelationships.csv",
+                writer.getContents());
     }
 
     @Override
