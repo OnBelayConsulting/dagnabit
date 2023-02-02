@@ -34,6 +34,9 @@ public class GraphRelationshipCollection extends AbstractEntityCollection<GraphR
                 total);
     }
 
+    public GraphRelationshipCollection() {
+    }
+
     public GraphRelationshipCollection(String errorCode) {
         super(errorCode);
     }

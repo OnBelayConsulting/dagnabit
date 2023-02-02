@@ -47,23 +47,23 @@ public class GraphRelationshipColumnDefinitions implements ColumnDefinitions {
 	public static final ColumnDefinition fromNodeName = new ColumnDefinition(
 			"fromNodeName",
 			ColumnDataType.STRING,
-			"fromGraphNode.detail.type");
+			"fromGraphNode.detail.name");
 
 	public static final ColumnDefinition fromNodeCategory = new ColumnDefinition(
 			"fromNodeCategory",
 			ColumnDataType.STRING,
-			"fromGraphNode.detail.type");
+			"fromGraphNode.detail.category");
 
 
 	public static final ColumnDefinition toNodeName = new ColumnDefinition(
 			"toNodeName",
 			ColumnDataType.STRING,
-			"toGraphNode.detail.type");
+			"toGraphNode.detail.name");
 
 	public static final ColumnDefinition toNodeCategory = new ColumnDefinition(
 			"toNodeCategory",
 			ColumnDataType.STRING,
-			"toGraphNode.detail.type");
+			"toGraphNode.detail.category");
 
 	public GraphRelationshipColumnDefinitions() {
 		add(id);

@@ -2,7 +2,7 @@ package com.onbelay.dagnabitapp.graphnode.controller;
 
 import com.onbelay.dagnabit.common.exception.RuntimeDagException;
 import com.onbelay.dagnabit.common.snapshot.TransactionResult;
-import com.onbelay.dagnabit.graph.exception.DagGraphException;
+import com.onbelay.dagnabit.dagmodel.exception.DagGraphException;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
 import com.onbelay.dagnabitapp.graphnode.adapter.GraphNodeRestAdapter;
 import com.onbelay.dagnabitapp.graphnode.snapshot.FileResult;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/graphNodes")public class GraphNodeRestController {
+@RequestMapping("/api/nodes")public class GraphNodeRestController {
     private static final Logger logger = LogManager.getLogger();
 
     @Autowired

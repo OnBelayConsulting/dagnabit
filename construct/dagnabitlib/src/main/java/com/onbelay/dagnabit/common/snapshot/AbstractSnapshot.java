@@ -6,7 +6,7 @@ public abstract class AbstractSnapshot {
 
     protected  Integer id;
 
-    private EntityState entityState;
+    private EntityState entityState = EntityState.NEW;
 
     public AbstractSnapshot() {
     }

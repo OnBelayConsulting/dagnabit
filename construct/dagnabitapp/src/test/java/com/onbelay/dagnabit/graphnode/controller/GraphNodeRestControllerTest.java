@@ -35,9 +35,9 @@ public class GraphNodeRestControllerTest extends DagControllerTestCase {
 	@Test
 	public void testFetchNodes() throws Exception {
 		
-		MockMvc mockMvc = generateMockMvcGet(graphNodeRestController, "/api/graphNodes");
+		MockMvc mockMvc = generateMockMvcGet(graphNodeRestController, "/api/nodes");
 		
-		ResultActions result = mockMvc.perform(get("/api/graphNodes"));
+		ResultActions result = mockMvc.perform(get("/api/nodes"));
 		MvcResult mvcResult = result.andReturn();
 		String jsonString = mvcResult.getResponse().getContentAsString();
 		String contentType = mvcResult.getResponse().getHeader("Content-type");
@@ -56,7 +56,7 @@ public class GraphNodeRestControllerTest extends DagControllerTestCase {
 	@Test
 	public void saveNode() throws Exception {
 		
-		MockMvc mockMvc = generateMockMvcPost(graphNodeRestController, "/api/graphNodes/");
+		MockMvc mockMvc = generateMockMvcPost(graphNodeRestController, "/api/nodes/");
 
 		GraphNodeSnapshot snapshot = new GraphNodeSnapshot();
 
@@ -65,7 +65,7 @@ public class GraphNodeRestControllerTest extends DagControllerTestCase {
 
 		String jsonString = objectMapper.writeValueAsString(snapshot);
 
-		ResultActions result = mockMvc.perform(post("/api/graphNodes/").content(jsonString));
+		ResultActions result = mockMvc.perform(post("/api/nodes/").content(jsonString));
 		MvcResult mvcResult = result.andReturn();
 		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
 		String contentType = mvcResult.getResponse().getHeader("Content-type");
@@ -77,7 +77,7 @@ public class GraphNodeRestControllerTest extends DagControllerTestCase {
 	@Test
 	public void saveNodes() throws Exception {
 		
-		MockMvc mockMvc = generateMockMvcPut(graphNodeRestController, "/api/graphNodes/");
+		MockMvc mockMvc = generateMockMvcPut(graphNodeRestController, "/api/nodes/");
 
 
 		GraphNodeSnapshot snapshot = new GraphNodeSnapshot();
@@ -90,7 +90,7 @@ public class GraphNodeRestControllerTest extends DagControllerTestCase {
 		
 		String jsonString = objectMapper.writeValueAsString(snapshots);
 
-		ResultActions result = mockMvc.perform(put("/api/graphNodes/").content(jsonString));
+		ResultActions result = mockMvc.perform(put("/api/nodes/").content(jsonString));
 		MvcResult mvcResult = result.andReturn();
 		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
 		String contentType = mvcResult.getResponse().getHeader("Content-type");
