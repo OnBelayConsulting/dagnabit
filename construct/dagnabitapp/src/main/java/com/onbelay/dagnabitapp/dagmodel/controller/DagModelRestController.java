@@ -3,6 +3,10 @@ package com.onbelay.dagnabitapp.dagmodel.controller;
 import com.onbelay.dagnabit.common.exception.RuntimeDagException;
 import com.onbelay.dagnabitapp.dagmodel.adapter.DagModelRestAdapter;
 import com.onbelay.dagnabitapp.dagmodel.snapshot.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +21,20 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Tag(name="GraphModel", description = "APIs to manage the GraphModel")
 @RequestMapping("/api/models")public class DagModelRestController {
     private static final Logger logger = LogManager.getLogger();
 
     @Autowired
     private DagModelRestAdapter dagModelRestAdapter;
 
+    @Operation(summary = "Create GraphModel", description = "Create a GraphModel to use for subsequent graphing operations.",
+            tags = {"model"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public ResponseEntity<ModelResult> createGraphModel(
             @RequestBody DagModelSnapshot snapshot,
@@ -58,6 +70,13 @@ import java.util.Map;
     }
 
 
+    @Operation(summary = "Add a node", description = "Add a non=persistent node to an existing graph model.",
+            tags = {"model, node"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(value="/{modelName}/nodes", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public ResponseEntity<ModelResult> addNodes(
             @PathVariable String modelName,
@@ -97,6 +116,13 @@ import java.util.Map;
 
 
 
+    @Operation(summary = "Add a relationship", description = "Add a non-persistent relationship to an existing graph model.",
+            tags = {"model, relationship"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(value="/{modelName}/relationships", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public ResponseEntity<ModelResult> addRelationships(
             @PathVariable String modelName,
@@ -136,6 +162,14 @@ import java.util.Map;
 
 
 
+
+    @Operation(summary = "Detect cycles in an existing model", description = "Detect a cyclic (cycle) relationship between two nodes.",
+            tags = {"model, relationship"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(value="/{modelName}/{relationshipName}/cycles", method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<DagNodePathCollection> fetchCycles(
             @PathVariable String modelName,
@@ -165,6 +199,13 @@ import java.util.Map;
     }
 
 
+    @Operation(summary = "Find zero or more existing GraphModels", description = "Find zero or more models",
+            tags = {"model"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<DagModelCollection> findGraphModels(
             @RequestHeader Map<String, String> headersIn,
@@ -194,9 +235,15 @@ import java.util.Map;
         }
     }
 
-
-    @RequestMapping(value="/{modelName}/{startingNodeName}/{relationshipName}/descendents",method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<DagNodeCollection> findDescendents(
+    @Operation(summary = "Find descendants from a starting node", description = "Find descendants from a starting node in a graph model. ",
+            tags = {"model"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
+    @RequestMapping(value="/{modelName}/{startingNodeName}/{relationshipName}/descendants",method = RequestMethod.GET, produces = "application/json")
+    public ResponseEntity<DagNodeCollection> findDescendants(
             @RequestHeader Map<String, String> headersIn,
             @PathVariable String modelName,
             @PathVariable String startingNodeName,
@@ -229,6 +276,14 @@ import java.util.Map;
     }
 
 
+
+    @Operation(summary = "Find root nodes.", description = "Find root nodes (no relationships to)",
+            tags = {"model"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(value="/{modelName}/rootnodes",method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<DagNodeCollection> findRootNodes(
             @RequestHeader Map<String, String> headersIn,

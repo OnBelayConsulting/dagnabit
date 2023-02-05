@@ -7,6 +7,10 @@ import com.onbelay.dagnabit.graphnode.snapshot.GraphRelationshipSnapshot;
 import com.onbelay.dagnabitapp.graphnode.adapter.GraphRelationshipRestAdapter;
 import com.onbelay.dagnabitapp.graphnode.snapshot.FileResult;
 import com.onbelay.dagnabitapp.graphnode.snapshot.GraphRelationshipCollection;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +25,21 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Tag(name="GraphRelationship", description = "APIs to manage persisted graph relationships.")
 @RequestMapping("/api/relationships")public class GraphRelationshipRestController {
     private static final Logger logger = LogManager.getLogger();
     
     @Autowired
     private GraphRelationshipRestAdapter graphRelationshipRestAdapter;
 
+
+    @Operation(summary = "Save a new GraphRelationship", description = "Create a persisted GraphRelationship between two existing nodes.",
+            tags = {"relationship"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
     public ResponseEntity<TransactionResult> saveGraphRelationship(
             @RequestBody GraphRelationshipSnapshot snapshot,
@@ -62,6 +75,13 @@ import java.util.Map;
     }
 
 
+    @Operation(summary = "Save multiple new GraphRelationships", description = "Save multiple persisted GraphRelationships between two existing nodes.",
+            tags = {"relationship"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
     public ResponseEntity<TransactionResult> saveGraphRelationships(
             @RequestBody List<GraphRelationshipSnapshot> snapshots,
@@ -97,6 +117,13 @@ import java.util.Map;
     }
 
 
+    @Operation(summary = "Find zero or more existing GraphRelationships.", description = "Find zero or more existing relationships filtering with optional query.",
+            tags = {"relationship"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public ResponseEntity<GraphRelationshipCollection> findGraphRelationships(
             @RequestHeader Map<String, String> headersIn,
@@ -126,6 +153,13 @@ import java.util.Map;
         }
     }
 
+    @Operation(summary = "Upload a CSV file containing GraphRelationships.", description = "Upload a file in CSV format with GraphRelationships.",
+            tags = {"relationship"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(
             value = "/file",
             produces = "application/json",
@@ -164,6 +198,13 @@ import java.util.Map;
     }
 
 
+    @Operation(summary = "Download a CSV file containing GraphRelationships.", description = "Download a file in CSV format with GraphRelationships filtering with an optional query.",
+            tags = {"relationship"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(method = RequestMethod.GET, produces ="application/text")
     public HttpEntity<byte[]> generateCSVFile(
             @RequestHeader Map<String, String> headersIn,

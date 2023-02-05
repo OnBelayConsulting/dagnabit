@@ -65,6 +65,10 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation("org.junit.vintage:junit-vintage-engine")
 
+
+	/** Swagger dependencies **/
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
+
 }
 
 

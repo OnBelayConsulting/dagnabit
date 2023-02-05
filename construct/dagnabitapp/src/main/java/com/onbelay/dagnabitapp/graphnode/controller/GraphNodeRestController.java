@@ -7,6 +7,10 @@ import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
 import com.onbelay.dagnabitapp.graphnode.adapter.GraphNodeRestAdapter;
 import com.onbelay.dagnabitapp.graphnode.snapshot.FileResult;
 import com.onbelay.dagnabitapp.graphnode.snapshot.GraphNodeCollection;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +25,20 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@Tag(name="GraphNode", description = "APIs to manage persisted graph nodes.")
 @RequestMapping("/api/nodes")public class GraphNodeRestController {
     private static final Logger logger = LogManager.getLogger();
 
     @Autowired
     private GraphNodeRestAdapter graphNodeRestAdapter;
 
+    @Operation(summary = "Save a new GraphNode", description = "Create a persisted GraphNode by unique name.",
+            tags = {"node"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(
             method = RequestMethod.POST,
             produces = "application/json",
@@ -65,6 +77,13 @@ import java.util.Map;
     }
 
 
+    @Operation(summary = "Save multiple GraphNodes", description = "Create multiple persisted GraphNodes by unique names.",
+            tags = {"model"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(
             method = RequestMethod.PUT,
             produces = "application/json",
@@ -102,6 +121,13 @@ import java.util.Map;
 
     }
 
+    @Operation(summary = "Find zero or more GraphNodes", description = "Find using an optional query - zero or more existing graph nodes",
+            tags = {"node"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(
             method = RequestMethod.GET,
             produces = "application/json")
@@ -133,6 +159,13 @@ import java.util.Map;
         }
     }
 
+    @Operation(summary = "Upload a csv GraphNodes file", description = "Upload a file in CSV format describing graph nodes to add.",
+            tags = {"node"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(
             value = "/file",
             produces = "application/json",
@@ -170,6 +203,13 @@ import java.util.Map;
 
     }
 
+    @Operation(summary = "Download a csv GraphNodes file", description = "Download a file in CSV format with an optional query to filter..",
+            tags = {"node"})
+    @ApiResponses(value={
+            @ApiResponse(responseCode = "200", description = "Operation Successful"),
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "406", description = "Not Acceptable"),
+    })
     @RequestMapping(method = RequestMethod.GET, produces ="application/text")
     public HttpEntity<byte[]> generateCSVFile(
             @RequestHeader Map<String, String> headersIn,
