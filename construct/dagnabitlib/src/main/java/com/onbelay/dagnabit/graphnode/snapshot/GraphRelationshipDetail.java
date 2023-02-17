@@ -1,7 +1,7 @@
 package com.onbelay.dagnabit.graphnode.snapshot;
 
+import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dagnabit.enums.TransactionErrorCode;
-import com.onbelay.dagnabit.graphnode.exception.GraphNodeException;
 
 import javax.persistence.Column;
 
@@ -35,9 +35,9 @@ public class GraphRelationshipDetail {
 
     public void validate() {
         if (this.name == null)
-            throw new GraphNodeException(TransactionErrorCode.MISSING_GRAPH_RELATIONSHIP_NAME.getCode());
+            throw new OBValidationException(TransactionErrorCode.MISSING_GRAPH_RELATIONSHIP_NAME.getCode());
         if (this.type == null)
-            throw new GraphNodeException(TransactionErrorCode.MISSING_GRAPH_RELATIONSHIP_TYPE.getCode());
+            throw new OBValidationException(TransactionErrorCode.MISSING_GRAPH_RELATIONSHIP_TYPE.getCode());
     }
 
     @Column(name = "RELATIONSHIP_TYPE")

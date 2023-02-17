@@ -1,25 +1,35 @@
 package com.onbelay.dagnabit.graphnode.snapshot;
 
-import com.onbelay.dagnabit.common.snapshot.AbstractSnapshot;
+
+import com.onbelay.core.entity.snapshot.AbstractSnapshot;
+import com.onbelay.core.entity.snapshot.EntitySlot;
 
 public class GraphRelationshipSnapshot extends AbstractSnapshot {
 
-    private Integer fromNodeId;
+    private EntitySlot fromNodeId;
     private String fromNodeName;
     private String fromCategory;
 
-    private Integer toNodeId;
+    private EntitySlot toNodeId;
     private String toNodeName;
     private String toCategory;
 
     private GraphRelationshipDetail detail = new GraphRelationshipDetail();
 
-    public Integer getFromNodeId() {
+    public EntitySlot getFromNodeId() {
         return fromNodeId;
     }
 
-    public void setFromNodeId(Integer fromNodeId) {
+    public void setFromNodeId(EntitySlot fromNodeId) {
         this.fromNodeId = fromNodeId;
+    }
+
+    public EntitySlot getToNodeId() {
+        return toNodeId;
+    }
+
+    public void setToNodeId(EntitySlot toNodeId) {
+        this.toNodeId = toNodeId;
     }
 
     public String getFromNodeName() {
@@ -28,14 +38,6 @@ public class GraphRelationshipSnapshot extends AbstractSnapshot {
 
     public void setFromNodeName(String fromNodeName) {
         this.fromNodeName = fromNodeName;
-    }
-
-    public Integer getToNodeId() {
-        return toNodeId;
-    }
-
-    public void setToNodeId(Integer toNodeId) {
-        this.toNodeId = toNodeId;
     }
 
     public String getToNodeName() {

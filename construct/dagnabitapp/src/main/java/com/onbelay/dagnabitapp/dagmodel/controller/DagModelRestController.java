@@ -1,6 +1,6 @@
 package com.onbelay.dagnabitapp.dagmodel.controller;
 
-import com.onbelay.dagnabit.common.exception.RuntimeDagException;
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dagnabitapp.dagmodel.adapter.DagModelRestAdapter;
 import com.onbelay.dagnabitapp.dagmodel.snapshot.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,7 +52,7 @@ import java.util.Map;
         ModelResult result;
         try {
             result = dagModelRestAdapter.createModel(snapshot);
-        } catch (RuntimeDagException p) {
+        } catch (OBRuntimeException p) {
             result = new ModelResult(p.getErrorCode(), p.getParms());
         } catch (RuntimeException bre) {
             result = new ModelResult(bre.getMessage());
@@ -61,7 +61,7 @@ import java.util.Map;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
 
-        if (result.wasSuccessful()) {
+        if (result.isSuccessful()) {
             return new ResponseEntity(result, headers, HttpStatus.OK);
         } else {
             return new ResponseEntity(result, HttpStatus.BAD_REQUEST);
@@ -97,7 +97,7 @@ import java.util.Map;
             result = dagModelRestAdapter.addNodes(
                     modelName,
                     snapshots);
-        } catch (RuntimeDagException p) {
+        } catch (OBRuntimeException p) {
             result = new ModelResult(p.getErrorCode(), p.getParms());
         } catch (RuntimeException bre) {
             result = new ModelResult(bre.getMessage());
@@ -106,7 +106,7 @@ import java.util.Map;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
 
-        if (result.wasSuccessful()) {
+        if (result.isSuccessful()) {
             return new ResponseEntity(result, headers, HttpStatus.OK);
         } else {
             return new ResponseEntity(result, HttpStatus.BAD_REQUEST);
@@ -143,7 +143,7 @@ import java.util.Map;
             result = dagModelRestAdapter.addRelationships(
                     modelName,
                     snapshots);
-        } catch (RuntimeDagException p) {
+        } catch (OBRuntimeException p) {
             result = new ModelResult(p.getErrorCode(), p.getParms());
         } catch (RuntimeException bre) {
             result = new ModelResult(bre.getMessage());
@@ -152,7 +152,7 @@ import java.util.Map;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
 
-        if (result.wasSuccessful()) {
+        if (result.isSuccessful()) {
             return new ResponseEntity(result, headers, HttpStatus.OK);
         } else {
             return new ResponseEntity(result, HttpStatus.BAD_REQUEST);
@@ -181,7 +181,7 @@ import java.util.Map;
             collection = dagModelRestAdapter.fetchCycleReport(
                     modelName,
                     relationshipName);
-        } catch (RuntimeDagException p) {
+        } catch (OBRuntimeException p) {
             collection = new DagNodePathCollection(p.getErrorCode(), p.getParms());
         } catch (RuntimeException bre) {
             collection = new DagNodePathCollection(bre.getMessage());
@@ -190,7 +190,7 @@ import java.util.Map;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
 
-        if (collection.wasSuccessful()) {
+        if (collection.isSuccessful()) {
             return new ResponseEntity(collection, headers, HttpStatus.OK);
         } else {
             return new ResponseEntity(collection, HttpStatus.BAD_REQUEST);
@@ -219,7 +219,7 @@ import java.util.Map;
                     start,
                     limit,
                     filter);
-        } catch (RuntimeDagException e) {
+        } catch (OBRuntimeException e) {
             collection = new DagModelCollection(e.getErrorCode(), e.getParms());
         } catch (RuntimeException e) {
             collection = new DagModelCollection(e.getMessage());
@@ -228,7 +228,7 @@ import java.util.Map;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
 
-        if (collection.wasSuccessful()) {
+        if (collection.isSuccessful()) {
             return new ResponseEntity<>(collection, headers, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(collection, headers, HttpStatus.BAD_REQUEST);
@@ -253,13 +253,13 @@ import java.util.Map;
 
         DagNodeCollection collection;
         try {
-            collection = dagModelRestAdapter.findDescendents(
+            collection = dagModelRestAdapter.findDescendants(
                     modelName,
                     startingNodeName,
                     relationshipName,
                     start,
                     limit);
-        } catch (RuntimeDagException e) {
+        } catch (OBRuntimeException e) {
             collection = new DagNodeCollection(e.getErrorCode(), e.getParms());
         } catch (RuntimeException e) {
             collection = new DagNodeCollection(e.getMessage());
@@ -268,7 +268,7 @@ import java.util.Map;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
 
-        if (collection.wasSuccessful()) {
+        if (collection.isSuccessful()) {
             return new ResponseEntity<>(collection, headers, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(collection, headers, HttpStatus.BAD_REQUEST);
@@ -297,7 +297,7 @@ import java.util.Map;
                     modelName,
                     start,
                     limit);
-        } catch (RuntimeDagException e) {
+        } catch (OBRuntimeException e) {
             collection = new DagNodeCollection(e.getErrorCode(), e.getParms());
         } catch (RuntimeException e) {
             collection = new DagNodeCollection(e.getMessage());
@@ -306,7 +306,7 @@ import java.util.Map;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
 
-        if (collection.wasSuccessful()) {
+        if (collection.isSuccessful()) {
             return new ResponseEntity<>(collection, headers, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(collection, headers, HttpStatus.BAD_REQUEST);

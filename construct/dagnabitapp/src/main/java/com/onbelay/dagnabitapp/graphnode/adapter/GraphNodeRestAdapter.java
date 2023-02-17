@@ -1,6 +1,6 @@
 package com.onbelay.dagnabitapp.graphnode.adapter;
 
-import com.onbelay.dagnabit.common.snapshot.TransactionResult;
+import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
 import com.onbelay.dagnabitapp.graphnode.snapshot.FileResult;
 import com.onbelay.dagnabitapp.graphnode.snapshot.GraphNodeCollection;

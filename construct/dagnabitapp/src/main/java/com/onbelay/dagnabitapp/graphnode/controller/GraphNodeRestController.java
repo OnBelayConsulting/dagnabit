@@ -1,7 +1,7 @@
 package com.onbelay.dagnabitapp.graphnode.controller;
 
-import com.onbelay.dagnabit.common.exception.RuntimeDagException;
-import com.onbelay.dagnabit.common.snapshot.TransactionResult;
+import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.dagnabit.dagmodel.exception.DagGraphException;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
 import com.onbelay.dagnabitapp.graphnode.adapter.GraphNodeRestAdapter;
@@ -59,7 +59,7 @@ import java.util.Map;
         TransactionResult result;
         try {
             result = graphNodeRestAdapter.saveGraphNode(snapshot);
-        } catch (RuntimeDagException p) {
+        } catch (OBRuntimeException p) {
             result = new TransactionResult(p.getErrorCode(), p.getParms());
         } catch (RuntimeException bre) {
             result = new TransactionResult(bre.getMessage());
@@ -68,7 +68,7 @@ import java.util.Map;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
 
-        if (result.wasSuccessful()) {
+        if (result.isSuccessful()) {
             return new ResponseEntity(result, headers, HttpStatus.OK);
         } else {
             return new ResponseEntity(result, HttpStatus.BAD_REQUEST);
@@ -104,7 +104,7 @@ import java.util.Map;
         TransactionResult result;
         try {
             result = graphNodeRestAdapter.saveGraphNodes(snapshots);
-        } catch (RuntimeDagException p) {
+        } catch (OBRuntimeException p) {
             result = new TransactionResult(p.getErrorCode(), p.getParms());
         } catch (RuntimeException bre) {
             result = new TransactionResult(bre.getMessage());
@@ -113,7 +113,7 @@ import java.util.Map;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
 
-        if (result.wasSuccessful()) {
+        if (result.isSuccessful()) {
             return new ResponseEntity(result, headers, HttpStatus.OK);
         } else {
             return new ResponseEntity(result, HttpStatus.BAD_REQUEST);
@@ -143,7 +143,7 @@ import java.util.Map;
                     start,
                     limit,
                     query);
-        } catch (RuntimeDagException e) {
+        } catch (OBRuntimeException e) {
             collection = new GraphNodeCollection(e.getErrorCode(), e.getParms());
         } catch (RuntimeException e) {
             collection = new GraphNodeCollection(e.getMessage());
@@ -152,7 +152,7 @@ import java.util.Map;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
 
-        if (collection.wasSuccessful()) {
+        if (collection.isSuccessful()) {
             return new ResponseEntity<>(collection, headers, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(collection, headers, HttpStatus.BAD_REQUEST);
@@ -182,7 +182,7 @@ import java.util.Map;
             result = graphNodeRestAdapter.uploadFile(
                     name,
                     file.getBytes());
-        } catch (RuntimeDagException e) {
+        } catch (OBRuntimeException e) {
             result = new TransactionResult(e.getErrorCode());
         } catch (RuntimeException e) {
             result = new TransactionResult(e.getMessage());
@@ -194,7 +194,7 @@ import java.util.Map;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
 
-        if (result.wasSuccessful()) {
+        if (result.isSuccessful()) {
             return new ResponseEntity<>(result, headers, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(result, headers, HttpStatus.BAD_REQUEST);

@@ -1,8 +1,9 @@
 package com.onbelay.dagnabit.graphnode.model;
 
-import com.onbelay.dagnabit.common.component.ApplicationContextFactory;
-import com.onbelay.dagnabit.common.model.AbstractEntity;
-import com.onbelay.dagnabit.enums.EntityState;
+import com.onbelay.core.entity.component.ApplicationContextFactory;
+import com.onbelay.core.entity.enums.EntityState;
+import com.onbelay.core.entity.model.AbstractEntity;
+import com.onbelay.core.entity.snapshot.EntitySlot;
 import com.onbelay.dagnabit.graphnode.repository.GraphNodeRepository;
 import com.onbelay.dagnabit.graphnode.repositoryimpl.GraphNodeRepositoryBean;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeDetail;
@@ -20,31 +21,23 @@ import javax.persistence.*;
                       "   WHERE node.detail.name = :name ")
 
 })
-public class GraphNode extends AbstractEntity<GraphNode> {
+public class GraphNode extends AbstractEntity {
 
-    private Integer graphNodeId;
+    private Integer id;
 
     private GraphNodeDetail detail = new GraphNodeDetail();
 
-    @Transient
-    public Integer getEntityId() {
-        return graphNodeId;
-    }
 
     @Id
     @Column(name="GRAPH_NODE_ID", insertable = false, updatable = false)
     @SequenceGenerator(name="graphnodegen", sequenceName="GRAPH_NODE_SEQ", allocationSize = 1)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "graphnodegen")
-    public Integer getGraphNodeId() {
-        return graphNodeId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setGraphNodeId(Integer graphNodeId) {
-        this.graphNodeId = graphNodeId;
-    }
-
-    public static GraphNode load(Integer id) {
-        return getEntityRepository().load(GraphNode.class, id);
+    public void setId(Integer graphNodeId) {
+        this.id = graphNodeId;
     }
 
     @Embedded
@@ -71,25 +64,29 @@ public class GraphNode extends AbstractEntity<GraphNode> {
         save();
     }
 
-    public static GraphNode findByName(String name) {
-        return getEntityRepository().findByName(name);
-    }
-
     public void updateWith(GraphNodeSnapshot snapshot) {
         if (snapshot.getEntityState() == EntityState.MODIFIED) {
             detail.shallowCopyFrom(snapshot.getDetail());
             update();
         } else if (snapshot.getEntityState() == EntityState.DELETE) {
-            delete();
+            getEntityRepository().delete(this);
         }
     }
+
+
+    public EntitySlot generateSlot() {
+        return new EntitySlot(
+                getEntityId(),
+                detail.getName());
+    }
+
 
     public void validate() {
         detail.validate();
     }
 
     @Transient
-    public static  GraphNodeRepository getEntityRepository() {
+    public static  GraphNodeRepository getGraphNodeRepository() {
         return (GraphNodeRepository) ApplicationContextFactory.getBean(GraphNodeRepository.NAME);
     }
 }

@@ -1,14 +1,13 @@
 package com.onbelay.dagnabitapp.graphnode.adapterimpl;
 
-import com.onbelay.dagnabit.common.snapshot.TransactionResult;
+import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.query.parsing.DefinedQueryBuilder;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabit.graphnode.service.GraphNodeService;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
-import com.onbelay.dagnabit.query.parsing.DefinedQueryBuilder;
-import com.onbelay.dagnabit.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabitapp.graphnode.adapter.GraphNodeRestAdapter;
 import com.onbelay.dagnabitapp.graphnode.filereader.GraphNodeFileReader;
 import com.onbelay.dagnabitapp.graphnode.filewriter.GraphNodeFileWriter;
-import com.onbelay.dagnabitapp.graphnode.filewriter.GraphRelationshipFileWriter;
 import com.onbelay.dagnabitapp.graphnode.snapshot.FileResult;
 import com.onbelay.dagnabitapp.graphnode.snapshot.GraphNodeCollection;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,7 @@
 package com.onbelay.dagnabitapp.graphnode.filewriter;
 
-import com.onbelay.dagnabit.common.exception.RuntimeDagException;
+import com.onbelay.core.exception.OBRuntimeException;
+import com.onbelay.dagnabit.enums.TransactionErrorCode;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
 import com.onbelay.dagnabitapp.graphnode.filereader.GraphNodeFileHeader;
 import org.apache.commons.csv.CSVFormat;
@@ -40,11 +41,11 @@ public class GraphNodeFileWriter extends GraphNodeFileHeader {
                 }
             } catch (IOException e) {
                 logger.error("Writing node csv file failed with: ", e);
-                throw new RuntimeDagException("CSV Node Write Failed.");
+                throw new OBRuntimeException(TransactionErrorCode.NODE_FILE_WRITE_FAILED.getCode());
             }
         } catch (IOException e) {
             logger.error("Writing node csv file failed with: ", e);
-            throw new RuntimeDagException("CSV Node Write Failed.");
+            throw new OBRuntimeException(TransactionErrorCode.NODE_FILE_WRITE_FAILED.getCode());
         }
 
         return out.toByteArray();

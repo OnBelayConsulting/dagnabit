@@ -1,14 +1,15 @@
 package com.onbelay.dagnabit.graphnode.serviceimpl;
 
+import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.query.enums.ExpressionOperator;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.DefinedWhereExpression;
 import com.onbelay.dagnabit.common.DagnabitSpringTestCase;
-import com.onbelay.dagnabit.common.snapshot.TransactionResult;
 import com.onbelay.dagnabit.graphnode.model.GraphNode;
 import com.onbelay.dagnabit.graphnode.model.GraphNodeFixture;
+import com.onbelay.dagnabit.graphnode.repository.GraphNodeRepository;
 import com.onbelay.dagnabit.graphnode.service.GraphNodeService;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
-import com.onbelay.dagnabit.query.enums.ExpressionOperator;
-import com.onbelay.dagnabit.query.snapshot.DefinedQuery;
-import com.onbelay.dagnabit.query.snapshot.DefinedWhereExpression;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,6 +20,9 @@ public class GraphNodeServiceTest extends DagnabitSpringTestCase {
 
     @Autowired
     private GraphNodeService graphNodeService;
+
+    @Autowired
+    private GraphNodeRepository graphNodeRepository;
 
     private GraphNode firstNode;
     private GraphNode secondNode;
@@ -76,7 +80,7 @@ public class GraphNodeServiceTest extends DagnabitSpringTestCase {
                 new DefinedWhereExpression(
                         "id",
                         ExpressionOperator.EQUALS,
-                        firstNode.getGraphNodeId()));
+                        firstNode.getId()));
 
         List<GraphNodeSnapshot> nodes = graphNodeService.findByDefinedQuery(definedQuery);
         assertEquals(1, nodes.size());
@@ -99,7 +103,7 @@ public class GraphNodeServiceTest extends DagnabitSpringTestCase {
         TransactionResult result = graphNodeService.save(snapshots);
         flush();
 
-        GraphNode graphNode = GraphNode.findByName("MyMyNode");
+        GraphNode graphNode = graphNodeRepository.findByName("MyMyNode");
         assertNotNull(graphNode);
         assertEquals("MyCategory", graphNode.getDetail().getCategory());
         assertEquals("data", graphNode.getDetail().getData());

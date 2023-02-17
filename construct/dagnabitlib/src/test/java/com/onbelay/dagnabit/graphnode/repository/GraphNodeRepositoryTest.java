@@ -1,12 +1,12 @@
 package com.onbelay.dagnabit.graphnode.repository;
 
+import com.onbelay.core.query.enums.ExpressionOperator;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.DefinedWhereExpression;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabit.common.DagnabitSpringTestCase;
 import com.onbelay.dagnabit.graphnode.model.GraphNode;
 import com.onbelay.dagnabit.graphnode.model.GraphNodeFixture;
-import com.onbelay.dagnabit.query.enums.ExpressionOperator;
-import com.onbelay.dagnabit.query.snapshot.DefinedQuery;
-import com.onbelay.dagnabit.query.snapshot.DefinedWhereExpression;
-import com.onbelay.dagnabit.query.snapshot.QuerySelectedPage;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -1,7 +1,7 @@
 package com.onbelay.dagnabit.graphnode.snapshot;
 
+import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dagnabit.enums.TransactionErrorCode;
-import com.onbelay.dagnabit.graphnode.exception.GraphNodeException;
 
 import javax.persistence.Column;
 
@@ -34,9 +34,9 @@ public class GraphNodeDetail {
 
     public void validate() {
         if (this.name == null)
-            throw new GraphNodeException(TransactionErrorCode.MISSING_GRAPH_NODE_NAME.getCode());
+            throw new OBValidationException(TransactionErrorCode.MISSING_GRAPH_NODE_NAME.getCode());
         if (this.category == null)
-            throw new GraphNodeException(TransactionErrorCode.MISSING_GRAPH_NODE_CATEGORY.getCode());
+            throw new OBValidationException(TransactionErrorCode.MISSING_GRAPH_NODE_CATEGORY.getCode());
     }
 
     @Column(name = "NODE_CATEGORY")

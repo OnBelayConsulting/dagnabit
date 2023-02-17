@@ -1,11 +1,12 @@
 package com.onbelay.dagnabit.graphnode.repositoryimpl;
 
-import com.onbelay.dagnabit.common.repository.BaseRepository;
+import com.onbelay.core.entity.repository.BaseRepository;
+import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabit.graphnode.model.GraphNode;
 import com.onbelay.dagnabit.graphnode.model.GraphNodeColumnDefinitions;
 import com.onbelay.dagnabit.graphnode.repository.GraphNodeRepository;
-import com.onbelay.dagnabit.query.snapshot.DefinedQuery;
-import com.onbelay.dagnabit.query.snapshot.QuerySelectedPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,5 +44,11 @@ public class GraphNodeRepositoryBean extends BaseRepository<GraphNode> implement
                 selectedPage);
     }
 
+    public GraphNode load(EntityId entityId) {
+        if (entityId.isSet())
+            return find(GraphNode.class, entityId.getId());
+        else
+            return null;
+    }
 
 }

@@ -1,17 +1,18 @@
 package com.onbelay.dagnabit.graphnode.repository;
 
-import com.onbelay.dagnabit.common.repository.Repository;
+import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabit.graphnode.model.GraphNode;
-import com.onbelay.dagnabit.query.snapshot.DefinedQuery;
-import com.onbelay.dagnabit.query.snapshot.QuerySelectedPage;
 
 import java.util.List;
 
-public interface GraphNodeRepository extends Repository<GraphNode> {
+public interface GraphNodeRepository {
     public static final String NAME = "graphNodeRepository";
 
     public GraphNode findByName(String name);
 
+    public GraphNode load(EntityId entityId);
 
     public List<Integer> findGraphNodeIds(DefinedQuery definedQuery);
 

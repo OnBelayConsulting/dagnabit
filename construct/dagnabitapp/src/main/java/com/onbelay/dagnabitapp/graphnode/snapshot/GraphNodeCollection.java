@@ -1,15 +1,15 @@
 package com.onbelay.dagnabitapp.graphnode.snapshot;
 
+import com.onbelay.core.entity.snapshot.AbstractSnapshotCollection;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
-import com.onbelay.dagnabitapp.common.snapshot.AbstractEntityCollection;
 
 import java.util.List;
 
-public class GraphNodeCollection extends AbstractEntityCollection<GraphNodeSnapshot> {
-
+public class GraphNodeCollection extends AbstractSnapshotCollection<GraphNodeSnapshot> {
+    public static final String name = "GraphNode";
 
     public GraphNodeCollection() {
-        setEntityName("GraphNode");
+        super(name);
     }
 
     public GraphNodeCollection(
@@ -19,7 +19,7 @@ public class GraphNodeCollection extends AbstractEntityCollection<GraphNodeSnaps
             List<GraphNodeSnapshot> items) {
 
         super(
-                "GraphNode",
+                name,
                 start,
                 limit,
                 total,
@@ -32,17 +32,25 @@ public class GraphNodeCollection extends AbstractEntityCollection<GraphNodeSnaps
             int total) {
 
         super(
-                "GraphNode",
+                name,
                 start,
                 limit,
                 total);
     }
 
     public GraphNodeCollection(String errorCode) {
-        super(errorCode);
+        super(
+                name,
+                errorCode);
     }
 
-    public GraphNodeCollection(String errorCode, String parms) {
-        super(errorCode, parms);
+    public GraphNodeCollection(
+            String errorCode,
+            List<String> parms) {
+
+        super(
+                name,
+                errorCode,
+                parms);
     }
 }

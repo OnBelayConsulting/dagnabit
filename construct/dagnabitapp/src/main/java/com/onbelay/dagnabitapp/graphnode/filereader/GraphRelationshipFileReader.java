@@ -1,7 +1,7 @@
 package com.onbelay.dagnabitapp.graphnode.filereader;
 
-import com.onbelay.dagnabit.common.exception.RuntimeDagException;
-import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
+import com.onbelay.core.exception.OBRuntimeException;
+import com.onbelay.dagnabit.enums.TransactionErrorCode;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphRelationshipSnapshot;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -9,7 +9,6 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -59,7 +58,7 @@ public class GraphRelationshipFileReader extends GraphRelationshipFileHeader{
 
         } catch (IOException e) {
             logger.error("CSV file parsing read failed. ", e);
-            throw new RuntimeDagException("file could not be parsed.");
+            throw new OBRuntimeException(TransactionErrorCode.RELATIONSHIP_FILE_WRITE_FAILED.getCode());
         }
         return snapshots;
     }

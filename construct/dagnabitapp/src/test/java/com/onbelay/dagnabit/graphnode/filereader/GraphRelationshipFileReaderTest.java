@@ -1,9 +1,7 @@
 package com.onbelay.dagnabit.graphnode.filereader;
 
 import com.onbelay.dagnabit.common.DagnabitSpringTestCase;
-import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphRelationshipSnapshot;
-import com.onbelay.dagnabitapp.graphnode.filereader.GraphNodeFileReader;
 import com.onbelay.dagnabitapp.graphnode.filereader.GraphRelationshipFileReader;
 import org.junit.Test;
 

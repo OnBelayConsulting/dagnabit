@@ -1,16 +1,17 @@
 package com.onbelay.dagnabit.graphnode.serviceimpl;
 
-import com.onbelay.dagnabit.common.snapshot.TransactionResult;
-import com.onbelay.dagnabit.enums.EntityState;
+import com.onbelay.core.entity.enums.EntityState;
+import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.exception.OBRuntimeException;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabit.enums.TransactionErrorCode;
 import com.onbelay.dagnabit.graphnode.assembler.GraphRelationshipAssembler;
-import com.onbelay.dagnabit.graphnode.exception.GraphNodeException;
 import com.onbelay.dagnabit.graphnode.model.GraphRelationship;
 import com.onbelay.dagnabit.graphnode.repository.GraphRelationshipRepository;
 import com.onbelay.dagnabit.graphnode.service.GraphRelationshipService;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphRelationshipSnapshot;
-import com.onbelay.dagnabit.query.snapshot.DefinedQuery;
-import com.onbelay.dagnabit.query.snapshot.QuerySelectedPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,14 +32,14 @@ public class GraphRelationshipServiceBean implements GraphRelationshipService {
         if (snapshot.getEntityState() == EntityState.NEW) {
             GraphRelationship relationship = new GraphRelationship();
             relationship.createWith(snapshot);
-            return new TransactionResult(relationship.getGraphRelationshipId());
+            return new TransactionResult(relationship.getId());
         } else if (snapshot.getEntityState() == EntityState.MODIFIED || snapshot.getEntityState() == EntityState.DELETE)  {
-            GraphRelationship relationship = GraphRelationship.load(snapshot.getId());
+            GraphRelationship relationship = graphRelationshipRepository.load(snapshot.getEntityId());
 
             if (relationship == null)
-                throw new GraphNodeException(TransactionErrorCode.MISSING_GRAPH_NODE.getCode());
+                throw new OBRuntimeException(TransactionErrorCode.MISSING_GRAPH_NODE.getCode());
             relationship.updateWith(snapshot);
-            return new TransactionResult(relationship.getGraphRelationshipId());
+            return new TransactionResult(relationship.getId());
         } else {
             return new TransactionResult();
         }
@@ -59,20 +60,20 @@ public class GraphRelationshipServiceBean implements GraphRelationshipService {
 
     @Override
     public TransactionResult save(List<GraphRelationshipSnapshot> snapshots) {
-        List<Integer> ids = new ArrayList<>();
+        List<EntityId> ids = new ArrayList<>();
         for (GraphRelationshipSnapshot snapshot : snapshots) {
             TransactionResult child = save(snapshot);
-            if (child.getId() != null)
-                ids.add(child.getId());
+            if (child.getEntityId() != null)
+                ids.add(child.getEntityId());
         }
         return new TransactionResult(ids);
     }
 
     @Override
-    public GraphRelationshipSnapshot load(Integer id) {
-        GraphRelationship relationship = GraphRelationship.load(id);
+    public GraphRelationshipSnapshot load(EntityId id) {
+        GraphRelationship relationship = graphRelationshipRepository.load(id);
         if (relationship == null)
-            throw new GraphNodeException(TransactionErrorCode.MISSING_GRAPH_RELATIONSHIP.getCode());
+            throw new OBRuntimeException(TransactionErrorCode.MISSING_GRAPH_RELATIONSHIP.getCode());
         GraphRelationshipAssembler assembler = new GraphRelationshipAssembler();
 
         return assembler.assemble(relationship);

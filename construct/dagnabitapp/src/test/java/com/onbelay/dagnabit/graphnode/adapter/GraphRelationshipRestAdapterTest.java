@@ -1,11 +1,12 @@
 package com.onbelay.dagnabit.graphnode.adapter;
 
+import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dagnabit.common.DagnabitSpringTestCase;
-import com.onbelay.dagnabit.common.snapshot.TransactionResult;
 import com.onbelay.dagnabit.graphnode.model.GraphNode;
 import com.onbelay.dagnabit.graphnode.model.GraphNodeFixture;
 import com.onbelay.dagnabit.graphnode.model.GraphRelationship;
 import com.onbelay.dagnabit.graphnode.model.GraphRelationshipFixture;
+import com.onbelay.dagnabit.graphnode.repository.GraphRelationshipRepository;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphRelationshipSnapshot;
 import com.onbelay.dagnabitapp.graphnode.adapter.GraphRelationshipRestAdapter;
 import com.onbelay.dagnabitapp.graphnode.snapshot.GraphRelationshipCollection;
@@ -16,6 +17,9 @@ public class GraphRelationshipRestAdapterTest extends DagnabitSpringTestCase {
 
     @Autowired
     private GraphRelationshipRestAdapter graphRelationshipRestAdapter;
+
+    @Autowired
+    private GraphRelationshipRepository graphRelationshipRepository;
 
     private GraphNode firstNode;
     private GraphNode secondNode;
@@ -44,8 +48,8 @@ public class GraphRelationshipRestAdapterTest extends DagnabitSpringTestCase {
                 10,
                 "WHERE fromNodeName = 'firstNode'");
 
-        assertEquals(1, collection.getItems().size());
-        GraphRelationshipSnapshot snapshot = collection.getItems().get(0);
+        assertEquals(1, collection.getSnapshots().size());
+        GraphRelationshipSnapshot snapshot = collection.getSnapshots().get(0);
         assertEquals("firstNode", snapshot.getFromNodeName());
         assertEquals("secondNode", snapshot.getToNodeName());
         assertEquals("specialRelationship", snapshot.getDetail().getType());
@@ -58,8 +62,8 @@ public class GraphRelationshipRestAdapterTest extends DagnabitSpringTestCase {
                 10,
                 "WHERE type = 'specialRelationship'");
 
-        assertEquals(1, collection.getItems().size());
-        GraphRelationshipSnapshot snapshot = collection.getItems().get(0);
+        assertEquals(1, collection.getSnapshots().size());
+        GraphRelationshipSnapshot snapshot = collection.getSnapshots().get(0);
         assertEquals("firstNode", snapshot.getFromNodeName());
         assertEquals("secondNode", snapshot.getToNodeName());
         assertEquals("specialRelationship", snapshot.getDetail().getType());
@@ -70,13 +74,13 @@ public class GraphRelationshipRestAdapterTest extends DagnabitSpringTestCase {
     public void createRelationship() {
         GraphRelationshipSnapshot snapshot = new GraphRelationshipSnapshot();
         snapshot.getDetail().setType("childOf");
-        snapshot.setFromNodeId(firstNode.getGraphNodeId());
-        snapshot.setToNodeId(secondNode.getGraphNodeId());
+        snapshot.setFromNodeId(firstNode.generateSlot());
+        snapshot.setToNodeId(secondNode.generateSlot());
         snapshot.getDetail().setData("mydata");
 
         TransactionResult result = graphRelationshipRestAdapter.saveGraphRelationship(snapshot);
-        assertTrue(result.wasSuccessful());
-        GraphRelationship graphRelationship = GraphRelationship.load(result.getId());
+        assertTrue(result.isSuccessful());
+        GraphRelationship graphRelationship = graphRelationshipRepository.load(result.getEntityId());
         assertEquals("childOf", graphRelationship.getDetail().getType());
         assertEquals("mydata", graphRelationship.getDetail().getData());
         assertEquals("firstNode", graphRelationship.getFromGraphNode().getDetail().getName());

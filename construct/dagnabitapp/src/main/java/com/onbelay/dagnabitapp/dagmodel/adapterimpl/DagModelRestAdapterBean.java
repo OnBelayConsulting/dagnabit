@@ -1,11 +1,11 @@
 package com.onbelay.dagnabitapp.dagmodel.adapterimpl;
 
-import com.onbelay.dagnabit.dagmodel.model.*;
 import com.onbelay.dagnabit.dagmodel.factory.DagModelFactory;
+import com.onbelay.dagnabit.dagmodel.model.*;
 import com.onbelay.dagnabitapp.common.adapterimpl.BaseRestAdapterBean;
 import com.onbelay.dagnabitapp.dagmodel.adapter.DagModelRestAdapter;
-import com.onbelay.dagnabitapp.dagmodel.assembler.DagNodeSnapshotAssembler;
 import com.onbelay.dagnabitapp.dagmodel.assembler.DagModelSnapshotAssembler;
+import com.onbelay.dagnabitapp.dagmodel.assembler.DagNodeSnapshotAssembler;
 import com.onbelay.dagnabitapp.dagmodel.snapshot.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -110,7 +110,7 @@ public class DagModelRestAdapterBean extends BaseRestAdapterBean implements DagM
     }
 
     @Override
-    public DagNodeCollection findDescendents(
+    public DagNodeCollection findDescendants(
             String modelName,
             String nodeRootName,
             String relationshipName,

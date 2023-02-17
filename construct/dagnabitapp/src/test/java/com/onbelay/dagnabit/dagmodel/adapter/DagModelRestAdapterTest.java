@@ -1,14 +1,14 @@
 package com.onbelay.dagnabit.dagmodel.adapter;
 
 import com.onbelay.dagnabit.common.DagnabitSpringTestCase;
+import com.onbelay.dagnabit.dagmodel.factory.DagModelFactory;
 import com.onbelay.dagnabit.dagmodel.model.DagModel;
 import com.onbelay.dagnabit.dagmodel.model.DagNodePath;
-import com.onbelay.dagnabit.dagmodel.factory.DagModelFactory;
 import com.onbelay.dagnabitapp.dagmodel.adapter.DagModelRestAdapter;
-import com.onbelay.dagnabitapp.dagmodel.snapshot.DagNodeCollection;
-import com.onbelay.dagnabitapp.dagmodel.snapshot.DagNodePathCollection;
 import com.onbelay.dagnabitapp.dagmodel.snapshot.DagModelCollection;
 import com.onbelay.dagnabitapp.dagmodel.snapshot.DagModelSnapshot;
+import com.onbelay.dagnabitapp.dagmodel.snapshot.DagNodeCollection;
+import com.onbelay.dagnabitapp.dagmodel.snapshot.DagNodePathCollection;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -64,20 +64,20 @@ public class DagModelRestAdapterTest extends DagnabitSpringTestCase {
     @Test
     public void findModels() {
          DagModelCollection collection = dagModelRestAdapter.findGraphModels(0, 100, null);
-         assertEquals(1, collection.getItems().size());
-         DagModelSnapshot snapshot = collection.getItems().get(0);
+         assertEquals(1, collection.getSnapshots().size());
+         DagModelSnapshot snapshot = collection.getSnapshots().get(0);
          assertEquals("myModel", snapshot.getName());
     }
 
     @Test
-    public void findDescendents() {
-        DagNodeCollection collection = dagModelRestAdapter.findDescendents(
+    public void findDescendants() {
+        DagNodeCollection collection = dagModelRestAdapter.findDescendants(
                 "myModel",
                 "firstNode",
                 "parentOf",
                 0,
                 100);
-        assertEquals(4, collection.getItems().size());
+        assertEquals(4, collection.getSnapshots().size());
     }
 
     @Test
@@ -93,8 +93,8 @@ public class DagModelRestAdapterTest extends DagnabitSpringTestCase {
 
         assertTrue(collection.isCyclic());
 
-        assertEquals(3, collection.getItems().size());
-        DagNodePath path = collection.getItems().get(0);
+        assertEquals(3, collection.getSnapshots().size());
+        DagNodePath path = collection.getSnapshots().get(0);
 
     }
 

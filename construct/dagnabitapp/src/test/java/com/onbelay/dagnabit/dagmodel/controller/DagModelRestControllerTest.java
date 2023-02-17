@@ -1,14 +1,10 @@
 package com.onbelay.dagnabit.dagmodel.controller;
 
-import com.onbelay.dagnabit.common.snapshot.TransactionResult;
 import com.onbelay.dagnabit.controller.DagControllerTestCase;
-import com.onbelay.dagnabit.dagmodel.model.DagModel;
 import com.onbelay.dagnabit.dagmodel.factory.DagModelFactory;
+import com.onbelay.dagnabit.dagmodel.model.DagModel;
 import com.onbelay.dagnabitapp.dagmodel.controller.DagModelRestController;
-import com.onbelay.dagnabitapp.dagmodel.snapshot.DagNodeCollection;
-import com.onbelay.dagnabitapp.dagmodel.snapshot.DagNodeSnapshot;
-import com.onbelay.dagnabitapp.dagmodel.snapshot.DagModelCollection;
-import com.onbelay.dagnabitapp.dagmodel.snapshot.DagModelSnapshot;
+import com.onbelay.dagnabitapp.dagmodel.snapshot.*;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -19,7 +15,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @WithMockUser
 public class DagModelRestControllerTest extends DagControllerTestCase {
@@ -85,9 +82,9 @@ public class DagModelRestControllerTest extends DagControllerTestCase {
 		
 		DagModelCollection collection = super.objectMapper.readValue(jsonString, DagModelCollection.class);
 		
-		assertEquals(1, collection.getItems().size());
+		assertEquals(1, collection.getSnapshots().size());
 		
-		List<DagModelSnapshot> snapshots = collection.getItems();
+		List<DagModelSnapshot> snapshots = collection.getSnapshots();
 
 		DagModelSnapshot snapshot = snapshots.get(0);
 		assertEquals("myModel", snapshot.getName());
@@ -96,11 +93,11 @@ public class DagModelRestControllerTest extends DagControllerTestCase {
 
 
 	@Test
-	public void fetchDescendents() throws Exception {
+	public void fetchDescendants() throws Exception {
 
 		MockMvc mockMvc = generateMockMvcGet(dagModelRestController, "/api/models");
 
-		ResultActions result = mockMvc.perform(get("/api/models/myModel/firstNode/parentOf/descendents"));
+		ResultActions result = mockMvc.perform(get("/api/models/myModel/firstNode/parentOf/descendants"));
 		MvcResult mvcResult = result.andReturn();
 		String jsonString = mvcResult.getResponse().getContentAsString();
 		String contentType = mvcResult.getResponse().getHeader("Content-type");
@@ -109,9 +106,9 @@ public class DagModelRestControllerTest extends DagControllerTestCase {
 
 		DagNodeCollection collection = super.objectMapper.readValue(jsonString, DagNodeCollection.class);
 
-		assertEquals(4, collection.getItems().size());
+		assertEquals(4, collection.getSnapshots().size());
 
-		List<DagNodeSnapshot> snapshots = collection.getItems();
+		List<DagNodeSnapshot> snapshots = collection.getSnapshots();
 
 		DagNodeSnapshot snapshot = snapshots.get(0);
 		assertEquals("secondNode", snapshot.getName());
@@ -133,8 +130,8 @@ public class DagModelRestControllerTest extends DagControllerTestCase {
 		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
 		String contentType = mvcResult.getResponse().getHeader("Content-type");
 
-		TransactionResult restResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
-		assertTrue(restResult.wasSuccessful());
+		ModelResult modelResult = objectMapper.readValue(jsonStringResponse, ModelResult.class);
+		assertTrue(modelResult.isSuccessful());
 	}
 	
 	@Test
@@ -157,7 +154,7 @@ public class DagModelRestControllerTest extends DagControllerTestCase {
 		String jsonStringResponse = mvcResult.getResponse().getContentAsString();
 		String contentType = mvcResult.getResponse().getHeader("Content-type");
 
-		TransactionResult restResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
-		assertTrue(restResult.wasSuccessful());
+		ModelResult modelResult = objectMapper.readValue(jsonStringResponse, ModelResult.class);
+		assertTrue(modelResult.isSuccessful());
 	}
 }

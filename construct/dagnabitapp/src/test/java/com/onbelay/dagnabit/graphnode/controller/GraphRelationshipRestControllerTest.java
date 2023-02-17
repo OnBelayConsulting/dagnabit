@@ -1,6 +1,6 @@
 package com.onbelay.dagnabit.graphnode.controller;
 
-import com.onbelay.dagnabit.common.snapshot.TransactionResult;
+import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dagnabit.controller.DagControllerTestCase;
 import com.onbelay.dagnabit.graphnode.model.GraphNode;
 import com.onbelay.dagnabit.graphnode.model.GraphNodeFixture;
@@ -58,9 +58,9 @@ public class GraphRelationshipRestControllerTest extends DagControllerTestCase {
 		
 		GraphRelationshipCollection collection = super.objectMapper.readValue(jsonString, GraphRelationshipCollection.class);
 		
-		assertEquals(1, collection.getItems().size());
+		assertEquals(1, collection.getSnapshots().size());
 		
-		List<GraphRelationshipSnapshot> snapshots = collection.getItems();
+		List<GraphRelationshipSnapshot> snapshots = collection.getSnapshots();
 
 		GraphRelationshipSnapshot snapshot = snapshots.get(0);
 	}
@@ -83,7 +83,7 @@ public class GraphRelationshipRestControllerTest extends DagControllerTestCase {
 		String contentType = mvcResult.getResponse().getHeader("Content-type");
 
 		TransactionResult restResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
-		assertTrue(restResult.wasSuccessful());
+		assertTrue(restResult.isSuccessful());
 	}
 	
 	@Test
@@ -108,6 +108,6 @@ public class GraphRelationshipRestControllerTest extends DagControllerTestCase {
 		String contentType = mvcResult.getResponse().getHeader("Content-type");
 
 		TransactionResult restResult = objectMapper.readValue(jsonStringResponse, TransactionResult.class);
-		assertTrue(restResult.wasSuccessful());
+		assertTrue(restResult.isSuccessful());
 	}
 }

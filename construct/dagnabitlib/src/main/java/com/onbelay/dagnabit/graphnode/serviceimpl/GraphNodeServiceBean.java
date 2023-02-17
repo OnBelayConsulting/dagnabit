@@ -1,16 +1,17 @@
 package com.onbelay.dagnabit.graphnode.serviceimpl;
 
-import com.onbelay.dagnabit.common.snapshot.TransactionResult;
-import com.onbelay.dagnabit.enums.EntityState;
+import com.onbelay.core.entity.enums.EntityState;
+import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.exception.OBRuntimeException;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabit.enums.TransactionErrorCode;
 import com.onbelay.dagnabit.graphnode.assembler.GraphNodeAssembler;
-import com.onbelay.dagnabit.graphnode.exception.GraphNodeException;
 import com.onbelay.dagnabit.graphnode.model.GraphNode;
 import com.onbelay.dagnabit.graphnode.repository.GraphNodeRepository;
 import com.onbelay.dagnabit.graphnode.service.GraphNodeService;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
-import com.onbelay.dagnabit.query.snapshot.DefinedQuery;
-import com.onbelay.dagnabit.query.snapshot.QuerySelectedPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,12 +34,12 @@ public class GraphNodeServiceBean implements GraphNodeService {
             graphNode.createWith(snapshot);
             return new TransactionResult(graphNode.getEntityId());
         } else if (snapshot.getEntityState() == EntityState.MODIFIED || snapshot.getEntityState() == EntityState.DELETE)  {
-            GraphNode graphNode = GraphNode.load(snapshot.getId());
+            GraphNode graphNode = graphNodeRepository.load(snapshot.getEntityId());
 
             if (graphNode == null)
-                throw new GraphNodeException(TransactionErrorCode.MISSING_GRAPH_NODE.getCode());
+                throw new OBRuntimeException(TransactionErrorCode.MISSING_GRAPH_NODE.getCode());
             graphNode.updateWith(snapshot);
-            return new TransactionResult(graphNode.getGraphNodeId());
+            return new TransactionResult(graphNode.getId());
         } else {
             return new TransactionResult();
         }
@@ -46,20 +47,20 @@ public class GraphNodeServiceBean implements GraphNodeService {
 
     @Override
     public TransactionResult save(List<GraphNodeSnapshot> snapshots) {
-        ArrayList<Integer> ids = new ArrayList<>();
+        ArrayList<EntityId> ids = new ArrayList<>();
         for (GraphNodeSnapshot snapshot : snapshots) {
             TransactionResult child = save(snapshot);
-            if (child.getId() != null)
-                ids.add(child.getId());
+            if (child.getEntityId() != null)
+                ids.add(child.getEntityId());
         }
         return new TransactionResult(ids);
     }
 
     @Override
-    public GraphNodeSnapshot load(Integer id) {
-        GraphNode node = GraphNode.load(id);
+    public GraphNodeSnapshot load(EntityId id) {
+        GraphNode node = graphNodeRepository.load(id);
         if (node == null)
-            throw new GraphNodeException(TransactionErrorCode.MISSING_GRAPH_NODE.getCode());
+            throw new OBRuntimeException(TransactionErrorCode.MISSING_GRAPH_NODE.getCode());
 
         GraphNodeAssembler assembler = new GraphNodeAssembler();
         return assembler.assemble(node);

@@ -1,12 +1,12 @@
 package com.onbelay.dagnabit.dagmodel.factory;
 
 import com.onbelay.dagnabit.common.DagnabitSpringTestCase;
-import com.onbelay.dagnabit.dagmodel.factory.DagModelFactory;
 import com.onbelay.dagnabit.dagmodel.model.DagModel;
 import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
 import com.onbelay.dagnabit.graphnode.model.GraphNode;
 import com.onbelay.dagnabit.graphnode.model.GraphNodeFixture;
 import com.onbelay.dagnabit.graphnode.model.GraphRelationship;
+import com.onbelay.dagnabit.graphnode.repository.GraphRelationshipRepository;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +17,9 @@ public class DagModelFactoryTest extends DagnabitSpringTestCase {
 
     @Autowired
     private DagModelFactory dagModelFactory;
+
+    @Autowired
+    private GraphRelationshipRepository graphRelationshipRepository;
 
 
     public void setUp() {
@@ -34,7 +37,7 @@ public class DagModelFactoryTest extends DagnabitSpringTestCase {
         relationship.createWith(toGraphNode, fromGraphNode, "boss");
         flush();
 
-        GraphRelationship created = GraphRelationship.load(relationship.getGraphRelationshipId());
+        GraphRelationship created = graphRelationshipRepository.load(relationship.getEntityId());
 
         DagModel dagModel = dagModelFactory.newModel(
                 "myModel",
@@ -51,7 +54,7 @@ public class DagModelFactoryTest extends DagnabitSpringTestCase {
         relationship.createWith(toGraphNode, fromGraphNode, "boss");
         flush();
 
-        GraphRelationship created = GraphRelationship.load(relationship.getGraphRelationshipId());
+        GraphRelationship created = graphRelationshipRepository.load(relationship.getEntityId());
 
         DagModel dagModel = dagModelFactory.newModel(
                 "myModel",

@@ -1,10 +1,10 @@
 package com.onbelay.dagnabitapp.dagmodel.snapshot;
 
-import com.onbelay.dagnabitapp.common.snapshot.AbstractEntityCollection;
+import com.onbelay.core.entity.snapshot.AbstractSnapshotCollection;
 
 import java.util.List;
 
-public class DagModelCollection extends AbstractEntityCollection<DagModelSnapshot> {
+public class DagModelCollection extends AbstractSnapshotCollection<DagModelSnapshot> {
     private static final String name = "GraphModel";
     private String filter;
 
@@ -71,11 +71,16 @@ public class DagModelCollection extends AbstractEntityCollection<DagModelSnapsho
 
 
     public DagModelCollection(String errorCode) {
-        super(errorCode);
+        super(
+                name,
+                errorCode);
     }
 
-    public DagModelCollection(String errorCode, String parms) {
-        super(errorCode, parms);
+    public DagModelCollection(String errorCode, List<String> parms) {
+        super(
+                name,
+                errorCode,
+                parms);
     }
 
     public String getFilter() {

@@ -1,16 +1,17 @@
 package com.onbelay.dagnabit.graphnode.service;
 
-import com.onbelay.dagnabit.common.snapshot.TransactionResult;
+import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
-import com.onbelay.dagnabit.query.snapshot.DefinedQuery;
-import com.onbelay.dagnabit.query.snapshot.QuerySelectedPage;
 
 import java.util.List;
 
 public interface GraphNodeService {
     public static final String NAME = "graphNodeService";
 
-    GraphNodeSnapshot load(Integer id);
+    GraphNodeSnapshot load(EntityId id);
 
     List<GraphNodeSnapshot> findByDefinedQuery(DefinedQuery definedQuery);
 

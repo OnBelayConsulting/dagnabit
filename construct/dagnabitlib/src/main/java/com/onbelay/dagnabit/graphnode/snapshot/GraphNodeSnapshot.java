@@ -1,6 +1,7 @@
 package com.onbelay.dagnabit.graphnode.snapshot;
 
-import com.onbelay.dagnabit.common.snapshot.AbstractSnapshot;
+
+import com.onbelay.core.entity.snapshot.AbstractSnapshot;
 
 public class GraphNodeSnapshot extends AbstractSnapshot {
 

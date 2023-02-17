@@ -1,11 +1,11 @@
 package com.onbelay.dagnabitapp.dagmodel.snapshot;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.onbelay.core.entity.snapshot.ErrorHoldingSnapshot;
 
-public class ModelResult {
+import java.util.List;
 
-    private String errorCode = "0";
-    private String parms;
+public class ModelResult extends ErrorHoldingSnapshot {
+
     private String modelName;
     private int totalRelationshipsSelected;
 
@@ -16,34 +16,12 @@ public class ModelResult {
         this.totalRelationshipsSelected = totalRelationshipsSelected;
     }
 
-    public ModelResult(String errorCode, String parms) {
-        this.errorCode = errorCode;
-        this.parms = parms;
+    public ModelResult(String errorCode, List<String> parms) {
+        super(errorCode,parms );
     }
 
     public ModelResult(String errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public String getErrorCode() {
-        return errorCode;
-    }
-
-    @JsonIgnore
-    public boolean wasSuccessful() {
-        return errorCode.equals("0");
-    }
-
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public String getParms() {
-        return parms;
-    }
-
-    public void setParms(String parms) {
-        this.parms = parms;
+        super(errorCode);
     }
 
     public String getModelName() {

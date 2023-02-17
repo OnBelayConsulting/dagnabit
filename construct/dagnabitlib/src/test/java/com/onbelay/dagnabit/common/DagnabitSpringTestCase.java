@@ -1,6 +1,6 @@
 package com.onbelay.dagnabit.common;
 
-import com.onbelay.dagnabit.entity.TransactionalSpringTestCase;
+import com.onbelay.core.entity.persistence.TransactionalSpringTestCase;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

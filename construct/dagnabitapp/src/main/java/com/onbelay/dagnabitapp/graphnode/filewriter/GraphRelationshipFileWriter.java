@@ -1,6 +1,7 @@
 package com.onbelay.dagnabitapp.graphnode.filewriter;
 
-import com.onbelay.dagnabit.common.exception.RuntimeDagException;
+import com.onbelay.core.exception.OBRuntimeException;
+import com.onbelay.dagnabit.enums.TransactionErrorCode;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphRelationshipSnapshot;
 import com.onbelay.dagnabitapp.graphnode.filereader.GraphRelationshipFileHeader;
 import org.apache.commons.csv.CSVFormat;
@@ -46,11 +47,11 @@ public class GraphRelationshipFileWriter extends GraphRelationshipFileHeader {
                 }
             } catch (IOException e) {
                 logger.error("Writing relationship csv file failed with: ", e);
-                throw new RuntimeDagException("CSV Relationship Write Failed.");
+                throw new OBRuntimeException(TransactionErrorCode.RELATIONSHIP_FILE_WRITE_FAILED.getCode());
             }
         } catch (IOException e) {
             logger.error("Writing relationship csv file failed with: ", e);
-            throw new RuntimeDagException("CSV Relationship Write Failed.");
+            throw new OBRuntimeException(TransactionErrorCode.RELATIONSHIP_FILE_WRITE_FAILED.getCode());
         }
 
         return out.toByteArray();

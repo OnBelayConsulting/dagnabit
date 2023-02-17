@@ -10,8 +10,8 @@ public class GraphRelationshipFixture {
             String relationship) {
 
         GraphRelationshipSnapshot snapshot = new GraphRelationshipSnapshot();
-        snapshot.setFromNodeId(fromNode.getGraphNodeId());
-        snapshot.setToNodeId(toNode.getGraphNodeId());
+        snapshot.setFromNodeId(fromNode.generateSlot());
+        snapshot.setToNodeId(toNode.generateSlot());
         snapshot.getDetail().setType(relationship);
 
         GraphRelationship graphRelationship = new GraphRelationship();

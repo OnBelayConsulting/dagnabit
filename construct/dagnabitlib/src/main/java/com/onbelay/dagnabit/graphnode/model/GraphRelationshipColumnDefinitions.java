@@ -15,13 +15,13 @@
  */
 package com.onbelay.dagnabit.graphnode.model;
 
+import com.onbelay.core.query.enums.ColumnDataType;
+import com.onbelay.core.query.model.ColumnDefinition;
+import com.onbelay.core.query.model.ColumnDefinitions;
+import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.onbelay.dagnabit.query.enums.ColumnDataType;
-import com.onbelay.dagnabit.query.model.ColumnDefinition;
-import com.onbelay.dagnabit.query.model.ColumnDefinitions;
-import org.springframework.stereotype.Component;
 
 
 @Component(value = "graphRelationshipColumnDefinitions")
@@ -74,7 +74,17 @@ public class GraphRelationshipColumnDefinitions implements ColumnDefinitions {
 		add(toNodeName);
 		add(toNodeCategory);
 	}
-	
+
+	@Override
+	public String getCodeName() {
+		return name.getPath();
+	}
+
+	@Override
+	public String getDescriptionName() {
+		return name.getPath();
+	}
+
 	public ColumnDefinition get(String name) {
 		return definitionsMap.get(name);
 	}

@@ -31,8 +31,9 @@ public enum TransactionErrorCode {
     MISSING_GRAPH_RELATIONSHIP_TYPE               ("DAG-E0102", "Missing GraphRelationship type (Mandatory)"),
     MISSING_GRAPH_RELATIONSHIP_NAME               ("DAG-E0103", "Missing GraphRelationship name (Mandatory"),
 
-    QUERY_MORE_THAN_ONE_RESULT                    ("DAG-E1000", "Query returned more than one result."),
-    ENTITY_DELETE_FAIL                            ("DAG-E1001", "Entity deletion failed."),
+    INVALID_FILE                                  ("DAG-E1000", "Invalid file."),
+    NODE_FILE_WRITE_FAILED                        ("DAG-E1100", "Node csv file write failed."),
+    RELATIONSHIP_FILE_WRITE_FAILED                ("DAG-E1001", "Relationship csv file write failed."),
     SYSTEM_FAILURE                                ("DAG-9999", "Error: Application error has occurred");
 
     private String code;

@@ -1,17 +1,17 @@
 package com.onbelay.dagnabit.graphnode.serviceimpl;
 
+import com.onbelay.core.entity.snapshot.TransactionResult;
+import com.onbelay.core.query.enums.ExpressionOperator;
+import com.onbelay.core.query.snapshot.DefinedQuery;
+import com.onbelay.core.query.snapshot.DefinedWhereExpression;
+import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabit.common.DagnabitSpringTestCase;
-import com.onbelay.dagnabit.common.snapshot.TransactionResult;
 import com.onbelay.dagnabit.graphnode.model.GraphNode;
 import com.onbelay.dagnabit.graphnode.model.GraphNodeFixture;
 import com.onbelay.dagnabit.graphnode.model.GraphRelationship;
 import com.onbelay.dagnabit.graphnode.model.GraphRelationshipFixture;
 import com.onbelay.dagnabit.graphnode.service.GraphRelationshipService;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphRelationshipSnapshot;
-import com.onbelay.dagnabit.query.enums.ExpressionOperator;
-import com.onbelay.dagnabit.query.snapshot.DefinedQuery;
-import com.onbelay.dagnabit.query.snapshot.DefinedWhereExpression;
-import com.onbelay.dagnabit.query.snapshot.QuerySelectedPage;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -134,13 +134,13 @@ public class GraphRelationshipServiceTest extends DagnabitSpringTestCase {
     public void createRelationship() {
         GraphRelationshipSnapshot snapshot = new GraphRelationshipSnapshot();
         snapshot.getDetail().setType("childOf");
-        snapshot.setFromNodeId(firstNode.getGraphNodeId());
-        snapshot.setToNodeId(secondNode.getGraphNodeId());
+        snapshot.setFromNodeId(firstNode.generateSlot());
+        snapshot.setToNodeId(secondNode.generateSlot());
         snapshot.getDetail().setData("mydata");
 
         TransactionResult result = graphRelationshipService.save(snapshot);
         flush();
-        GraphRelationshipSnapshot saved = graphRelationshipService.load(result.getId());
+        GraphRelationshipSnapshot saved = graphRelationshipService.load(result.getEntityId());
         assertNotNull(saved);
         assertEquals("childOf", saved.getDetail().getType());
         assertEquals("firstNode - childOf -> secondNode", saved.getDetail().getName());
@@ -152,13 +152,13 @@ public class GraphRelationshipServiceTest extends DagnabitSpringTestCase {
         GraphRelationshipSnapshot snapshot = new GraphRelationshipSnapshot();
         snapshot.getDetail().setType("childOf");
         snapshot.getDetail().setName("First is childOf Second");
-        snapshot.setFromNodeId(firstNode.getGraphNodeId());
-        snapshot.setToNodeId(secondNode.getGraphNodeId());
+        snapshot.setFromNodeId(firstNode.generateSlot());
+        snapshot.setToNodeId(secondNode.generateSlot());
         snapshot.getDetail().setData("mydata");
 
         TransactionResult result = graphRelationshipService.save(snapshot);
         flush();
-        GraphRelationshipSnapshot saved = graphRelationshipService.load(result.getId());
+        GraphRelationshipSnapshot saved = graphRelationshipService.load(result.getEntityId());
         assertNotNull(saved);
         assertEquals("childOf", saved.getDetail().getType());
         assertEquals("First is childOf Second", saved.getDetail().getName());

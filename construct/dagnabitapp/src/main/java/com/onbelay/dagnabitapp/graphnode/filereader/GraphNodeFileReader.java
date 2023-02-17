@@ -1,6 +1,7 @@
 package com.onbelay.dagnabitapp.graphnode.filereader;
 
-import com.onbelay.dagnabit.common.exception.RuntimeDagException;
+import com.onbelay.core.exception.OBRuntimeException;
+import com.onbelay.dagnabit.enums.TransactionErrorCode;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -56,7 +57,7 @@ public class GraphNodeFileReader extends GraphNodeFileHeader{
 
         } catch (IOException e) {
             logger.error("CSV file parsing read failed. ", e);
-            throw new RuntimeDagException("file could not be parsed.");
+            throw new OBRuntimeException(TransactionErrorCode.INVALID_FILE.getCode());
         }
 
         return snapshots;

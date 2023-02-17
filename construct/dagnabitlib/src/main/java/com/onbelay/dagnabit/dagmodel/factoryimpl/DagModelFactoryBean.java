@@ -1,5 +1,7 @@
 package com.onbelay.dagnabit.dagmodel.factoryimpl;
 
+import com.onbelay.core.query.parsing.DefinedQueryBuilder;
+import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dagnabit.dagmodel.components.DagModelImpl;
 import com.onbelay.dagnabit.dagmodel.model.DagNode;
 import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
@@ -7,8 +9,6 @@ import com.onbelay.dagnabit.dagmodel.factory.DagModelFactory;
 import com.onbelay.dagnabit.dagmodel.model.DagModel;
 import com.onbelay.dagnabit.graphnode.service.GraphRelationshipService;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphRelationshipSnapshot;
-import com.onbelay.dagnabit.query.parsing.DefinedQueryBuilder;
-import com.onbelay.dagnabit.query.snapshot.DefinedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -71,10 +71,10 @@ public class DagModelFactoryBean implements DagModelFactory {
         relationships.forEach( c->
                 {
                    DagNode node = dagModel.addNode(c.getFromNodeName(), c.getFromCategory());
-                   node.setReferenceNo(c.getFromNodeId());
+                   node.setReferenceNo(c.getFromNodeId().getEntityId().getId());
 
                    node = dagModel.addNode(c.getToNodeName(), c.getToCategory());
-                   node.setReferenceNo(c.getToNodeId());
+                   node.setReferenceNo(c.getToNodeId().getEntityId().getId());
 
                    DagRelationship relationship = dagModel.addRelationship(
                            dagModel.getNode(c.getFromNodeName()),
@@ -82,7 +82,7 @@ public class DagModelFactoryBean implements DagModelFactory {
                            dagModel.getNode(c.getToNodeName()));
 
                    relationship.setWeight(c.getDetail().getWeight());
-                   relationship.setReferenceNo(c.getId());
+                   relationship.setReferenceNo(c.getEntityId().getId());
                 }
         );
 

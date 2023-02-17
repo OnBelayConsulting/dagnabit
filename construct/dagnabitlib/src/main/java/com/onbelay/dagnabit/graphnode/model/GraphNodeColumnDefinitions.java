@@ -18,9 +18,9 @@ package com.onbelay.dagnabit.graphnode.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.onbelay.dagnabit.query.enums.ColumnDataType;
-import com.onbelay.dagnabit.query.model.ColumnDefinition;
-import com.onbelay.dagnabit.query.model.ColumnDefinitions;
+import com.onbelay.core.query.enums.ColumnDataType;
+import com.onbelay.core.query.model.ColumnDefinition;
+import com.onbelay.core.query.model.ColumnDefinitions;
 import org.springframework.stereotype.Component;
 
 
@@ -53,7 +53,17 @@ public class GraphNodeColumnDefinitions implements ColumnDefinitions {
 	public ColumnDefinition get(String name) {
 		return definitionsMap.get(name);
 	}
-	
+
+	@Override
+	public String getCodeName() {
+		return name.getPath();
+	}
+
+	@Override
+	public String getDescriptionName() {
+		return name.getPath();
+	}
+
 	private void add(ColumnDefinition definition) {
 		definitionsMap.put(definition.getName(), definition);
 	}

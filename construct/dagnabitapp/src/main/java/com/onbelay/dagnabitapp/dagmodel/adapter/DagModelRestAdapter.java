@@ -31,7 +31,7 @@ public interface DagModelRestAdapter {
             String modelName,
             String relationshipName);
 
-    DagNodeCollection findDescendents(
+    DagNodeCollection findDescendants(
             String modelName,
             String nodeRootName,
             String relationship,

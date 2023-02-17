@@ -1,10 +1,10 @@
 package com.onbelay.dagnabitapp.dagmodel.snapshot;
 
-import com.onbelay.dagnabitapp.common.snapshot.AbstractEntityCollection;
+import com.onbelay.core.entity.snapshot.AbstractSnapshotCollection;
 
 import java.util.List;
 
-public class DagNodeCollection extends AbstractEntityCollection<DagNodeSnapshot> {
+public class DagNodeCollection extends AbstractSnapshotCollection<DagNodeSnapshot> {
     private static final String name = "DagNode";
 
     public DagNodeCollection() {
@@ -37,11 +37,16 @@ public class DagNodeCollection extends AbstractEntityCollection<DagNodeSnapshot>
     }
 
     public DagNodeCollection(String errorCode) {
-        super(errorCode);
+        super(
+                name,
+                errorCode);
     }
 
-    public DagNodeCollection(String errorCode, String parms) {
-        super(errorCode, parms);
+    public DagNodeCollection(String errorCode, List<String> parms) {
+        super(
+                name,
+                errorCode,
+                parms);
     }
 }
 

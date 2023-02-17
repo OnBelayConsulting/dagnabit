@@ -1,10 +1,11 @@
 package com.onbelay.dagnabit.graphnode.model;
 
-import com.onbelay.dagnabit.common.component.ApplicationContextFactory;
-import com.onbelay.dagnabit.common.model.AbstractEntity;
-import com.onbelay.dagnabit.enums.EntityState;
+import com.onbelay.core.entity.component.ApplicationContextFactory;
+import com.onbelay.core.entity.enums.EntityState;
+import com.onbelay.core.entity.model.AbstractEntity;
+import com.onbelay.core.entity.snapshot.EntitySlot;
+import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dagnabit.enums.TransactionErrorCode;
-import com.onbelay.dagnabit.graphnode.exception.GraphNodeException;
 import com.onbelay.dagnabit.graphnode.repository.GraphRelationshipRepository;
 import com.onbelay.dagnabit.graphnode.repositoryimpl.GraphRelationshipRepositoryBean;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphRelationshipDetail;
@@ -22,9 +23,9 @@ import javax.persistence.*;
                       "   WHERE relationship.detail.name = :name ")
 
 })
-public class GraphRelationship extends AbstractEntity<GraphRelationship> {
+public class GraphRelationship extends AbstractEntity {
 
-    private Integer graphRelationshipId;
+    private Integer id;
 
     private GraphNode fromGraphNode;
 
@@ -32,22 +33,16 @@ public class GraphRelationship extends AbstractEntity<GraphRelationship> {
 
     private GraphRelationshipDetail detail = new GraphRelationshipDetail();
 
-    @Transient
-    public Integer getEntityId() {
-        return graphRelationshipId;
-    }
-
-
     @Id
     @Column(name="GRAPH_RELATIONSHIP_ID", insertable = false, updatable = false)
     @SequenceGenerator(name="graphrelgen", sequenceName="GRAPH_RELATIONSHIP_SEQ", allocationSize = 1)
     @GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "graphrelgen")
-    public Integer getGraphRelationshipId() {
-        return graphRelationshipId;
+    public Integer getId() {
+        return id;
     }
 
-    public void setGraphRelationshipId(Integer graphNodeId) {
-        this.graphRelationshipId = graphNodeId;
+    public void setId(Integer graphNodeId) {
+        this.id = graphNodeId;
     }
 
 
@@ -69,10 +64,6 @@ public class GraphRelationship extends AbstractEntity<GraphRelationship> {
 
     public void setToGraphNode(GraphNode toGraphNode) {
         this.toGraphNode = toGraphNode;
-    }
-
-    public static GraphRelationship load(Integer id) {
-        return getEntityRepository().load(GraphRelationship.class, id);
     }
 
     @Embedded
@@ -103,21 +94,21 @@ public class GraphRelationship extends AbstractEntity<GraphRelationship> {
             detail.shallowCopyFrom(snapshot.getDetail());
             update();
         } else if (snapshot.getEntityState() == EntityState.DELETE) {
-            delete();
+            getEntityRepository().delete(this);
         }
     }
 
     private void setRelationships(GraphRelationshipSnapshot snapshot) {
 
         if (snapshot.getFromNodeName() != null) {
-            this.fromGraphNode = GraphNode.findByName(snapshot.getFromNodeName());
+            this.fromGraphNode = GraphNode.getGraphNodeRepository().findByName(snapshot.getFromNodeName());
         } else if (snapshot.getFromNodeId() != null)
-            this.fromGraphNode = GraphNode.load(snapshot.getFromNodeId());
+            this.fromGraphNode = GraphNode.getGraphNodeRepository().load(snapshot.getFromNodeId().getEntityId());
 
         if (snapshot.getToNodeName() != null) {
-            this.toGraphNode = GraphNode.findByName(snapshot.getToNodeName());
+            this.toGraphNode = GraphNode.getGraphNodeRepository().findByName(snapshot.getToNodeName());
         } else if (snapshot.getToNodeId() != null)
-            this.toGraphNode = GraphNode.load(snapshot.getToNodeId());
+            this.toGraphNode = GraphNode.getGraphNodeRepository().load(snapshot.getToNodeId().getEntityId());
     }
 
     public void createWith(
@@ -137,6 +128,14 @@ public class GraphRelationship extends AbstractEntity<GraphRelationship> {
         save();
     }
 
+
+    public EntitySlot generateSlot() {
+        return new EntitySlot(
+                getEntityId(),
+                detail.getName());
+    }
+
+
     private String generateRelationshipName(
             GraphNode from,
             GraphNode to,
@@ -147,15 +146,15 @@ public class GraphRelationship extends AbstractEntity<GraphRelationship> {
 
     public void validate() {
         if (fromGraphNode == null)
-            throw new GraphNodeException(TransactionErrorCode.MISSING_GRAPH_NODE.getCode(), "From");
+            throw new OBValidationException(TransactionErrorCode.MISSING_GRAPH_NODE.getCode(), "From");
         if (toGraphNode == null)
-            throw new GraphNodeException(TransactionErrorCode.MISSING_GRAPH_NODE.getCode(), "To");
+            throw new OBValidationException(TransactionErrorCode.MISSING_GRAPH_NODE.getCode(), "To");
         detail.validate();
     }
 
     @Transient
-    public static  GraphRelationshipRepositoryBean getEntityRepository() {
-        return (GraphRelationshipRepositoryBean) ApplicationContextFactory.getBean(GraphRelationshipRepository.NAME);
+    public static  GraphRelationshipRepository getGraphRelationshipRepository() {
+        return (GraphRelationshipRepository) ApplicationContextFactory.getBean(GraphRelationshipRepository.NAME);
     }
 
 

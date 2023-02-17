@@ -1,12 +1,12 @@
 package com.onbelay.dagnabitapp.graphnode.snapshot;
 
-import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
+import com.onbelay.core.entity.snapshot.AbstractSnapshotCollection;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphRelationshipSnapshot;
-import com.onbelay.dagnabitapp.common.snapshot.AbstractEntityCollection;
 
 import java.util.List;
 
-public class GraphRelationshipCollection extends AbstractEntityCollection<GraphRelationshipSnapshot> {
+public class GraphRelationshipCollection extends AbstractSnapshotCollection<GraphRelationshipSnapshot> {
+    public static final String name = "GraphRelationship";
 
     public GraphRelationshipCollection(
             int start,
@@ -15,7 +15,7 @@ public class GraphRelationshipCollection extends AbstractEntityCollection<GraphR
             List<GraphRelationshipSnapshot> items) {
 
         super(
-                "GraphRelationship",
+                name,
                 start,
                 limit,
                 total,
@@ -28,7 +28,7 @@ public class GraphRelationshipCollection extends AbstractEntityCollection<GraphR
             int total) {
 
         super(
-                "GraphRelationship",
+                name,
                 start,
                 limit,
                 total);
@@ -38,10 +38,18 @@ public class GraphRelationshipCollection extends AbstractEntityCollection<GraphR
     }
 
     public GraphRelationshipCollection(String errorCode) {
-        super(errorCode);
+        super(
+                name,
+                errorCode);
     }
 
-    public GraphRelationshipCollection(String errorCode, String parms) {
-        super(errorCode, parms);
+    public GraphRelationshipCollection(
+            String errorCode,
+            List<String> parms) {
+
+        super(
+                name,
+                errorCode,
+                parms);
     }
 }

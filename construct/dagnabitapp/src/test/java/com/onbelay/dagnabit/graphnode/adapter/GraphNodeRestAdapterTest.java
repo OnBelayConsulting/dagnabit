@@ -1,9 +1,10 @@
 package com.onbelay.dagnabit.graphnode.adapter;
 
+import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.dagnabit.common.DagnabitSpringTestCase;
-import com.onbelay.dagnabit.common.snapshot.TransactionResult;
 import com.onbelay.dagnabit.graphnode.model.GraphNode;
 import com.onbelay.dagnabit.graphnode.model.GraphNodeFixture;
+import com.onbelay.dagnabit.graphnode.repository.GraphNodeRepository;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
 import com.onbelay.dagnabitapp.graphnode.adapter.GraphNodeRestAdapter;
 import com.onbelay.dagnabitapp.graphnode.snapshot.GraphNodeCollection;
@@ -18,6 +19,9 @@ public class GraphNodeRestAdapterTest extends DagnabitSpringTestCase {
 
     @Autowired
     private GraphNodeRestAdapter graphNodeRestAdapter;
+
+    @Autowired
+    private GraphNodeRepository graphNodeRepository;
 
     private GraphNode firstNode;
 
@@ -40,14 +44,14 @@ public class GraphNodeRestAdapterTest extends DagnabitSpringTestCase {
         snapshots.add(node);
 
         TransactionResult result = graphNodeRestAdapter.saveGraphNodes(snapshots);
-        assertEquals(1, result.getIds().size());
-        GraphNode saved = GraphNode.findByName("MyMyNode");
+        assertEquals(1, result.getEntityIds().size());
+        GraphNode saved = graphNodeRepository.findByName("MyMyNode");
         assertNotNull(saved);
     }
 
     @Test
     public void findNodes() {
         GraphNodeCollection collection = graphNodeRestAdapter.findGraphNodes(0, 100, "WHERE name like 'H%'");
-        assertEquals(1, collection.getItems().size());
+        assertEquals(1, collection.getSnapshots().size());
     }
 }
