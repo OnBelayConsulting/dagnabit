@@ -4,3 +4,6 @@
 /construct/dagnabitapp/build
 .idea/
 *.jar
+build/
+.idea/
+.gradle/
