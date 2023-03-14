@@ -22,4 +22,6 @@ public interface GraphRelationshipService {
     TransactionResult save(GraphRelationshipSnapshot snapshot);
 
     TransactionResult save(List<GraphRelationshipSnapshot> snapshots);
+
+    GraphRelationshipSnapshot findByExternalReference(Integer externalReferenceId);
 }

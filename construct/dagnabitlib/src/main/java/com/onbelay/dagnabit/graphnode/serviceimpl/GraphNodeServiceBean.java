@@ -46,6 +46,12 @@ public class GraphNodeServiceBean implements GraphNodeService {
     }
 
     @Override
+    public GraphNodeSnapshot findByExternalReference(Integer externalReferenceId) {
+        GraphNode node = graphNodeRepository.findByExternalReference(externalReferenceId);
+        return null;
+    }
+
+    @Override
     public TransactionResult save(List<GraphNodeSnapshot> snapshots) {
         ArrayList<EntityId> ids = new ArrayList<>();
         for (GraphNodeSnapshot snapshot : snapshots) {

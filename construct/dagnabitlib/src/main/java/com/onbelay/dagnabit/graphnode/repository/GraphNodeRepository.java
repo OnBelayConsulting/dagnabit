@@ -19,5 +19,5 @@ public interface GraphNodeRepository {
     public List<GraphNode> fetchByIds(QuerySelectedPage selectedPage);
 
 
-
+    GraphNode findByExternalReference(Integer externalReferenceId);
 }

@@ -8,6 +8,8 @@ dependencyManagement {
 
 	imports {
 		mavenBom 'org.springframework.boot:spring-boot-dependencies:2.7.5'
+		mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2021.0.1'
+
 	}
 
 	dependencies {
@@ -69,6 +71,9 @@ dependencies {
 
 	testImplementation files("../libs/obcorelib-tests.jar")
 	implementation files("../libs/obcorelib-0.1.0.jar")
+
+
+	implementation "org.springframework.cloud:spring-cloud-stream-binder-rabbit"
 
 
 	/** Swagger dependencies **/

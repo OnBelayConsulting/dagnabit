@@ -17,6 +17,7 @@ import java.util.List;
 @Transactional
 public class GraphRelationshipRepositoryBean extends BaseRepository<GraphRelationship> implements GraphRelationshipRepository {
     public static final String FIND_BY_NAME = "GraphRelationship.FIND_BY_NAME";
+    public static final String FIND_BY_EXTERNAL_REFERENCE = "GraphRelationship.FIND_BY_EXTERNAL_REFERENCE";
 
     @Autowired
     private GraphRelationshipColumnDefinitions graphRelationshipColumnDefinitions;
@@ -36,6 +37,13 @@ public class GraphRelationshipRepositoryBean extends BaseRepository<GraphRelatio
             return null;
     }
 
+
+    public GraphRelationship findByExternalReference(Integer externalReferenceId) {
+        return executeSingleResultQuery(
+                FIND_BY_EXTERNAL_REFERENCE,
+                "externalReferenceId",
+                externalReferenceId);
+    }
 
 
     @Override

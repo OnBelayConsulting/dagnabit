@@ -18,8 +18,13 @@ import javax.persistence.*;
                 name = GraphNodeRepositoryBean.FIND_NODE_BY_NAME,
                 query = "SELECT node " +
                         "  FROM GraphNode node " +
-                      "   WHERE node.detail.name = :name ")
+                      "   WHERE node.detail.name = :name "),
 
+        @NamedQuery(
+                name = GraphNodeRepositoryBean.FIND_BY_EXTERNAL_REFERENCE,
+                query = "SELECT node " +
+                        "  FROM GraphNode node " +
+                      "   WHERE node.detail.externalReferenceId = :externalReferenceId ")
 })
 public class GraphNode extends AbstractEntity {
 

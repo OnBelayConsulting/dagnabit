@@ -20,8 +20,13 @@ import javax.persistence.*;
                 name = GraphRelationshipRepositoryBean.FIND_BY_NAME,
                 query = "SELECT relationship " +
                         "  FROM GraphRelationship relationship " +
-                      "   WHERE relationship.detail.name = :name ")
+                      "   WHERE relationship.detail.name = :name "),
 
+        @NamedQuery(
+                name = GraphRelationshipRepositoryBean.FIND_BY_EXTERNAL_REFERENCE,
+                query = "SELECT relationship " +
+                        "  FROM GraphRelationship relationship " +
+                      "   WHERE relationship.detail.externalReferenceId = :externalReferenceId ")
 })
 public class GraphRelationship extends AbstractEntity {
 

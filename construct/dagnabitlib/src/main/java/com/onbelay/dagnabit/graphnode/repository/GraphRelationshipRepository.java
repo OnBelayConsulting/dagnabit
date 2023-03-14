@@ -19,5 +19,5 @@ public interface GraphRelationshipRepository {
     public List<GraphRelationship> fetchByIds(QuerySelectedPage selectedPage);
 
 
-
+    GraphRelationship findByExternalReference(Integer externalReferenceId);
 }

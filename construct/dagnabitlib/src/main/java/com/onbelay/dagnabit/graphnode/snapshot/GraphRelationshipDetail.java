@@ -11,6 +11,7 @@ public class GraphRelationshipDetail {
     private String type;
     private String data;
     private Integer weight;
+    private Integer externalReferenceId;
 
     public void applyDefaults() {
         type = "default";
@@ -31,6 +32,8 @@ public class GraphRelationshipDetail {
         if (copy.weight != null)
             this.weight = copy.weight;
 
+        if (copy.externalReferenceId != null)
+            this.externalReferenceId = copy.externalReferenceId;
     }
 
     public void validate() {
@@ -75,4 +78,15 @@ public class GraphRelationshipDetail {
     public void setWeight(Integer weight) {
         this.weight = weight;
     }
+
+
+    @Column(name = "EXTERNAL_REF_ID")
+    public Integer getExternalReferenceId() {
+        return externalReferenceId;
+    }
+
+    public void setExternalReferenceId(Integer externalReferenceId) {
+        this.externalReferenceId = externalReferenceId;
+    }
+
 }

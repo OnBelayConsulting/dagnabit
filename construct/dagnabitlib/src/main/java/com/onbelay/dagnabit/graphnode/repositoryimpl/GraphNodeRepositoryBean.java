@@ -17,6 +17,7 @@ import java.util.List;
 @Transactional
 public class GraphNodeRepositoryBean extends BaseRepository<GraphNode> implements GraphNodeRepository {
     public static final String FIND_NODE_BY_NAME = "GraphNode.FIND_NODE_BY_NAME";
+    public static final String FIND_BY_EXTERNAL_REFERENCE = "GraphNode.FIND_BY_EXTERNAL_REFERENCE";
 
     @Autowired
     private GraphNodeColumnDefinitions graphNodeColumnDefinitions;
@@ -28,6 +29,16 @@ public class GraphNodeRepositoryBean extends BaseRepository<GraphNode> implement
                 "name",
                 name);
     }
+
+
+    @Override
+    public GraphNode findByExternalReference(Integer externalReferenceId) {
+        return executeSingleResultQuery(
+                FIND_BY_EXTERNAL_REFERENCE,
+                "externalReferenceId",
+                externalReferenceId);
+    }
+
 
     @Override
     public List<Integer> findGraphNodeIds(DefinedQuery definedQuery) {

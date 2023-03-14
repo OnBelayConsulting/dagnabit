@@ -52,6 +52,17 @@ public class GraphRelationshipServiceBean implements GraphRelationshipService {
     }
 
     @Override
+    public GraphRelationshipSnapshot findByExternalReference(Integer externalReferenceId) {
+        GraphRelationship graphRelationship = graphRelationshipRepository.findByExternalReference(externalReferenceId);
+        if (graphRelationship != null) {
+            GraphRelationshipAssembler assembler = new GraphRelationshipAssembler();
+            return assembler.assemble(graphRelationship);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     public List<GraphRelationshipSnapshot> findByIds(QuerySelectedPage page) {
         List<GraphRelationship> relationships = graphRelationshipRepository.fetchByIds(page);
         GraphRelationshipAssembler assembler = new GraphRelationshipAssembler();

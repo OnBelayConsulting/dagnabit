@@ -22,4 +22,6 @@ public interface GraphNodeService {
     TransactionResult save(GraphNodeSnapshot snapshot);
 
     TransactionResult save(List<GraphNodeSnapshot> snapshots);
+
+    GraphNodeSnapshot findByExternalReference(Integer externalReferenceId);
 }
