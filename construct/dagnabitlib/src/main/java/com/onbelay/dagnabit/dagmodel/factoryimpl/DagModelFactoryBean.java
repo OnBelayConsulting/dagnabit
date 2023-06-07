@@ -3,10 +3,10 @@ package com.onbelay.dagnabit.dagmodel.factoryimpl;
 import com.onbelay.core.query.parsing.DefinedQueryBuilder;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.dagnabit.dagmodel.components.DagModelImpl;
-import com.onbelay.dagnabit.dagmodel.model.DagNode;
-import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
 import com.onbelay.dagnabit.dagmodel.factory.DagModelFactory;
 import com.onbelay.dagnabit.dagmodel.model.DagModel;
+import com.onbelay.dagnabit.dagmodel.model.DagNode;
+import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
 import com.onbelay.dagnabit.graphnode.service.GraphRelationshipService;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphRelationshipSnapshot;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,16 +70,16 @@ public class DagModelFactoryBean implements DagModelFactory {
 
         relationships.forEach( c->
                 {
-                   DagNode node = dagModel.addNode(c.getFromNodeName(), c.getFromCategory());
-                   node.setReferenceNo(c.getFromNodeId().getEntityId().getId());
+                   DagNode node = dagModel.addNode(c.getFromNodeId().getCode(), c.getFromCategory());
+                   node.setReferenceNo(c.getFromNodeId().getId());
 
-                   node = dagModel.addNode(c.getToNodeName(), c.getToCategory());
-                   node.setReferenceNo(c.getToNodeId().getEntityId().getId());
+                   node = dagModel.addNode(c.getToNodeId().getCode(), c.getToCategory());
+                   node.setReferenceNo(c.getToNodeId().getId());
 
                    DagRelationship relationship = dagModel.addRelationship(
-                           dagModel.getNode(c.getFromNodeName()),
+                           dagModel.getNode(c.getFromNodeId().getCode()),
                            c.getDetail().getType(),
-                           dagModel.getNode(c.getToNodeName()));
+                           dagModel.getNode(c.getToNodeId().getCode()));
 
                    relationship.setWeight(c.getDetail().getWeight());
                    relationship.setReferenceNo(c.getEntityId().getId());

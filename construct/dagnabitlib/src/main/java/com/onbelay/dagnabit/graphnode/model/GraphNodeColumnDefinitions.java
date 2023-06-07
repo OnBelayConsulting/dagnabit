@@ -15,13 +15,13 @@
  */
 package com.onbelay.dagnabit.graphnode.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.onbelay.core.query.enums.ColumnDataType;
 import com.onbelay.core.query.model.ColumnDefinition;
 import com.onbelay.core.query.model.ColumnDefinitions;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Component(value = "graphNodeColumnDefinitions")

@@ -15,16 +15,16 @@
  */
 package com.onbelay.dagnabit.dagmodel.components;
 
+import com.onbelay.dagnabit.dagmodel.exception.DagGraphException;
+import com.onbelay.dagnabit.dagmodel.model.DagNode;
+import com.onbelay.dagnabit.dagmodel.model.DagNodePath;
+import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
+import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import com.onbelay.dagnabit.dagmodel.exception.DagGraphException;
-import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
-import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
-import com.onbelay.dagnabit.dagmodel.model.DagNode;
-import com.onbelay.dagnabit.dagmodel.model.DagNodePath;
 
 /**
  * Contains a list of DagNodeConnectors representing a vector from a from to a to node.

@@ -15,6 +15,8 @@
  */
 package com.onbelay.dagnabit.dagmodel.components;
 
+import com.onbelay.dagnabit.dagmodel.model.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,19 +24,6 @@ import java.util.Map;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import com.onbelay.dagnabit.dagmodel.model.DagContext;
-import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
-import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
-import com.onbelay.dagnabit.dagmodel.model.DagModel;
-import com.onbelay.dagnabit.dagmodel.model.DagNode;
-import com.onbelay.dagnabit.dagmodel.model.DagNodeNavigator;
-import com.onbelay.dagnabit.dagmodel.model.DagNodeCategory;
-import com.onbelay.dagnabit.dagmodel.model.LinkAnalyser;
-import com.onbelay.dagnabit.dagmodel.model.LinkRouteFinder;
-import com.onbelay.dagnabit.dagmodel.model.MinimumSpanningTreeFinder;
-import com.onbelay.dagnabit.dagmodel.model.NodeVisitor;
-import com.onbelay.dagnabit.dagmodel.model.ShortestPathFinder;
 
 /**
  * Implementation of the DagModel: Container for all Directed Acyclic Graph (DAG) elements such as nodes and links (relationship, edge).

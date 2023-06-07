@@ -15,30 +15,15 @@
  */
 package com.onbelay.dagnabit.dagmodel.components;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import com.onbelay.dagnabit.dagmodel.exception.DagGraphException;
+import com.onbelay.dagnabit.dagmodel.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-
-import com.onbelay.dagnabit.dagmodel.exception.DagGraphException;
-import com.onbelay.dagnabit.dagmodel.model.DagContext;
-import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
-import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
-import com.onbelay.dagnabit.dagmodel.model.DagMapContext;
-import com.onbelay.dagnabit.dagmodel.model.DagNode;
-import com.onbelay.dagnabit.dagmodel.model.DagNodePath;
-import com.onbelay.dagnabit.dagmodel.model.DagNodeCategory;
-import com.onbelay.dagnabit.dagmodel.model.DagPathRoutes;
-import com.onbelay.dagnabit.dagmodel.model.LinkRouteFinder;
-import com.onbelay.dagnabit.dagmodel.model.NodeSearchResult;
-import com.onbelay.dagnabit.dagmodel.model.NodeVisitor;
 
 /**
  * The DagLinkRouteFinder finds routes between nodes.

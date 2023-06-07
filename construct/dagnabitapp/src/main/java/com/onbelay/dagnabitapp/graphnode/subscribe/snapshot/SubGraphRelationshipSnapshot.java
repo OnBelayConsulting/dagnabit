@@ -2,7 +2,6 @@ package com.onbelay.dagnabitapp.graphnode.subscribe.snapshot;
 
 
 import com.onbelay.core.entity.snapshot.AbstractSnapshot;
-import com.onbelay.core.entity.snapshot.EntitySlot;
 
 public class SubGraphRelationshipSnapshot extends AbstractSnapshot {
 

@@ -71,8 +71,8 @@ public class GraphRelationshipRestControllerTest extends DagControllerTestCase {
 		MockMvc mockMvc = generateMockMvcPost(graphRelationshipRestController, "/api/relationships/");
 
 		GraphRelationshipSnapshot snapshot = new GraphRelationshipSnapshot();
-		snapshot.setFromNodeName("firstNode");
-		snapshot.setToNodeName("secondNode");
+		snapshot.getFromNodeId().setCode("firstNode");
+		snapshot.getToNodeId().setCode("secondNode");
 		snapshot.getDetail().setName("AlphaRelationship");
 
 		String jsonString = objectMapper.writeValueAsString(snapshot);
@@ -93,8 +93,8 @@ public class GraphRelationshipRestControllerTest extends DagControllerTestCase {
 
 
 		GraphRelationshipSnapshot snapshot = new GraphRelationshipSnapshot();
-		snapshot.setFromNodeName("firstNode");
-		snapshot.setToNodeName("secondNode");
+		snapshot.getFromNodeId().setCode("firstNode");
+		snapshot.getToNodeId().setCode("secondNode");
 		snapshot.getDetail().setName("AlphaRelationship");
 
 		List<GraphRelationshipSnapshot> snapshots = new ArrayList<>();

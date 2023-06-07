@@ -15,12 +15,12 @@
  */
 package com.onbelay.dagnabit.dagmodel.components;
 
+import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
-import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
 
 public class DagNodeConnector {
     

@@ -1,8 +1,8 @@
 package com.onbelay.dagnabit.dagmodel.examples.genealogy;
 
 import com.onbelay.dagnabit.dagmodel.model.DagContext;
-import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
 import com.onbelay.dagnabit.dagmodel.model.DagNode;
+import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
 
 import java.util.HashMap;
 import java.util.List;

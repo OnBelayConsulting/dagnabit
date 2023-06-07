@@ -13,12 +13,10 @@ public class GraphRelationshipAssembler extends EntityAssembler {
         GraphRelationshipSnapshot snapshot = new GraphRelationshipSnapshot();
         setEntityAttributes(relationship, snapshot);
 
-        snapshot.setFromNodeId(relationship.getFromGraphNode().generateSlot());
-        snapshot.setFromNodeName(relationship.getFromGraphNode().getDetail().getName());
+        snapshot.setFromNodeId(relationship.getFromGraphNode().generateEntityId());
         snapshot.setFromCategory(relationship.getFromGraphNode().getDetail().getCategory());
 
-        snapshot.setToNodeId(relationship.getToGraphNode().generateSlot());
-        snapshot.setToNodeName(relationship.getToGraphNode().getDetail().getName());
+        snapshot.setToNodeId(relationship.getToGraphNode().generateEntityId());
         snapshot.setToCategory(relationship.getToGraphNode().getDetail().getCategory());
 
 

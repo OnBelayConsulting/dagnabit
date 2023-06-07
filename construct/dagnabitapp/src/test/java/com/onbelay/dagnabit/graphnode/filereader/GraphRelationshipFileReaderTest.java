@@ -22,14 +22,14 @@ public class GraphRelationshipFileReaderTest extends DagnabitSpringTestCase  {
         assertEquals(5, relationships.size());
 
         GraphRelationshipSnapshot first = relationships.get(0);
-        assertEquals("FatherSmith", first.getFromNodeName());
-        assertEquals("JaneSmith", first.getToNodeName());
+        assertEquals("FatherSmith", first.getFromNodeId().getCode());
+        assertEquals("JaneSmith", first.getToNodeId().getCode());
         assertEquals("ParentOf", first.getDetail().getType());
 
 
         GraphRelationshipSnapshot last = relationships.get(4);
-        assertEquals("MotherSmith", last.getFromNodeName());
-        assertEquals("FatherSmith", last.getToNodeName());
+        assertEquals("MotherSmith", last.getFromNodeId().getCode());
+        assertEquals("FatherSmith", last.getToNodeId().getCode());
         assertEquals("spouse", last.getDetail().getType());
 
 

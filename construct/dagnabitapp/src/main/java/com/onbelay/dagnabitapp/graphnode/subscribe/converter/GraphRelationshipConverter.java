@@ -23,8 +23,8 @@ public class GraphRelationshipConverter {
         GraphRelationshipSnapshot snapshot = new GraphRelationshipSnapshot();
         snapshot.setEntityState(snapshotIn.getEntityState());
 
-        snapshot.setFromNodeName(snapshotIn.getFromNodeName());
-        snapshot.setToNodeName(snapshotIn.getToNodeName());
+        snapshot.getFromNodeId().setCode(snapshotIn.getFromNodeName());
+        snapshot.getToNodeId().setCode(snapshotIn.getToNodeName());
 
         snapshot.getDetail().setExternalReferenceId(snapshotIn.getDetail().getExternalReferenceId());
         snapshot.getDetail().setName(snapshotIn.getDetail().getName());

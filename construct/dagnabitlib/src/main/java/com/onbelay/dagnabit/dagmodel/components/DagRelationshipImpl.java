@@ -15,9 +15,9 @@
  */
 package com.onbelay.dagnabit.dagmodel.components;
 
+import com.onbelay.dagnabit.dagmodel.model.DagNode;
 import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
 import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
-import com.onbelay.dagnabit.dagmodel.model.DagNode;
 
 public class DagRelationshipImpl extends DagItemImpl implements DagRelationship {
 	public static final String DEFAULT_TYPE = "link";

@@ -37,7 +37,7 @@ public class DagModelFactoryTest extends DagnabitSpringTestCase {
         relationship.createWith(toGraphNode, fromGraphNode, "boss");
         flush();
 
-        GraphRelationship created = graphRelationshipRepository.load(relationship.getEntityId());
+        GraphRelationship created = graphRelationshipRepository.load(relationship.generateEntityId());
 
         DagModel dagModel = dagModelFactory.newModel(
                 "myModel",
@@ -54,7 +54,7 @@ public class DagModelFactoryTest extends DagnabitSpringTestCase {
         relationship.createWith(toGraphNode, fromGraphNode, "boss");
         flush();
 
-        GraphRelationship created = graphRelationshipRepository.load(relationship.getEntityId());
+        GraphRelationship created = graphRelationshipRepository.load(relationship.generateEntityId());
 
         DagModel dagModel = dagModelFactory.newModel(
                 "myModel",

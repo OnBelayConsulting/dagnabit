@@ -20,16 +20,16 @@ public class GraphRelationshipFileWriterTest extends DagnabitSpringTestCase {
         List<GraphRelationshipSnapshot> snapshots = new ArrayList<>();
 
         GraphRelationshipSnapshot snapshot = new GraphRelationshipSnapshot();
-        snapshot.setFromNodeName("fred");
-        snapshot.setToNodeName("janice");
+        snapshot.getFromNodeId().setCode("fred");
+        snapshot.getToNodeId().setCode("janice");
         snapshot.getDetail().setType("parentOf");
         snapshot.getDetail().setWeight(2);
         snapshot.getDetail().setData("data");
         snapshots.add(snapshot);
 
         snapshot = new GraphRelationshipSnapshot();
-        snapshot.setFromNodeName("ginger");
-        snapshot.setToNodeName("fred");
+        snapshot.getFromNodeId().setCode("ginger");
+        snapshot.getToNodeId().setCode("fred");
         snapshot.getDetail().setType("spouse");
         snapshot.getDetail().setWeight(2);
         snapshot.getDetail().setData("data");

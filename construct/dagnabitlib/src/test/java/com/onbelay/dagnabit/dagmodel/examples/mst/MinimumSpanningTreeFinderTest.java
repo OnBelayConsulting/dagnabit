@@ -15,9 +15,9 @@
  */
 package com.onbelay.dagnabit.dagmodel.examples.mst;
 
-import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
 import com.onbelay.dagnabit.dagmodel.model.DagModel;
 import com.onbelay.dagnabit.dagmodel.model.DagNode;
+import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
 import com.onbelay.dagnabit.dagmodel.model.MinimumSpanningTreeFinder;
 import org.junit.Before;
 import org.junit.Test;

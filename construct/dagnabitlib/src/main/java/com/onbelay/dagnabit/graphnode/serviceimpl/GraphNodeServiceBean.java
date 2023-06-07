@@ -32,7 +32,7 @@ public class GraphNodeServiceBean implements GraphNodeService {
         if (snapshot.getEntityState() == EntityState.NEW) {
             GraphNode graphNode = new GraphNode();
             graphNode.createWith(snapshot);
-            return new TransactionResult(graphNode.getEntityId());
+            return new TransactionResult(graphNode.generateEntityId());
         } else if (snapshot.getEntityState() == EntityState.MODIFIED || snapshot.getEntityState() == EntityState.DELETE)  {
             GraphNode graphNode = graphNodeRepository.load(snapshot.getEntityId());
 

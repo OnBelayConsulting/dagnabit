@@ -15,17 +15,16 @@
  */
 package com.onbelay.dagnabit.dagmodel.components;
 
+import com.onbelay.dagnabit.dagmodel.model.DagNode;
+import com.onbelay.dagnabit.dagmodel.model.DagNodeCategory;
+import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-
-import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
-import com.onbelay.dagnabit.dagmodel.model.DagNode;
-import com.onbelay.dagnabit.dagmodel.model.DagNodeCategory;
 
 /**
  * represents a node on a graph with connectors to other nodes.

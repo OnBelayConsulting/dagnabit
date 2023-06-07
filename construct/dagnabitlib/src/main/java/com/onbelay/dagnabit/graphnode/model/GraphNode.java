@@ -3,7 +3,7 @@ package com.onbelay.dagnabit.graphnode.model;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.model.AbstractEntity;
-import com.onbelay.core.entity.snapshot.EntitySlot;
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.dagnabit.graphnode.repository.GraphNodeRepository;
 import com.onbelay.dagnabit.graphnode.repositoryimpl.GraphNodeRepositoryBean;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeDetail;
@@ -78,11 +78,13 @@ public class GraphNode extends AbstractEntity {
         }
     }
 
-
-    public EntitySlot generateSlot() {
-        return new EntitySlot(
-                getEntityId(),
-                detail.getName());
+    @Override
+    public EntityId generateEntityId() {
+        return new EntityId(
+                getId(),
+                detail.getName(),
+                detail.getCategory(),
+                false);
     }
 
 

@@ -3,6 +3,7 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id 'idea'
+	id 'com.google.cloud.tools.jib' version '3.2.1'
 }
 dependencyManagement {
 
@@ -33,6 +34,15 @@ task construct (dependsOn: ["build", "srcZip"])
 
 repositories {
     mavenCentral()
+	maven {
+		name = "GitHubPackages"
+		url = uri("https://maven.pkg.github.com/onbelayconsulting/obcorelib")
+		credentials {
+			username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+			password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+		}
+	}
+
 }
 
 sourceCompatibility = 11
@@ -41,6 +51,8 @@ targetCompatibility = 11
 dependencies {
 	implementation project(':construct:dagnabitlib')
 	testImplementation project(path: ':construct:dagnabitlib', configuration: 'tests')
+	implementation group: "com.onbelay.core", name: "obcore", version: "1.+"
+	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.+", classifier: 'tests'
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
@@ -69,8 +81,8 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation("org.junit.vintage:junit-vintage-engine")
 
-	testImplementation files("../libs/obcorelib-tests.jar")
-	implementation files("../libs/obcorelib-0.1.0.jar")
+//	testImplementation files("../libs/obcorelib-tests.jar")
+//	implementation files("../libs/obcorelib-0.1.0.jar")
 
 
 	implementation "org.springframework.cloud:spring-cloud-stream-binder-rabbit"
@@ -104,6 +116,19 @@ jar {
 	}
 }
 
+jib {
+	from {
+		image = 'eclipse-temurin:11'
+	}
+	to {
+		image = 'lefeuvrem/dagnabit:1'
+	}
+	container {
+		appRoot = '/opt/app'
+		format = 'OCI'
+		labels = ['MAINTAINER': 'Michael Le Feuvre<lefeuvrem@gmail.com']
+	}
+}
 
 
 

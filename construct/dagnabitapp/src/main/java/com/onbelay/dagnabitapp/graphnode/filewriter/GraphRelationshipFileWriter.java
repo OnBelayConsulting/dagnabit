@@ -38,8 +38,8 @@ public class GraphRelationshipFileWriter extends GraphRelationshipFileHeader {
 
                 for (GraphRelationshipSnapshot relationship : relationships) {
                     printer.printRecord(
-                            relationship.getFromNodeName(),
-                            relationship.getToNodeName(),
+                            relationship.getFromNodeId().getCode(),
+                            relationship.getToNodeId().getCode(),
                             relationship.getDetail().getType(),
                             relationship.getDetail().getWeight(),
                             relationship.getDetail().getData());

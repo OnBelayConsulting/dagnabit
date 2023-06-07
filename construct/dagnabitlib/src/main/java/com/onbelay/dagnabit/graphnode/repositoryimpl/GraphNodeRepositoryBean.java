@@ -2,6 +2,8 @@ package com.onbelay.dagnabit.graphnode.repositoryimpl;
 
 import com.onbelay.core.entity.repository.BaseRepository;
 import com.onbelay.core.entity.snapshot.EntityId;
+import com.onbelay.core.enums.CoreTransactionErrorCode;
+import com.onbelay.core.exception.OBRuntimeException;
 import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabit.graphnode.model.GraphNode;
@@ -56,8 +58,17 @@ public class GraphNodeRepositoryBean extends BaseRepository<GraphNode> implement
     }
 
     public GraphNode load(EntityId entityId) {
+
+        if (entityId.isNull())
+            return null;
+
+        if (entityId.isInvalid())
+            throw new OBRuntimeException(CoreTransactionErrorCode.INVALID_ENTITY_ID.getCode());
+
         if (entityId.isSet())
             return find(GraphNode.class, entityId.getId());
+        else if (entityId.getCode() != null)
+            return findByName(entityId.getCode());
         else
             return null;
     }

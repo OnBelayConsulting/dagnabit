@@ -8,6 +8,15 @@ plugins {
 
 repositories {
 	mavenCentral()
+	maven {
+		name = "GitHubPackages"
+		url = uri("https://maven.pkg.github.com/onbelayconsulting/obcorelib")
+		credentials {
+			username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+			password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+		}
+	}
+
 }
 
 
@@ -26,6 +35,8 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 dependencies {
+	implementation group: "com.onbelay.core", name: "obcore", version: "1.+"
+	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.+", classifier: 'tests'
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
 	implementation "com.fasterxml.jackson.core:jackson-core"
@@ -39,8 +50,6 @@ dependencies {
 	//testImplementation('org.springframework.security:spring-security-test')
 	testImplementation("org.junit.vintage:junit-vintage-engine")
 	implementation('org.springframework.boot:spring-boot-starter-log4j2')
-	testImplementation files("../libs/obcorelib-tests.jar")
-	implementation files("../libs/obcorelib-0.1.0.jar")
 
 }
 

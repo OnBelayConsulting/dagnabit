@@ -15,12 +15,7 @@
  */
 package com.onbelay.dagnabit.dagmodel.components;
 
-import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
-import com.onbelay.dagnabit.dagmodel.model.DagNodeCategory;
-import com.onbelay.dagnabit.dagmodel.model.LinkAnalyser;
-import com.onbelay.dagnabit.dagmodel.model.LinkAnalysis;
-import com.onbelay.dagnabit.dagmodel.model.NavigationResult;
-import com.onbelay.dagnabit.dagmodel.model.NodeSearchResult;
+import com.onbelay.dagnabit.dagmodel.model.*;
 
 public class LinkAnalyserImpl implements LinkAnalyser {
 

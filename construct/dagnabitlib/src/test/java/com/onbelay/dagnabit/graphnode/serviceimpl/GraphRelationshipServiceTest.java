@@ -134,8 +134,8 @@ public class GraphRelationshipServiceTest extends DagnabitSpringTestCase {
     public void createRelationship() {
         GraphRelationshipSnapshot snapshot = new GraphRelationshipSnapshot();
         snapshot.getDetail().setType("childOf");
-        snapshot.setFromNodeId(firstNode.generateSlot());
-        snapshot.setToNodeId(secondNode.generateSlot());
+        snapshot.setFromNodeId(firstNode.generateEntityId());
+        snapshot.setToNodeId(secondNode.generateEntityId());
         snapshot.getDetail().setData("mydata");
 
         TransactionResult result = graphRelationshipService.save(snapshot);
@@ -152,8 +152,8 @@ public class GraphRelationshipServiceTest extends DagnabitSpringTestCase {
         GraphRelationshipSnapshot snapshot = new GraphRelationshipSnapshot();
         snapshot.getDetail().setType("childOf");
         snapshot.getDetail().setName("First is childOf Second");
-        snapshot.setFromNodeId(firstNode.generateSlot());
-        snapshot.setToNodeId(secondNode.generateSlot());
+        snapshot.setFromNodeId(firstNode.generateEntityId());
+        snapshot.setToNodeId(secondNode.generateEntityId());
         snapshot.getDetail().setData("mydata");
 
         TransactionResult result = graphRelationshipService.save(snapshot);

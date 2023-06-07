@@ -40,8 +40,8 @@ public class GraphRelationshipFileReader extends GraphRelationshipFileHeader{
 
             for (CSVRecord record : records) {
                 GraphRelationshipSnapshot snapshot = new GraphRelationshipSnapshot();
-                snapshot.setFromNodeName(record.get("FromNode"));
-                snapshot.setToNodeName(record.get("ToNode"));
+                snapshot.getFromNodeId().setCode(record.get("FromNode"));
+                snapshot.getToNodeId().setCode(record.get("ToNode"));
                 snapshot.getDetail().setType(record.get("Relationship"));
 
                 String weightStr = record.get("Weight");

@@ -1,21 +1,15 @@
 package com.onbelay.dagnabit.dagmodel.components;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
+import com.onbelay.dagnabit.dagmodel.model.DagNode;
+import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
+import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
+import com.onbelay.dagnabit.dagmodel.model.MinimumSpanningTreeFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
-import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
-import com.onbelay.dagnabit.dagmodel.model.DagNode;
-import com.onbelay.dagnabit.dagmodel.model.MinimumSpanningTreeFinder;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Find the minimum spanning tree using Prim's Algorithm.

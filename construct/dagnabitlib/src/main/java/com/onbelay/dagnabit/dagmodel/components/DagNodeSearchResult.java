@@ -1,12 +1,12 @@
 package com.onbelay.dagnabit.dagmodel.components;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
 import com.onbelay.dagnabit.dagmodel.model.DagNode;
 import com.onbelay.dagnabit.dagmodel.model.DagNodePath;
+import com.onbelay.dagnabit.dagmodel.model.DagRelationshipType;
 import com.onbelay.dagnabit.dagmodel.model.NodeSearchResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DagNodeSearchResult implements NodeSearchResult {
 

@@ -3,7 +3,7 @@ package com.onbelay.dagnabit.graphnode.model;
 import com.onbelay.core.entity.component.ApplicationContextFactory;
 import com.onbelay.core.entity.enums.EntityState;
 import com.onbelay.core.entity.model.AbstractEntity;
-import com.onbelay.core.entity.snapshot.EntitySlot;
+import com.onbelay.core.entity.snapshot.EntityId;
 import com.onbelay.core.exception.OBValidationException;
 import com.onbelay.dagnabit.enums.TransactionErrorCode;
 import com.onbelay.dagnabit.graphnode.repository.GraphRelationshipRepository;
@@ -105,15 +105,13 @@ public class GraphRelationship extends AbstractEntity {
 
     private void setRelationships(GraphRelationshipSnapshot snapshot) {
 
-        if (snapshot.getFromNodeName() != null) {
-            this.fromGraphNode = GraphNode.getGraphNodeRepository().findByName(snapshot.getFromNodeName());
-        } else if (snapshot.getFromNodeId() != null)
-            this.fromGraphNode = GraphNode.getGraphNodeRepository().load(snapshot.getFromNodeId().getEntityId());
+        if (snapshot.getFromNodeId() != null) {
+            this.fromGraphNode = GraphNode.getGraphNodeRepository().load(snapshot.getFromNodeId());
+        }
 
-        if (snapshot.getToNodeName() != null) {
-            this.toGraphNode = GraphNode.getGraphNodeRepository().findByName(snapshot.getToNodeName());
-        } else if (snapshot.getToNodeId() != null)
-            this.toGraphNode = GraphNode.getGraphNodeRepository().load(snapshot.getToNodeId().getEntityId());
+        if (snapshot.getToNodeId() != null) {
+            this.toGraphNode = GraphNode.getGraphNodeRepository().load(snapshot.getToNodeId());
+        }
     }
 
     public void createWith(
@@ -134,10 +132,13 @@ public class GraphRelationship extends AbstractEntity {
     }
 
 
-    public EntitySlot generateSlot() {
-        return new EntitySlot(
-                getEntityId(),
-                detail.getName());
+    @Override
+    public EntityId generateEntityId() {
+        return new EntityId(
+                getId(),
+                detail.getName(),
+                detail.getType(),
+                false);
     }
 
 
