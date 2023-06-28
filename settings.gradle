@@ -1,3 +1,2 @@
 rootProject.name = 'dagnabit'
-include ':construct:dagnabitlib',
-        ':construct:dagnabitapp'
+include ':construct:dagnabitlib'
