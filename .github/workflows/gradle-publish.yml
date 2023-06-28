@@ -32,6 +32,7 @@ jobs:
       id: versioning
       uses: ietf-tools/semver-action@v1
       with:
+        branch: master
         token: ${{ github.token }}
         skipInvalidTags: true
 
