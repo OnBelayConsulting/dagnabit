@@ -15,15 +15,6 @@ public interface DagModelFactory {
 	public DagModel newModel(String modelName);
 
 
-	/**
-	 * Build a model based on persisted nodes and relationships
-	 * @param modelName
-	 * @param selectingQuery - a definedQuery that selects relationships
-	 * @return
-	 */
-	public DagModel newModel(String modelName, String selectingQuery);
-
-
 	public DagModel findModel(String modelName);
 
 	public List<DagModel> findModels();

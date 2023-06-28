@@ -2,6 +2,8 @@ package com.onbelay.dagnabitapp.graphnode.adapterimpl;
 
 import com.onbelay.core.entity.snapshot.TransactionResult;
 import com.onbelay.core.query.parsing.DefinedQueryBuilder;
+import com.onbelay.core.query.snapshot.DefinedOrderExpression;
+import com.onbelay.core.query.snapshot.DefinedQuery;
 import com.onbelay.core.query.snapshot.QuerySelectedPage;
 import com.onbelay.dagnabit.graphnode.service.GraphNodeService;
 import com.onbelay.dagnabit.graphnode.snapshot.GraphNodeSnapshot;
@@ -38,9 +40,20 @@ public class GraphNodeRestAdapterBean implements GraphNodeRestAdapter {
             int limit,
             String query) {
 
-        DefinedQueryBuilder queryBuilder = new DefinedQueryBuilder("GraphNode", query);
+        DefinedQuery definedQuery;
+        if (query == null) {
+            definedQuery = new DefinedQuery("GraphNode");
+        } else {
+            DefinedQueryBuilder queryBuilder = new DefinedQueryBuilder("GraphNode", query);
+            definedQuery = queryBuilder.build();
+        }
 
-        QuerySelectedPage page = graphNodeService.findIdsByDefinedQuery(queryBuilder.build());
+        if (definedQuery.getOrderByClause().hasExpressions() == false) {
+            definedQuery.getOrderByClause().addOrderExpression(
+                    new DefinedOrderExpression("name"));
+        }
+
+        QuerySelectedPage page = graphNodeService.findIdsByDefinedQuery(definedQuery);
 
         if (page.getIds().size() == 0 || start >= page.getIds().size()) {
             return new GraphNodeCollection(

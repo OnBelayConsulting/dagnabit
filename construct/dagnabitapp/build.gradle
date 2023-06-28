@@ -51,8 +51,8 @@ targetCompatibility = 11
 dependencies {
 	implementation project(':construct:dagnabitlib')
 	testImplementation project(path: ':construct:dagnabitlib', configuration: 'tests')
-	implementation group: "com.onbelay.core", name: "obcore", version: "1.+"
-	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.+", classifier: 'tests'
+	implementation group: "com.onbelay.core", name: "obcore", version: "1.8.2"
+	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.8.2", classifier: 'tests'
 
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation('org.springframework.boot:spring-boot-starter-actuator')

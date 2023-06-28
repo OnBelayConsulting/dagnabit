@@ -35,8 +35,8 @@ sourceCompatibility = 11
 targetCompatibility = 11
 
 dependencies {
-	implementation group: "com.onbelay.core", name: "obcore", version: "1.+"
-	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.+", classifier: 'tests'
+	implementation group: "com.onbelay.core", name: "obcore", version: "1.8.2"
+	testImplementation group: "com.onbelay.core", name: "obcoretest", version: "1.8.2", classifier: 'tests'
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
 	implementation "com.fasterxml.jackson.core:jackson-core"
