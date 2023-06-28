@@ -1,6 +1,6 @@
 package com.onbelay.dagnabit.common;
 
-import com.onbelay.core.entity.persistence.TransactionalSpringTestCase;
+import junit.framework.TestCase;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @TestPropertySource( locations="classpath:application-integrationtest.properties")
 @SpringBootTest
 @Ignore("Do not run *TestCase classes with JUnit")
-public class DagnabitSpringTestCase extends TransactionalSpringTestCase {
+public class DagnabitSpringTestCase extends TestCase {
 	
 	public void setUp() {
 		
