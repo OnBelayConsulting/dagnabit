@@ -53,9 +53,10 @@ test {
 
 jar {
 	enabled = true
-	archiveClassifier = 'DAGNabitlib'
+	archiveClassifier = ''
+	archiveBaseName = 'dagnabitlib'
 	manifest {
-		attributes("Implementation-Title": "Dagnabitlib", "Implementation-Version": "1.0", "Created-By": "OnBelay Consulting")
+		attributes("Implementation-Title": "Dagnabitlib", "Created-By": "OnBelay Consulting")
 	}
 }
 
@@ -108,7 +109,7 @@ publishing {
 	publications {
 		obcorelibrary(MavenPublication) {
 			groupId = 'com.onbelay.dagnabit'
-			artifactId = 'dagnabit'
+			artifactId = 'dagnabitlib'
 			version = System.getenv("SEMANTIC_VERSION") ?: project.findProperty("semantic_version")
 			artifact jar
 		}
