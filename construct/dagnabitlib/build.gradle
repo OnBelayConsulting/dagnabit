@@ -1,6 +1,6 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.5'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'org.springframework.boot' version '3.1.1'
+	id 'io.spring.dependency-management' version '1.1.0'
 	id 'java'
 	id 'idea'
 	id("maven-publish")
@@ -16,7 +16,7 @@ repositories {
 dependencyManagement {
 
 	imports {
-		mavenBom 'org.springframework.boot:spring-boot-dependencies:2.7.5'
+		mavenBom 'org.springframework.boot:spring-boot-dependencies:3.1.1'
 	}
 
 	dependencies {
@@ -24,8 +24,8 @@ dependencyManagement {
 	}
 }
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 17
+targetCompatibility = 17
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -58,14 +58,6 @@ jar {
 	manifest {
 		attributes("Implementation-Title": "Dagnabitlib", "Created-By": "OnBelay Consulting")
 	}
-}
-
-task srcZip (type: Zip) {
-	
-	classifier = 'src'
-	from projectDir
-	include 'src/**/*'
-	
 }
 
 task runUnitTests(type: Test) {
