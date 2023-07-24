@@ -6,4 +6,5 @@
 *.jar
 build/
 .idea/
-.gradle/
+.gradle
+.idea/
