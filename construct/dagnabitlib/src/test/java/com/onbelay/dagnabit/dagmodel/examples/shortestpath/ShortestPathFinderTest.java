@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -119,17 +120,17 @@ public class ShortestPathFinderTest  {
 		DagRelationship firstLink = path.getRelationships().get(0);
 		assertEquals("start", firstLink.getFromNode().getName());
 		assertEquals("B", firstLink.getToNode().getName());
-		assertEquals(2, firstLink.getWeight());
+		assertEquals(0, firstLink.getWeight().compareTo(BigDecimal.valueOf(2)));
 		
 		DagRelationship secondLink = path.getRelationships().get(1);
 		assertEquals("B", secondLink.getFromNode().getName());
 		assertEquals("A", secondLink.getToNode().getName());
-		assertEquals(3, secondLink.getWeight());
+		assertEquals(0, secondLink.getWeight().compareTo(BigDecimal.valueOf(3)));
 		
 		DagRelationship thirdLink = path.getRelationships().get(2);
 		assertEquals("A", thirdLink.getFromNode().getName());
 		assertEquals("finish", thirdLink.getToNode().getName());
-		assertEquals(1, thirdLink.getWeight());
+		assertEquals(0, thirdLink.getWeight().compareTo(BigDecimal.valueOf(1)));
 		
 	}
 	
@@ -160,22 +161,22 @@ public class ShortestPathFinderTest  {
 		DagRelationship firstLink = path.getRelationships().get(0);
 		assertEquals("start", firstLink.getFromNode().getName());
 		assertEquals("B", firstLink.getToNode().getName());
-		assertEquals(2, firstLink.getWeight());
+		assertEquals(0, firstLink.getWeight().compareTo(BigDecimal.valueOf(2)));
 		
 		DagRelationship secondLink = path.getRelationships().get(1);
 		assertEquals("B", secondLink.getFromNode().getName());
 		assertEquals("A", secondLink.getToNode().getName());
-		assertEquals(3, secondLink.getWeight());
+		assertEquals(0, secondLink.getWeight().compareTo(BigDecimal.valueOf(3)));
 		
 		DagRelationship thirdLink = path.getRelationships().get(2);
 		assertEquals("A", thirdLink.getFromNode().getName());
 		assertEquals("D", thirdLink.getToNode().getName());
-		assertEquals(4, thirdLink.getWeight());
+		assertEquals(0, thirdLink.getWeight().compareTo(BigDecimal.valueOf(4)));
 		
 		DagRelationship fourthLink = path.getRelationships().get(3);
 		assertEquals("D", fourthLink.getFromNode().getName());
 		assertEquals("finish", fourthLink.getToNode().getName());
-		assertEquals(3, fourthLink.getWeight());
+		assertEquals(0, fourthLink.getWeight().compareTo(BigDecimal.valueOf(3)));
 		
 	}
 

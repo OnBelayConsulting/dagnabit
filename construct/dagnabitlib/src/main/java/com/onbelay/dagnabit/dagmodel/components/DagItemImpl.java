@@ -17,11 +17,13 @@ package com.onbelay.dagnabit.dagmodel.components;
 
 import com.onbelay.dagnabit.dagmodel.model.DagData;
 
+import java.math.BigDecimal;
+
 public abstract class DagItemImpl {
 	
     protected String name;
     private DagData data;
-    private int weight = 0;
+    private BigDecimal weight = BigDecimal.ONE;
     private Integer referenceNo;
 
 	protected DagItemImpl(String name) {
@@ -55,11 +57,11 @@ public abstract class DagItemImpl {
         this.referenceNo = referenceNo;
     }
 
-    public int getWeight() {
+    public BigDecimal getWeight() {
 		return weight;
 	}
 
-	public void setWeight(int weight) {
+	public void setWeight(BigDecimal weight) {
 		this.weight = weight;
 	}
 

@@ -94,7 +94,7 @@ public class DagMinimumSpanningTreeFinder implements MinimumSpanningTreeFinder {
 			return new ArrayList<DagRelationship>();
 		}
 		
-		DagRelationshipWrapper minLink = Collections.min(links, Comparator.comparingInt(c -> c.getRelationship().getWeight()) );
+		DagRelationshipWrapper minLink = Collections.min(links, Comparator.comparingDouble(c -> c.getRelationship().getWeight().doubleValue()) );
 		
 		ArrayList<DagRelationship> processedLinks = new ArrayList<DagRelationship>();
 		
@@ -149,7 +149,7 @@ public class DagMinimumSpanningTreeFinder implements MinimumSpanningTreeFinder {
 		boolean found = false;
 		DagRelationshipWrapper minLink = null;
 		while (found == false) {
-			minLink = Collections.min(existingLinks, Comparator.comparingInt( c -> c.getRelationship().getWeight()) );
+			minLink = Collections.min(existingLinks, Comparator.comparingDouble( c -> c.getRelationship().getWeight().doubleValue()) );
 			if (minLink == null) {
 				found = true;
 			} else {	

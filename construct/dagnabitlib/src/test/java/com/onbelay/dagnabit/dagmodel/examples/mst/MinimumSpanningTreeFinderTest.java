@@ -24,6 +24,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -55,27 +57,27 @@ public class MinimumSpanningTreeFinderTest  {
 		DagRelationship firstLink = processedLinks.get(0);
 		assertEquals("A", firstLink.getFromNode().getName());
 		assertEquals("B", firstLink.getToNode().getName());
-		assertEquals(7, firstLink.getWeight());
+		assertEquals(0, BigDecimal.valueOf(7).compareTo(firstLink.getWeight()));
 		
 		DagRelationship secondLink = processedLinks.get(1);
 		assertEquals("B", secondLink.getFromNode().getName());
 		assertEquals("C", secondLink.getToNode().getName());
-		assertEquals(3, secondLink.getWeight());
+		assertEquals(0, BigDecimal.valueOf(3).compareTo(secondLink.getWeight()));
 		
 		DagRelationship thirdLink = processedLinks.get(2);
 		assertEquals("C", thirdLink.getFromNode().getName());
 		assertEquals("E", thirdLink.getToNode().getName());
-		assertEquals(3, thirdLink.getWeight());
+		assertEquals(0, BigDecimal.valueOf(3).compareTo(thirdLink.getWeight()));
 		
 		DagRelationship fourthLink = processedLinks.get(3);
 		assertEquals("E", fourthLink.getFromNode().getName());
 		assertEquals("D", fourthLink.getToNode().getName());
-		assertEquals(2, fourthLink.getWeight());
+		assertEquals(0, BigDecimal.valueOf(2).compareTo(fourthLink.getWeight()));
 		
 		DagRelationship fifthLink = processedLinks.get(4);
 		assertEquals("E", fifthLink.getFromNode().getName());
 		assertEquals("F", fifthLink.getToNode().getName());
-		assertEquals(2, fifthLink.getWeight());
+		assertEquals(0, BigDecimal.valueOf(2).compareTo(fifthLink.getWeight()));
 	}
 	
 	@Test
@@ -87,15 +89,15 @@ public class MinimumSpanningTreeFinderTest  {
 		
 		
 		List<DagRelationship> processedLinks = finder.determineMinimumSpanningTree(model.getNode("A"));
-		int total = 0;
+		BigDecimal total = BigDecimal.ZERO;
 		for (DagRelationship l : processedLinks) {
 			logger.error(l.getFromNode().getName() + " --> " + l.getToNode().getName() + " with " + l.getWeight() ) ;
-			total = total + l.getWeight();
+			total = total.add(l.getWeight(), MathContext.DECIMAL128);
 		}
 		
 		List<DagNode> nodes = model.navigate().from(model.getNode("A")).by(model.getRelationshipType("mst")).descendants();
 		logger.error(nodes.toString()) ;
-		assertEquals(17, total);
+		assertEquals(0, BigDecimal.valueOf(17).compareTo(total));
 		
 		assertEquals("[B, C, E, D, F]", nodes.toString());
 	}
@@ -113,12 +115,12 @@ public class MinimumSpanningTreeFinderTest  {
 		
 		List<DagRelationship> processedLinks = finder.determineMinimumSpanningTree(model.getNode("A"));
 		
-		int total = 0;
+		BigDecimal total = BigDecimal.ZERO;
 		for (DagRelationship l : processedLinks) {
 			logger.error(l.getFromNode().getName() + " --> " + l.getToNode().getName() + " with " + l.getWeight() ) ;
-			total = total + l.getWeight();
+			total = total.add(l.getWeight(), MathContext.DECIMAL128);
 		}
-		assertEquals(21, total);
+		assertEquals(0, total.compareTo(BigDecimal.valueOf(21)));
 	}
 	
 	

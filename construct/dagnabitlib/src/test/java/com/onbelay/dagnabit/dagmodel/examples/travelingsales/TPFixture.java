@@ -7,6 +7,8 @@ import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+
 public class TPFixture {
 	private static Logger logger = LoggerFactory.getLogger(TPFixture.class);
 
@@ -63,74 +65,74 @@ public class TPFixture {
 				model.getNode("1"), 
 				"connects", 
 				model.getNode("3"));
-		a13Link.setWeight(15);
+		a13Link.setWeight(BigDecimal.valueOf(15));
 		
 		DagRelationship b31Link = model.addRelationship(
 				model.getNode("3"), 
 				"connects", 
 				model.getNode("1"));
-		b31Link.setWeight(15);
+		b31Link.setWeight(BigDecimal.valueOf(15));
 
 		DagRelationship a34Link = model.addRelationship(
 				model.getNode("3"), 
 				"connects", 
 				model.getNode("4"));
-		a34Link.setWeight(30);
+		a34Link.setWeight(BigDecimal.valueOf(30));
 
 		DagRelationship b43Link = model.addRelationship(
 				model.getNode("4"), 
 				"connects", 
 				model.getNode("3"));
-		b43Link.setWeight(30);
+		b43Link.setWeight(BigDecimal.valueOf(30));
 
 		DagRelationship a41Link = model.addRelationship(
 				model.getNode("4"), 
 				"connects", 
 				model.getNode("1"));
-		a41Link.setWeight(20);
+		a41Link.setWeight(BigDecimal.valueOf(20));
 
 		DagRelationship b14Link = model.addRelationship(
 				model.getNode("1"), 
 				"connects", 
 				model.getNode("4"));
-		b14Link.setWeight(20);
+		b14Link.setWeight(BigDecimal.valueOf(20));
 
 		
 		DagRelationship a32Link = model.addRelationship(
 				model.getNode("3"), 
 				"connects", 
 				model.getNode("2"));
-		a32Link.setWeight(35);
+		a32Link.setWeight(BigDecimal.valueOf(35));
 		
 		DagRelationship b23Link = model.addRelationship(
 				model.getNode("2"), 
 				"connects", 
 				model.getNode("3"));
-		b23Link.setWeight(35);
+		b23Link.setWeight(BigDecimal.valueOf(35));
 		
 		DagRelationship a24Link =  model.addRelationship(
 				model.getNode("2"), 
 				"connects", 
 				model.getNode("4"));
-		a24Link.setWeight(25);
+		a24Link.setWeight(BigDecimal.valueOf(25));
 		
 		DagRelationship b42Link =  model.addRelationship(
 				model.getNode("4"), 
 				"connects", 
 				model.getNode("2"));
-		b42Link.setWeight(25);
+		b42Link.setWeight(BigDecimal.valueOf(25));
 		
 		DagRelationship a21Link =  model.addRelationship(
 				model.getNode("2"), 
 				"connects", 
 				model.getNode("1"));
-		a21Link.setWeight(10);
+		a21Link.setWeight(BigDecimal.valueOf(10));
 		
 		DagRelationship b12Link =  model.addRelationship(
 				model.getNode("1"), 
 				"connects", 
 				model.getNode("2"));
-		b12Link.setWeight(10);
+		b12Link.setWeight(BigDecimal.valueOf(10));
 		
 		return model;
 
@@ -167,12 +169,12 @@ public class TPFixture {
 							node, 
 							"connects", 
 							secondNode);
-					firstLink.setWeight(weight);
+					firstLink.setWeight(BigDecimal.valueOf(weight));
 					DagRelationship secondLink =  model.addRelationship(
 							secondNode, 
 							"connects", 
 							node);
-					secondLink.setWeight(weight);
+					secondLink.setWeight(BigDecimal.valueOf(weight));
 					
 				}
 			}

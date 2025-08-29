@@ -6,6 +6,7 @@ import com.onbelay.dagnabit.dagmodel.model.DagRelationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 /**
@@ -45,60 +46,60 @@ public class ModelFixture {
 		DagRelationship link = model.addDefaultRelationship(
 				model.getNode("A"), 
 				model.getNode("B"));
-		link.setWeight(7);
+		link.setWeight(BigDecimal.valueOf(7));
 		links.add(link);
 		
 		link = model.addDefaultRelationship(
 				model.getNode("B"), 
 				model.getNode("D"));
-		link.setWeight(6);
+		link.setWeight(BigDecimal.valueOf(6));
 		links.add(link);
 		
 		link = model.addDefaultRelationship(
 				model.getNode("D"), 
 				model.getNode("F"));
-		link.setWeight(5);
+		link.setWeight(BigDecimal.valueOf(5));
 		links.add(link);
 		
 
 		link = model.addDefaultRelationship(
 				model.getNode("F"), 
 				model.getNode("E"));
-		link.setWeight(2);
+		link.setWeight(BigDecimal.valueOf(2));
 		links.add(link);
 
 		link = model.addDefaultRelationship(
 				model.getNode("E"), 
 				model.getNode("D"));
-		link.setWeight(2);
+		link.setWeight(BigDecimal.valueOf(2));
 		links.add(link);
 		
 		
 		link = model.addDefaultRelationship(
 				model.getNode("E"), 
 				model.getNode("C"));
-		link.setWeight(3);
+		link.setWeight(BigDecimal.valueOf(3));
 		links.add(link);
 
 		
 		link = model.addDefaultRelationship(
 				model.getNode("C"), 
 				model.getNode("D"));
-		link.setWeight(4);
+		link.setWeight(BigDecimal.valueOf(4));
 		links.add(link);
 		
 		
 		link = model.addDefaultRelationship(
 				model.getNode("C"), 
 				model.getNode("B"));
-		link.setWeight(3);
+		link.setWeight(BigDecimal.valueOf(3));
 		links.add(link);
 		
 		
 		link = model.addDefaultRelationship(
 				model.getNode("C"), 
 				model.getNode("A"));
-		link.setWeight(8);
+		link.setWeight(BigDecimal.valueOf(8));
 		links.add(link);
 
 		// Make Bidirectional
@@ -137,47 +138,47 @@ public class ModelFixture {
 		DagRelationship link = model.addDefaultRelationship(
 				model.getNode("A"), 
 				model.getNode("H"));
-		link.setWeight(1);
+		link.setWeight(BigDecimal.valueOf(1));
 		links.add(link);
 		
 		
 		link = model.addDefaultRelationship(
 				model.getNode("H"), 
 				model.getNode("D"));
-		link.setWeight(2);
+		link.setWeight(BigDecimal.valueOf(2));
 		links.add(link);
 
 		
 		link = model.addDefaultRelationship(
 				model.getNode("D"), 
 				model.getNode("I"));
-		link.setWeight(2);
+		link.setWeight(BigDecimal.valueOf(2));
 		links.add(link);
 		
 		
 		link = model.addDefaultRelationship(
 				model.getNode("I"), 
 				model.getNode("F"));
-		link.setWeight(1);
+		link.setWeight(BigDecimal.valueOf(1));
 		links.add(link);
 		
 		
 		link = model.addDefaultRelationship(
 				model.getNode("E"), 
 				model.getNode("G"));
-		link.setWeight(1);
+		link.setWeight(BigDecimal.valueOf(1));
 		links.add(link);
 		
 		link = model.addDefaultRelationship(
 				model.getNode("G"), 
 				model.getNode("J"));
-		link.setWeight(8);
+		link.setWeight(BigDecimal.valueOf(8));
 		links.add(link);
 		
 		link = model.addDefaultRelationship(
 				model.getNode("F"), 
 				model.getNode("J"));
-		link.setWeight(6);
+		link.setWeight(BigDecimal.valueOf(6));
 		links.add(link);
 		
 		// Make Bidirectional

@@ -15,6 +15,8 @@
  */
 package com.onbelay.dagnabit.dagmodel.model;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,10 +104,10 @@ public class DagNodePath {
      * Calculate the total weight of the path based on the weights of the links.
      * @return 0 if no links or total weight.
      */
-    public int calculateTotalWeight() {
-    	int totalWeight = 0;
+    public BigDecimal calculateTotalWeight() {
+		BigDecimal totalWeight = BigDecimal.ZERO;
     	for (DagRelationship c : relationships) {
-    		totalWeight = totalWeight + c.getWeight();
+    		totalWeight = totalWeight.add(c.getWeight(), MathContext.DECIMAL128);
     	}
     	return totalWeight;
     }

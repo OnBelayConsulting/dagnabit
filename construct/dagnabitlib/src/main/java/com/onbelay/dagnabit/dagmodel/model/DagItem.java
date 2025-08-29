@@ -1,5 +1,7 @@
 package com.onbelay.dagnabit.dagmodel.model;
 
+import java.math.BigDecimal;
+
 public interface DagItem {
 
     public String getName();
@@ -8,9 +10,9 @@ public interface DagItem {
 
     public DagData getData();
 
-    public void setWeight(int weight);
+    public void setWeight(BigDecimal weight);
 
-    public int getWeight();
+    public BigDecimal getWeight();
 
     public Integer getReferenceNo();
 

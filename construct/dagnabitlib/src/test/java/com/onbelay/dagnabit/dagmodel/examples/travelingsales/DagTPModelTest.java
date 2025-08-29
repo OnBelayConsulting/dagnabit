@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -104,10 +105,10 @@ public class DagTPModelTest  {
 										.collect(Collectors.toList());
 		
 		DagNodePath shortestPath = null;
-		int totalCost = 100000;
+		BigDecimal totalCost = BigDecimal.valueOf(100000);
 		for (DagNodePath p : filtered) {
-			int totalWeight = p.calculateTotalWeight();
-			if (totalWeight < totalCost) {
+			BigDecimal totalWeight = p.calculateTotalWeight();
+			if (totalWeight.compareTo(totalCost) < 0) {
 				totalCost = totalWeight;
 				shortestPath = p;
 			}
@@ -137,10 +138,10 @@ public class DagTPModelTest  {
 		logger.error("number of paths: " + paths.size());
 		
 		DagNodePath shortestPath = null;
-		int totalCost = 100000;
+		BigDecimal totalCost = BigDecimal.valueOf(100000);
 		for (DagNodePath p : filtered) {
-			int totalWeight = p.calculateTotalWeight();
-			if (totalWeight < totalCost) {
+			BigDecimal totalWeight = p.calculateTotalWeight();
+			if (totalWeight.compareTo(totalCost) < 0) {
 				totalCost = totalWeight;
 				shortestPath = p;
 			}

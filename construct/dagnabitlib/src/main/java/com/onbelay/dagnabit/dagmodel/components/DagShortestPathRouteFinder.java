@@ -4,6 +4,8 @@ import com.onbelay.dagnabit.dagmodel.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -85,11 +87,11 @@ public class DagShortestPathRouteFinder implements ShortestPathFinder {
 	private Map<DagNode, DagNode> findShortestRouteParents(DagNode startNodeIn, DagNode endNode) {
 		
 		Map<DagNode, DagNode> parents = new HashMap<>();
-		Map<DagNode, Integer> costs = new HashMap<>();
+		Map<DagNode, BigDecimal> costs = new HashMap<>();
 		Map<DagNode, DagNode> processed = new HashMap<>();
 		
 		DagNodeImpl startNode = model.getNodeImplementation(startNodeIn.getName());
-		costs.put(startNode, 0);
+		costs.put(startNode, BigDecimal.ZERO);
 		parents.put(startNode, null);
 		
 		if (startNode.hasFromThisNodeConnectors() == false)
@@ -116,15 +118,15 @@ public class DagShortestPathRouteFinder implements ShortestPathFinder {
 			DagNode endNode,
 			Map<DagNode, DagNode> processed,
 			Map<DagNode, DagNode> parents,
-			Map<DagNode, Integer> costs) {
+			Map<DagNode, BigDecimal> costs) {
 	
 		
 		for (DagNodeConnector connector : currentNode.getSortedFromThisNodeConnectors(sorter)) {
 			
-			int cost = costs.get(currentNode) + connector.getRelationship(relationshipType).getWeight();
+			BigDecimal cost = costs.get(currentNode).add(connector.getRelationship(relationshipType).getWeight(), MathContext.DECIMAL128);
 			
 			if (costs.containsKey(connector.getToNode())) {
-				if (cost < costs.get(connector.getToNode())) {
+				if (cost.compareTo(costs.get(connector.getToNode())) < 0) {
 					costs.put(connector.getToNode(), cost);
 					parents.put(connector.getToNode(), currentNode);
 				}
@@ -153,12 +155,11 @@ public class DagShortestPathRouteFinder implements ShortestPathFinder {
 	}
 	
 	private Comparator<DagNodeConnector> buildSorter() {
-		Comparator<DagNodeConnector> sorter = (c, d) -> {
-			int cWeight = c.getRelationship(model.getDefaultRelationshipType()).getWeight();
-			int dWeight = d.getRelationship(model.getDefaultRelationshipType()).getWeight();
-			return cWeight - dWeight;
+		return (c, d) -> {
+			BigDecimal cWeight = c.getRelationship(model.getDefaultRelationshipType()).getWeight();
+			BigDecimal dWeight = d.getRelationship(model.getDefaultRelationshipType()).getWeight();
+			return cWeight.compareTo(dWeight);
 		};
-		return sorter;
 	}
 	
 
